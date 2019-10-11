@@ -8,10 +8,12 @@
 
 //My includes
 #include "server.h"
+#include "serverhelpers.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    if(!ServerHelper::InputCheck(argc, argv))
+        return 0;
 
     std::cout<<"Starting server..."<<std::endl;
 
@@ -28,6 +30,5 @@ int main(int argc, char *argv[])
     QTcpSocket baseSocket(nullptr);
 
 
-
-    return a.exec();
+    return 0;
 }
