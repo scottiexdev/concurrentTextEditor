@@ -9,7 +9,21 @@ std::string Server::GetName(){
 
 void Server::incomingConnection(qintptr socketDescriptor){
     std::cout<<"Incoming connection"<<std::endl;
-    return;
+  //  FortuneThread *thread = new FortuneThread(socketDescriptor, fortune, this);
+    //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    //thread->start();
+}
+
+bool Server::ConnectToDatabase(QString database, QString connectionString){
+    this->db = QSqlDatabase::addDatabase(database);
+    this->db.setDatabaseName(connectionString);
+
+    if(!this->db.open()){
+        std::cout<<"Couldn't connect to database"<<std::endl;
+        return false;
+    }
+
+    return true;
 }
 
 

@@ -1,10 +1,7 @@
-#include <QCoreApplication>
-#include <iostream>
-#include <QtCore/QCoreApplication>
 #include <QDebug>
-#include <QtCore/QCoreApplication>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
+#include <iostream>
 
 //My includes
 #include "server.h"
@@ -12,20 +9,23 @@
 
 int main(int argc, char *argv[])
 {
-    if(!ServerHelper::InputCheck(argc, argv))
-        return 0;
+   // if(!ServerHelper::InputCheck(argc, argv))
+   //     return 0;
 
     std::cout<<"Starting server..."<<std::endl;
 
     //Create server
     Server server(nullptr, "Concurrent Server");
 
-    if(!server.listen(QHostAddress("127.0.0.1"), 0)){
+    //Connect to Database
+
+    if(!server.ConnectToDatabase("QSQLITE", "path"))
+        return 0;
+
+    if(!(server.listen(QHostAddress("127.0.0.1"), 0)))
         std::cout<<"Unable to start server, connection refused"<<std::endl;
-    }
-    else{
+    else
         std::cout<<"Server listening on localhost, port 0,"<<std::endl;
-    }
 
     QTcpSocket baseSocket(nullptr);
 

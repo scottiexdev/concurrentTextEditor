@@ -5,6 +5,10 @@
 #include <QtNetwork/QTcpServer>
 #include <iostream>
 #include <string>
+#include <QtSql>
+#include <QFileInfo>
+#include <QString>
+
 
 class Server : public QTcpServer
 {
@@ -17,12 +21,14 @@ public:
 
     //Methods
     std::string GetName(void);
+    bool ConnectToDatabase(QString database, QString connectionString);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
 
-private:
+private:    
     std::string _serverName;
+    QSqlDatabase db;
 };
 
 #endif // SERVER_H
