@@ -28,3 +28,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     server.h \
     serverhelpers.h
+
+DISTFILES += \
+    concurrentDb.db \
+    database/concurrentDb.db

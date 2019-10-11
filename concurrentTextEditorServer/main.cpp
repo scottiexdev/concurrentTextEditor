@@ -15,17 +15,17 @@ int main(int argc, char *argv[])
     std::cout<<"Starting server..."<<std::endl;
 
     //Create server
-    Server server(nullptr, "Concurrent Server");
+    Server server("Concurrent Server");
 
     //Connect to Database
-
-    if(!server.ConnectToDatabase("QSQLITE", "path"))
+    if(!server.ConnectToDatabase())
         return 0;
 
     if(!(server.listen(QHostAddress("127.0.0.1"), 0)))
         std::cout<<"Unable to start server, connection refused"<<std::endl;
     else
         std::cout<<"Server listening on localhost, port 0,"<<std::endl;
+
 
     QTcpSocket baseSocket(nullptr);
 

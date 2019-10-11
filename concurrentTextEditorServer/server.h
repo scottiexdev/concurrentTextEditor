@@ -5,10 +5,15 @@
 #include <QtNetwork/QTcpServer>
 #include <iostream>
 #include <string>
+#include <QString>
 #include <QtSql>
 #include <QFileInfo>
 #include <QString>
-
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QDebug>
 
 class Server : public QTcpServer
 {
@@ -16,19 +21,22 @@ class Server : public QTcpServer
 
 public:
     //Constructors
-    Server(QObject *parent) : QTcpServer(parent) {}
-    Server(QObject *parent, std::string serverName) : QTcpServer(parent), _serverName(serverName) {}
+    Server() : QTcpServer(nullptr) {}
+    Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {}
 
     //Methods
     std::string GetName(void);
-    bool ConnectToDatabase(QString database, QString connectionString);
+    bool ConnectToDatabase(QString databaseLocation = nullptr);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
 
 private:    
-    std::string _serverName;
-    QSqlDatabase db;
+    std::string  _serverName;
+    QSqlDatabase _db;
+    const QString _database = "QSQLITE";
+    const QString _defaultDatabaseLocation = "/home/the_albo/Music/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
 };
 
 #endif // SERVER_H

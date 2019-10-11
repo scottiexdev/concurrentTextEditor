@@ -14,14 +14,40 @@ void Server::incomingConnection(qintptr socketDescriptor){
     //thread->start();
 }
 
-bool Server::ConnectToDatabase(QString database, QString connectionString){
-    this->db = QSqlDatabase::addDatabase(database);
-    this->db.setDatabaseName(connectionString);
+bool Server::ConnectToDatabase(QString databaseLocation){
 
-    if(!this->db.open()){
-        std::cout<<"Couldn't connect to database"<<std::endl;
+    const QString DRIVER(this->_database);
+    if(QSqlDatabase::isDriverAvailable(DRIVER))
+
+    this->_db = QSqlDatabase::addDatabase(DRIVER);
+
+    //Set db
+    if(databaseLocation.isNull() || databaseLocation.isEmpty())
+        this->_db.setDatabaseName(this->_defaultDatabaseLocation);
+    else
+        this->_db.setDatabaseName(databaseLocation);
+
+    //Open connection
+    if(!this->_db.open()){
+        std::cout<<"Couldn't connect to database, Error: " << this->_db.lastError().text().toUtf8().constData() << std::endl;
         return false;
     }
+    else
+        std::cout<<"Successfully connected to database"<<std::endl;
+
+    _db.isOpen();
+    _db.tables();
+
+    //Try query
+    QSqlQuery query;
+
+
+    if(!query.exec("INSERT INTO users (username, password) VALUES ('Silviussss', NULL);")){
+        //std::cout<<"Query Error"<<std::endl;
+        std::cout << query.lastError().text().toUtf8().constData();
+    }
+
+
 
     return true;
 }
