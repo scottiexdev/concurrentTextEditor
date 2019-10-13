@@ -52,4 +52,22 @@ bool Server::ConnectToDatabase(QString databaseLocation){
     return true;
 }
 
+void Server::sendListFile() {
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    QFileDialog listFile;
+
+    listFile.setFileMode(QFileDialog::AnyFile); //existing and non
+    listFile.setNameFilter(tr("Text: (*.txt)"));
+    listFile.setViewMode(QFileDialog::List);
+    out.setVersion(QDataStream::Qt_5_10); //for retrocompatibility
+    listFile.setDirectory(QDir::currentPath());
+    out << listFile.saveState(); //transofrm in QByteArray
+    QTcpSocket *clientConn = tcpServer->nextPendingConnection();
+    connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater); not working
+    clientConn->write(block);
+    //than disconnect(?)
+    //clientConn->disconnectFromHost();
+}
+
 

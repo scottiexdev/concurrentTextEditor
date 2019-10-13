@@ -14,6 +14,9 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QDebug>
+#include <QFileDialog>
+#include <QDialog>
+#include <QTcpSocket>
 
 class Server : public QTcpServer
 {
@@ -22,16 +25,23 @@ class Server : public QTcpServer
 public:
     //Constructors
     Server() : QTcpServer(nullptr) {}
-    Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {}
+    Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {
+        connect(tcpServer, &QTcpServer::newConnection, this, &Server::sendListFile); //new connection => send list file to show in the client
+    }
 
     //Methods
     std::string GetName(void);
     bool ConnectToDatabase(QString databaseLocation = nullptr);
 
+
+private slots:
+    void sendListFile();
+
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
 
 private:    
+    QTcpServer *tcpServer = nullptr;
     std::string  _serverName;
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
