@@ -1,4 +1,5 @@
 #include "server.h"
+#include "workerserver.h"
 
 std::string Server::GetName(){
     if(_serverName.empty())
@@ -9,6 +10,18 @@ std::string Server::GetName(){
 
 void Server::incomingConnection(qintptr socketDescriptor){
     std::cout<<"Incoming connection"<<std::endl;
+
+    WorkerServer *worker = new WorkerServer(this);
+
+    if (!worker->setSocketDescriptor(socketDescriptor)) {
+          worker->deleteLater();
+          return;
+    }
+
+    connect(worker, &WorkerServer::logMessage, this, &Server::logMessage);
+
+    emit logMessage("User connected with socket: ");
+
   //  FortuneThread *thread = new FortuneThread(socketDescriptor, fortune, this);
     //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     //thread->start();
@@ -35,22 +48,23 @@ bool Server::ConnectToDatabase(QString databaseLocation){
     else
         std::cout<<"Successfully connected to database"<<std::endl;
 
-    _db.isOpen();
-    _db.tables();
+    return true;
+}
 
-    //Try query
+bool Server::queryDatabase(QString queryString){
+
     QSqlQuery query;
 
-
-    if(!query.exec("INSERT INTO users (username, password) VALUES ('Silviussss', NULL);")){
-        //std::cout<<"Query Error"<<std::endl;
+    if(!query.exec(queryString)){
         std::cout << query.lastError().text().toUtf8().constData();
+        return false;
     }
-
-
+    else
+        std::cout << "Succesfull query: " << queryString.toUtf8().constData() << std::endl;
 
     return true;
 }
+
 
 void Server::sendListFile() {
     QByteArray block;
@@ -85,5 +99,12 @@ void Server::sendListFile() {
     //than disconnect(?)
     //clientConn->disconnectFromHost();
 }
+
+void Server::logMessage(const QString &msg){
+
+    std::cout << msg.toUtf8().constData() << std::endl;
+}
+
+
 
 
