@@ -52,4 +52,37 @@ bool Server::ConnectToDatabase(QString databaseLocation){
     return true;
 }
 
+void Server::sendListFile() {
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    QDir dir;
+    QJsonArray listFile;
+
+    //set directory
+    dir.filePath("Files"); //what path?
+    dir.setFilter(QDir::Files);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    //create filelist
+    QFileInfoList list = dir.entryInfoList();
+    for(int i=0; i<list.size(); ++i) {
+        QString fileName = list.at(i).fileName();
+        QJsonObject file_data;
+        file_data.insert("Name", QJsonValue(fileName));
+        listFile.push_back(QJsonValue(file_data));
+    }
+
+    //put in json document
+    QJsonDocument final_list(listFile);
+    out.setVersion(QDataStream::Qt_5_10);
+    out << final_list.toJson(QJsonDocument::Indented);
+
+    //send to client
+    QTcpSocket *clientConn = tcpServer->nextPendingConnection();
+    connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater);
+    clientConn->write(block);
+    //than disconnect(?)
+    //clientConn->disconnectFromHost();
+}
+
 
