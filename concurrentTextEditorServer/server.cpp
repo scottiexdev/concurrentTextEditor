@@ -78,9 +78,10 @@ void Server::sendListFile() {
     out << final_list.toJson(QJsonDocument::Indented);
 
     //send to client
-    QTcpSocket *clientConn = tcpServer->nextPendingConnection();
+    QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
     connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater);
     clientConn->write(block);
+
     //than disconnect(?)
     //clientConn->disconnectFromHost();
 }
