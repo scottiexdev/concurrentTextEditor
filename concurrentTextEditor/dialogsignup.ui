@@ -1,49 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogSignup</class>
- <widget class="QDialog" name="DialogSignup">
+ <class>dialogsignup</class>
+ <widget class="QDialog" name="dialogsignup">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>512</height>
+    <width>566</width>
+    <height>445</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>696</width>
-    <height>512</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>2088</width>
-    <height>2048</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Signup</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_usrname">
+    <widget class="QLabel" name="label">
      <property name="minimumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="text">
@@ -52,33 +34,33 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLineEdit" name="lineEditUsr">
+    <widget class="QLineEdit" name="lineEdit_Usr">
      <property name="minimumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="label_pwdIns">
+    <widget class="QLabel" name="label_2">
      <property name="minimumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="text">
@@ -87,33 +69,36 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLineEdit" name="lineEditPwdIns">
+    <widget class="QLineEdit" name="lineEdit_PwdIns">
      <property name="minimumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="label_pwdConf">
+    <widget class="QLabel" name="label_3">
      <property name="minimumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>151</width>
-       <height>16</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="text">
@@ -122,18 +107,24 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QLineEdit" name="lineEditPwdConf">
+    <widget class="QLineEdit" name="lineEdit_PwdConf">
      <property name="minimumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>141</width>
-       <height>31</height>
+       <width>150</width>
+       <height>30</height>
       </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
@@ -141,13 +132,13 @@
     <widget class="QPushButton" name="pushButton">
      <property name="minimumSize">
       <size>
-       <width>141</width>
+       <width>150</width>
        <height>50</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>141</width>
+       <width>150</width>
        <height>50</height>
       </size>
      </property>
