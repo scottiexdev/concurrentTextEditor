@@ -3,20 +3,19 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class ClientMainWindow;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class clientmainwindow; }
+QT_END_NAMESPACE
 
-class ClientMainWindow : public QMainWindow
+class clientmainwindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit ClientMainWindow(QWidget *parent = nullptr);
-    ~ClientMainWindow();
+    clientmainwindow(QWidget *parent = nullptr);
+    ~clientmainwindow();
 
 private:
-    Ui::ClientMainWindow *ui;
+    Ui::clientmainwindow *ui;
 };
-
 #endif // CLIENTMAINWINDOW_H
