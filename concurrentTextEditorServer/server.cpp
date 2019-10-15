@@ -1,6 +1,8 @@
 #include "server.h"
 #include "workerserver.h"
 
+Server::Server(QObject *parent) : QTcpServer (parent) {}
+
 std::string Server::GetName(){
     if(_serverName.empty())
         return "Unknown server";
@@ -100,11 +102,17 @@ void Server::sendListFile() {
     //clientConn->disconnectFromHost();
 }
 
-void Server::logMessage(const QString &msg){
+//void Server::logMessage(const QString &msg){
 
-    std::cout << msg.toUtf8().constData() << std::endl;
+//    std::cout << msg.toUtf8().constData() << std::endl;
+//}
+
+void Server::stopServer() {
+    for(WorkerServer *worker : m_clients) {
+        worker->disconnectFromClient();
+    }
+    close();
 }
-
 
 
 

@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         server.cpp \
+        serverwindow.cpp \
         workerserver.cpp
 
 # Default rules for deployment.
@@ -29,8 +30,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     server.h \
     serverhelpers.h \
+    serverwindow.h \
     workerserver.h
 
 DISTFILES += \
     concurrentDb.db \
     database/concurrentDb.db
+
+FORMS += \
+    serverwindow.ui

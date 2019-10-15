@@ -17,6 +17,7 @@
 #include <QFileDialog>
 #include <QDialog>
 #include <QTcpSocket>
+#include "workerserver.h"
 
 class Server : public QTcpServer
 {
@@ -24,20 +25,24 @@ class Server : public QTcpServer
 
 public:
     //Constructors
-    Server() : QTcpServer(nullptr) {}
-    Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {
-        //connect(tcpServer, &QTcpServer::newConnection, this, &Server::sendListFile); //new connection => send list file to show in the client
-    }
+    explicit Server(QObject *parent = nullptr);
+//    Server() : QTcpServer(nullptr) {}
+//    Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {
+//        //connect(tcpServer, &QTcpServer::newConnection, this, &Server::sendListFile); //new connection => send list file to show in the client
+//    }
 
     //Methods
     std::string GetName(void);
     bool ConnectToDatabase(QString databaseLocation = nullptr);
     bool queryDatabase(QString query);
 
-
-private slots:
-    void sendListFile();
+signals:
     void logMessage(const QString &msg);
+
+public slots:
+    void sendListFile();
+    void stopServer();
+
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -49,6 +54,7 @@ private:
     const QString _database = "QSQLITE";
     const QString _defaultDatabaseLocation = "/home/the_albo/Music/concurrentDb.db";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
+    QVector<WorkerServer *> m_clients;
 };
 
 #endif // SERVER_H
