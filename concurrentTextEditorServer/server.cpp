@@ -55,16 +55,25 @@ bool Server::ConnectToDatabase(QString databaseLocation){
 void Server::sendListFile() {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
-    QFileDialog listFile;
+    QDir dir;
+    QJsonArray listFile;
 
-    listFile.setFileMode(QFileDialog::AnyFile); //existing and non
-    listFile.setNameFilter(tr("Text: (*.txt)"));
-    listFile.setViewMode(QFileDialog::List);
-    out.setVersion(QDataStream::Qt_5_10); //for retrocompatibility
-    listFile.setDirectory(QDir::currentPath());
-    out << listFile.saveState(); //transofrm in QByteArray
+    dir.filePath("Files"); //what path?
+    dir.setFilter(QDir::Files);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+    QFileInfoList list = dir.entryInfoList();
+    for(int i=0; i<list.size(); ++i) {
+        QString fileName = list.at(i).fileName();
+        QJsonObject file_data;
+        file_data.insert("Name", QJsonValue(fileName));
+        listFile.push_back(QJsonValue(file_data));
+    }
+
+    QJsonDocument final_list(listFile);
+    out.setVersion(QDataStream::Qt_5_10);
+    out << final_list.toJson(QJsonDocument::Indented);
     QTcpSocket *clientConn = tcpServer->nextPendingConnection();
-    connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater); not working
+    connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater);
     clientConn->write(block);
     //than disconnect(?)
     //clientConn->disconnectFromHost();
