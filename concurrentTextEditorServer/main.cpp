@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     if(!server.ConnectToDatabase())
         return 0;
 
+    server.queryDatabase("select * from users");
+
     if(!(server.listen(QHostAddress("127.0.0.1"), 0)))
         std::cout<<"Unable to start server, connection refused"<<std::endl;
     else
@@ -28,6 +30,10 @@ int main(int argc, char *argv[])
 
 
     QTcpSocket baseSocket(nullptr);
+
+    while (1) {
+        server.waitForNewConnection();
+    }
 
 
     return 0;

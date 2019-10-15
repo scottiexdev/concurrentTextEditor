@@ -18,7 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        server.cpp
+        server.cpp \
+        workerserver.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -27,7 +28,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     server.h \
-    serverhelpers.h
+    serverhelpers.h \
+    workerserver.h
 
 DISTFILES += \
     concurrentDb.db \

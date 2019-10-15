@@ -26,16 +26,18 @@ public:
     //Constructors
     Server() : QTcpServer(nullptr) {}
     Server(std::string serverName) : QTcpServer(nullptr), _serverName(serverName) {
-        connect(tcpServer, &QTcpServer::newConnection, this, &Server::sendListFile); //new connection => send list file to show in the client
+        //connect(tcpServer, &QTcpServer::newConnection, this, &Server::sendListFile); //new connection => send list file to show in the client
     }
 
     //Methods
     std::string GetName(void);
     bool ConnectToDatabase(QString databaseLocation = nullptr);
+    bool queryDatabase(QString query);
 
 
 private slots:
     void sendListFile();
+    void logMessage(const QString &msg);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
