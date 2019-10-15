@@ -79,8 +79,8 @@ void Server::sendListFile() {
 
     //send to client
     QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-    connect(clientConn, &QAbstractSocket::disconnected, clientConn, &QObject::deleteLater);
-    clientConn->write(block);
+    connect(clientConnection, &QAbstractSocket::disconnected, clientConnection, &QObject::deleteLater);
+    clientConnection->write(block);
 
     //than disconnect(?)
     //clientConn->disconnectFromHost();
