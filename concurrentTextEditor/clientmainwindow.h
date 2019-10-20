@@ -5,6 +5,7 @@
 
 //custom includes
 #include "dialogsignup.h"
+#include "homeloggedin.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class clientmainwindow; }
@@ -26,5 +27,6 @@ private slots:
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
+    homeLoggedIn *hli;
 };
 #endif // CLIENTMAINWINDOW_H
