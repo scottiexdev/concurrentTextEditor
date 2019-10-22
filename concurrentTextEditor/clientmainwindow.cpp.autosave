@@ -30,7 +30,6 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["username"] = usr;
     cred["password"] = pwd;
 
-
     //make query and update bool accordingly
 
     if(!credentialok){

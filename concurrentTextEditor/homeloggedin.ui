@@ -126,7 +126,7 @@
      <string>Invite</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_6">
+   <widget class="QPushButton" name="pushButtonLogout">
     <property name="geometry">
      <rect>
       <x>30</x>

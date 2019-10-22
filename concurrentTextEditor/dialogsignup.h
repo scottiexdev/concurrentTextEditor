@@ -3,7 +3,9 @@
 
 #include <QDialog>
 
+//custom includes
 #include <QMessageBox>
+#include <QJsonObject>
 
 namespace Ui {
 class dialogsignup;

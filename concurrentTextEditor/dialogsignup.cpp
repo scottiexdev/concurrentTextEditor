@@ -15,13 +15,20 @@ dialogsignup::~dialogsignup()
 
 void dialogsignup::on_pushButton_clicked()
 {
-    std::string usr = ui->lineEdit_Usr->text().toUtf8().constData();
-    std::string pwd1 = ui->lineEdit_PwdIns->text().toUtf8().constData();
-    std::string pwd2 = ui->lineEdit_PwdConf->text().toUtf8().constData();
+    QString usr = ui->lineEdit_Usr->text();
+    QString pwd1 = ui->lineEdit_PwdIns->text();
+    QString pwd2 = ui->lineEdit_PwdConf->text();
+
 
     if(pwd1 != pwd2){
         QMessageBox pwd_not_eq;
         pwd_not_eq.setText("Passwords do not match.");
         pwd_not_eq.exec();
     }
+
+    QJsonObject signup;
+
+    signup["type"] = "signup";
+    signup["username"] = usr;
+    signup["password"] = pwd1;
 }
