@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "accountsettings.h"
+#include "workerclient.h"
 
 namespace Ui {
 class homeLoggedIn;
@@ -13,7 +14,7 @@ class homeLoggedIn : public QDialog
     Q_OBJECT
 
 public:
-    explicit homeLoggedIn(QWidget *parent = nullptr, QString usrname="usr_default_value");
+    explicit homeLoggedIn(QWidget *parent, QString usrname, WorkerClient* worker);
     ~homeLoggedIn();
 
 private slots:
@@ -24,6 +25,7 @@ private slots:
 private:
     Ui::homeLoggedIn *ui;
     accountSettings *ac_st;
+    WorkerClient* _workerClient;
 };
 
 #endif // HOMELOGGEDIN_H

@@ -2,11 +2,13 @@
 #define CLIENTMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTcpSocket>
 
 //custom includes
 #include <QDataStream>
 #include "dialogsignup.h"
 #include "homeloggedin.h"
+#include "workerclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class clientmainwindow; }
@@ -29,6 +31,6 @@ private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
     homeLoggedIn *hli;
-    //QTcpSocket *client;
+    WorkerClient * _workerClient;
 };
 #endif // CLIENTMAINWINDOW_H

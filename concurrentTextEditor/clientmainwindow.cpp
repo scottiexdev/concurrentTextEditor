@@ -1,6 +1,8 @@
 #include "clientmainwindow.h"
 #include "ui_clientmainwindow.h"
 
+#include <QHostAddress>
+
 clientmainwindow::clientmainwindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::clientmainwindow)
@@ -16,12 +18,15 @@ clientmainwindow::~clientmainwindow()
 
 void clientmainwindow::on_pushButtonLogin_clicked()
 {
+    //Socket to server - workerClient
+    WorkerClient* workerClient = new WorkerClient(this);
+    workerClient->connectToServer(QHostAddress(QHostAddress::Any), 1967);
+
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
     QString pwd = ui->lineEditPwd->text();
 
-    bool credentialok = false;
-
+    bool credentialok = true;
 
     //create a json message with credentials for login
     QJsonObject cred;
@@ -43,7 +48,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     }
 
     if(credentialok) {
-        hli = new homeLoggedIn(this, usr);
+        hli = new homeLoggedIn(this, usr, workerClient);
         hide();
         hli->exec();
     }
