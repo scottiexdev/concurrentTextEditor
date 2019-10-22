@@ -6,6 +6,9 @@
 //custom includes
 #include <QMessageBox>
 #include <QJsonObject>
+#include <QDataStream>
+#include <QJsonDocument>
+#include <QTcpSocket>
 
 namespace Ui {
 class dialogsignup;
