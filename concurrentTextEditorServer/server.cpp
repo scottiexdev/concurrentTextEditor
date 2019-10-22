@@ -66,7 +66,7 @@ bool Server::queryDatabase(QSqlQuery query){
         return false;
     }
     else
-        std::cout << "Succesfull query: " << queryString.toUtf8().constData() << std::endl;
+        std::cout << "Succesfull query: " << query.lastQuery().toStdString() << std::endl;
 
     return true;
 }
@@ -206,7 +206,40 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
 
         //signup
         if(typeVal.toString().compare("signup", Qt::CaseInsensitive) == 0) {
+            const QJsonValue userVal = doc.value("username");
+            if(userVal.isNull() || !userVal.isString())
+                return;
 
+            const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
+            const QString password = doc.value("password").toString(); //TODO: hash password from client
+            qUser.bindValue(":username", simplifiedUser);
+            qUser.bindValue(":password", password);
+
+            if(queryDatabase(qUser)) {
+                if(qSignup.size()!=0) {
+                    QJsonObject failmsg;
+                    failmsg["type"] = QString("signup");
+                    failmsg["success"] = false;
+                    failmsg["reason"] = QString("Username already present");
+                    sendJson(sender,failmsg);
+                    return;
+                }
+                //TODO: check password and hash
+                qSignup.bindValue(":username", simplifiedUser);
+                qSignup.bindValue(":password", password);
+                if(!queryDatabase(qSignup)) {
+                    QJsonObject failmsg;
+                    failmsg["type"] = QString("signup");
+                    failmsg["success"] = false;
+                    failmsg["reason"] = QString("Problem with database");
+                    sendJson(sender,failmsg);
+                    return;
+                }
+                QJsonObject successMsg;
+                successMsg["type"] = QString("signup");
+                successMsg["success"] = true;
+                sendJson(sender,successMsg);
+            }
         }
     }
 
