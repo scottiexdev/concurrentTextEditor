@@ -22,6 +22,7 @@
 class Server : public QTcpServer
 {
     Q_OBJECT
+    Q_DISABLE_COPY(Server)
 
 public:
     //Constructors
@@ -34,7 +35,7 @@ public:
     //Methods
     std::string GetName(void);
     bool ConnectToDatabase(QString databaseLocation = nullptr);
-    bool queryDatabase(QString query);
+    bool queryDatabase(QSqlQuery query);
 
 signals:
     void logMessage(const QString &msg);
@@ -43,6 +44,11 @@ public slots:
     void sendListFile();
     void stopServer();
 
+private slots:
+    void broadcast(const QJsonObject &message, WorkerServer *exclude);
+    void jsonReceived(WorkerServer *sender, const QJsonObject &doc);
+    void userDisconnected(WorkerServer *sender);
+    void userError(WorkerServer *sender);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -55,6 +61,9 @@ private:
     const QString _defaultDatabaseLocation = "/home/the_albo/Music/concurrentDb.db";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     QVector<WorkerServer *> m_clients;
+    void jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc);
+    void jsonFromLoggedIn(WorkerServer *sender, const QJsonObject &doc);
+    void sendJson(WorkerServer *dest, const QJsonObject &msg);
 };
 
 #endif // SERVER_H

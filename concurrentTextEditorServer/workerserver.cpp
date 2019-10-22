@@ -22,7 +22,7 @@ void WorkerServer::sendJson(const QJsonObject &json) {
     const QByteArray jsonData = QJsonDocument(json).toJson(QJsonDocument::Compact);
 
     //notify central server about sending dats
-    emit logMessage("Sending o "+ userName() + " - " + QString::fromUtf8(jsonData));
+    emit logMessage("Sending to "+ userName() + " - " + QString::fromUtf8(jsonData));
 
     //send message to the socket
     QDataStream socketStream(m_serverSocket);
