@@ -30,6 +30,9 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["username"] = usr;
     cred["password"] = pwd;
 
+    //QDataStream clientStream(client);
+
+    //clientStream << QJsonDocument(cred).toJson();
 
     //make query and update bool accordingly
 

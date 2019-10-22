@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 //custom includes
+#include <QDataStream>
 #include "dialogsignup.h"
 #include "homeloggedin.h"
 
@@ -28,5 +29,6 @@ private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
     homeLoggedIn *hli;
+    //QTcpSocket *client;
 };
 #endif // CLIENTMAINWINDOW_H
