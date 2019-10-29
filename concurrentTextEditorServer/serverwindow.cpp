@@ -24,11 +24,12 @@ void ServerWindow::toggleStartServer() {
         ui->startStopButton->setText(tr("Start Server"));
         logMessage("Server Stopped");
     } else {
-        if(!m_server->listen(QHostAddress::Any, 0)) {
+        if(!m_server->listen(QHostAddress::Any, 1967)) {
             QMessageBox::critical(this, tr("Error"), tr("Unable to connect"));
             return;
         }
         logMessage("Server Started");
+        m_server->ConnectToDatabase();
         ui->startStopButton->setText(tr("Stop Server"));
     }
 }

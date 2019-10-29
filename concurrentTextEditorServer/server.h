@@ -58,7 +58,7 @@ private:
     std::string  _serverName;
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
-    const QString _defaultDatabaseLocation = "/home/the_albo/Music/concurrentDb.db";
+    const QString _defaultDatabaseLocation = "C:\\Users\\silvi\\Google Drive\\Politecnico\\Magistrale\\Progetto\\concurrentTextEditor\\concurrentTextEditorServer\\concurrentDb.db";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     QVector<WorkerServer *> m_clients;
     void jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc);

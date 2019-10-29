@@ -11,8 +11,8 @@ std::string Server::GetName(){
 }
 
 void Server::incomingConnection(qintptr socketDescriptor){
-    std::cout<<"Incoming connection"<<std::endl;
-
+//    std::cout<<"Incoming connection"<<std::endl;
+    emit logMessage("Incoming connection");
     WorkerServer *worker = new WorkerServer(this);
 
     if (!worker->setSocketDescriptor(socketDescriptor)) {
@@ -28,10 +28,6 @@ void Server::incomingConnection(qintptr socketDescriptor){
 
     m_clients.append(worker);
     emit logMessage("New client connected");
-
-  //  FortuneThread *thread = new FortuneThread(socketDescriptor, fortune, this);
-    //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    //thread->start();
 }
 
 bool Server::ConnectToDatabase(QString databaseLocation){
@@ -128,7 +124,9 @@ void Server::stopServer() {
     for(WorkerServer *worker : m_clients) {
         worker->disconnectFromClient();
     }
-    close();
+    _db.removeDatabase(_db.connectionName());
+    _db.removeDatabase((QSqlDatabase::defaultConnection));
+    this->close();
 }
 
 void Server::userDisconnected(WorkerServer *sender) {
