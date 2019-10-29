@@ -52,8 +52,6 @@ bool Server::ConnectToDatabase(QString databaseLocation){
     else {
         //std::cout<<"Successfully connected to database"<<std::endl;
         emit logMessage("Successfully connected to database");
-        QSqlQuery q("insert into users(username, password) values ('Paolo', 'dguewru834n9')");
-        this->queryDatabase(q);
     }
     return true;
 }
