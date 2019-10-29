@@ -185,7 +185,6 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
                     QJsonObject msg;
                     msg["type"] = QString("login");
                     msg["success"] = true;
-                    msg["reason"] = QString("Correct username and password");
                     sendJson(sender, msg);
 
                     //now sending information to update other clients' GUI
@@ -242,6 +241,10 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
             }
         }
     }
+
+}
+
+void Server::jsonFromLoggedIn(WorkerServer *sender, const QJsonObject &doc) {
 
 }
 
