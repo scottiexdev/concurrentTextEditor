@@ -57,15 +57,13 @@ bool Server::ConnectToDatabase(QString databaseLocation){
 }
 
 bool Server::queryDatabase(QSqlQuery query){
-
-    if(!query.exec()){
-        std::cout << query.lastError().text().toUtf8().constData();
-        return false;
-    }
-    else
-        std::cout << "Succesfull query: " << query.lastQuery().toStdString() << std::endl;
-
-    return true;
+        if(!query.exec()){
+            emit logMessage(query.lastError().text().toUtf8().constData());
+            return false;
+        }
+        else
+            emit logMessage("Succesfull query: " + query.lastQuery());
+        return true;
 }
 
 
@@ -118,7 +116,7 @@ void Server::jsonReceived(WorkerServer *sender, const QJsonObject &doc) {
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if(sender->userName().isEmpty())
         return jsonFromLoggedOut(sender, doc);
-    jsonFromLoggedIn(sender, doc);
+    //jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {
