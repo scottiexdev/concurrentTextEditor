@@ -18,7 +18,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 {
     //Socket to server - workerClient
         WorkerClient* workerClient = new WorkerClient(this);
-        workerClient->connectToServer(QHostAddress(QHostAddress::Any), 1967);
+        workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
         //get login credentials to make query to db
         QString usr = ui->lineEditUsr->text();
