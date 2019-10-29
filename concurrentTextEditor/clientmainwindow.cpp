@@ -1,5 +1,7 @@
 #include "clientmainwindow.h"
 #include "ui_clientmainwindow.h"
+#include "workerclient.h"
+#include <QDataStream>
 
 clientmainwindow::clientmainwindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,7 +26,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
         QString usr = ui->lineEditUsr->text();
         QString pwd = ui->lineEditPwd->text();
 
-        bool credentialok = true;
+        bool credentialok = false;
+
 
         //create a json message with credentials for login
         QJsonObject cred;
@@ -33,11 +36,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
         cred["username"] = usr;
         cred["password"] = pwd;
 
-        //QDataStream clientStream(client);
-
-        //clientStream << QJsonDocument(cred).toJson();
-
-        //make query and update bool accordingly
+        workerClient->SendLoginCred(cred);
+        credentialok = workerClient->receiveLoginResult();
 
         if(!credentialok){
             QMessageBox nok;
