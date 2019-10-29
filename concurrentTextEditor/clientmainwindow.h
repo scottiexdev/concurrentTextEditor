@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTcpSocket>
+#include <QHostAddress>
 
 //custom includes
 #include <QDataStream>

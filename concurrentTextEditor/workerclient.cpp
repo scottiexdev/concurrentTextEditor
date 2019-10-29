@@ -17,4 +17,3 @@ WorkerClient::WorkerClient(QObject *parent)
 void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
     _clientSocket->connectToHost(address, port);
 }
-
