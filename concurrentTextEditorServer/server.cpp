@@ -49,9 +49,12 @@ bool Server::ConnectToDatabase(QString databaseLocation){
         emit logMessage("Couldn't connect to database");
         return false;
     }
-    else
+    else {
         //std::cout<<"Successfully connected to database"<<std::endl;
         emit logMessage("Successfully connected to database");
+        QSqlQuery q("insert into users(username, password) values ('Paolo', 'dguewru834n9')");
+        this->queryDatabase(q);
+    }
     return true;
 }
 
@@ -84,7 +87,7 @@ void Server::sendListFile() {
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
         QJsonObject file_data;
-        file_data.insert("Name", QJsonValue(fileName));
+        file_data.insert("Filename", QJsonValue(fileName));
         listFile.push_back(QJsonValue(file_data));
     }
 
@@ -180,6 +183,8 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
 
             if(queryDatabase(qUser)) {
                 if(qUser.size()==1) {
+                    //success
+                    sender->setUserName(simplifiedUser);
                     QJsonObject msg;
                     msg["type"] = QString("login");
                     msg["success"] = true;
@@ -194,7 +199,7 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
                     QJsonObject failmsg2;
                     failmsg2["type"] = QString("login");
                     failmsg2["success"] = false;
-                    failmsg2["reason"] = QString("Non existing user");
+                    failmsg2["reason"] = QString("User and Password not matching");
                     sendJson(sender,failmsg2);
                     return;
                 }
@@ -232,6 +237,7 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
                     sendJson(sender,failmsg);
                     return;
                 }
+                sender->setUserName(simplifiedUser);
                 QJsonObject successMsg;
                 successMsg["type"] = QString("signup");
                 successMsg["success"] = true;
