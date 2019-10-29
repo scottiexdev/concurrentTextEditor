@@ -46,7 +46,9 @@ bool WorkerClient::receiveLoginResult() {
                         const QJsonValue resultVal = jDoc.object().value(QLatin1String("success"));
                         if (resultVal.isNull() || !resultVal.isBool())
                             return false;
-                        return resultVal.toBool();
+                        if(resultVal.toBool())
+                            return true;
+                        else return false;
                     } else
                         return false;
                 }
