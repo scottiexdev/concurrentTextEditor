@@ -121,7 +121,7 @@ void Server::jsonReceived(WorkerServer *sender, const QJsonObject &doc) {
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if(sender->userName().isEmpty())
         return jsonFromLoggedOut(sender, doc);
-    jsonFromLoggedIn(sender, doc);
+    //jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {

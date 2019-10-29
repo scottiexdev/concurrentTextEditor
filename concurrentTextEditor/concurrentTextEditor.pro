@@ -21,13 +21,15 @@ SOURCES += \
     dialogsignup.cpp \
     homeloggedin.cpp \
     main.cpp \
-    clientmainwindow.cpp
+    clientmainwindow.cpp \
+    workerclient.cpp
 
 HEADERS += \
     accountsettings.h \
     clientmainwindow.h \
     dialogsignup.h \
-    homeloggedin.h
+    homeloggedin.h \
+    workerclient.h
 
 FORMS += \
     accountsettings.ui \
