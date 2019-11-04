@@ -56,14 +56,23 @@ bool Server::ConnectToDatabase(QString databaseLocation){
     return true;
 }
 
-bool Server::queryDatabase(QSqlQuery query){
-        if(!query.exec()){
-            emit logMessage(query.lastError().text().toUtf8().constData());
-            return false;
-        }
-        else
-            emit logMessage("Succesfull query: " + query.lastQuery());
-        return true;
+bool Server::queryDatabase(QSqlQuery* query){
+
+    if(query == nullptr){
+        std::cout << "Query is null"<< std::endl;
+        return false;
+    }
+
+    if(!query->exec()){
+        std::cout << query->lastError().text().toUtf8().constData() << std::endl;
+        return false;
+    }
+    else {
+        std::cout << "Succesfull query: " << query->lastQuery().toStdString() << std::endl;
+        std::cout << "Executed query: " << query->executedQuery().toStdString() << std::endl;
+   }
+
+   return true;
 }
 
 
@@ -100,11 +109,6 @@ void Server::sendListFile() {
     //than disconnect(?)
     //clientConn->disconnectFromHost();
 }
-
-//void Server::logMessage(const QString &msg){
-
-//    std::cout << msg.toUtf8().constData() << std::endl;
-//}
 
 void Server::sendJson(WorkerServer *dest, const QJsonObject &msg) {
     Q_ASSERT(dest);
@@ -157,91 +161,108 @@ void Server::broadcast(const QJsonObject &message, WorkerServer *exclude) {
 }
 
 void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
-    Q_ASSERT(sender);
-    if(ConnectToDatabase()) {
-        QSqlQuery qUser, qSignup;
-        qUser.prepare("SELECT * FROM users WHERE username=':username' AND password=':password'");
-        qSignup.prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
-        const QJsonValue typeVal = doc.value("type");
-        if(typeVal.isNull() || !typeVal.isString())
+
+    Q_ASSERT(sender);   //cosa fa?
+
+    if(!ConnectToDatabase())
+        return;
+
+    QSqlQuery qUser, qSignup;
+    //qUser.prepare("SELECT * FROM users WHERE username = :USERNAME AND password = :PASSWORD");
+    qUser.prepare("SELECT * FROM users");
+    qSignup.prepare("INSERT INTO users (username, password) VALUES (:USERNAME, :PASSWORD)");
+    const QJsonValue typeVal = doc.value("type");
+
+    if(typeVal.isNull() || !typeVal.isString())
+        return;
+
+    //TODO: login and shit FUNCTIONS - refactor
+
+    //login
+    if(typeVal.toString().compare("login", Qt::CaseInsensitive) == 0) {
+
+        const QJsonValue userVal = doc.value("username");
+
+        if(userVal.isNull() || !userVal.isString())
             return;
 
-        //login
-        if(typeVal.toString().compare("login", Qt::CaseInsensitive) == 0) {
-            const QJsonValue userVal = doc.value("username");
-            if(userVal.isNull() || !userVal.isString())
-                return;
+        const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
+        const QString password = doc.value("password").toString();      //TODO: hash password from client
+        qUser.bindValue(":USERNAME", simplifiedUser);
+        qUser.bindValue(":PASSWORD", password);
 
-            const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
-            const QString password = doc.value("password").toString(); //TODO: hash password from client
-            qUser.bindValue(":username", simplifiedUser);
-            qUser.bindValue(":password", password);
+        if(queryDatabase(&qUser)) {
+            if(this->countReturnedRows(qUser) == 1) {
+                QJsonObject msg;
+                msg["type"] = QString("login");
+                msg["success"] = true;
+                sendJson(sender, msg);
 
-            if(queryDatabase(qUser)) {
-                if(qUser.size()==1) {
-                    //success
-                    sender->setUserName(simplifiedUser);
-                    QJsonObject msg;
-                    msg["type"] = QString("login");
-                    msg["success"] = true;
-                    sendJson(sender, msg);
-
-                    //now sending information to update other clients' GUI
-                    QJsonObject connectedMsg;
-                    connectedMsg["type"] = QString("newuser");
-                    connectedMsg["username"] = simplifiedUser;
-                    broadcast(connectedMsg, sender);
-                } else { //no user found
-                    QJsonObject failmsg2;
-                    failmsg2["type"] = QString("login");
-                    failmsg2["success"] = false;
-                    failmsg2["reason"] = QString("User and Password not matching");
-                    sendJson(sender,failmsg2);
-                    return;
-                }
+                //now sending information to update other clients' GUI
+                QJsonObject connectedMsg;
+                connectedMsg["type"] = QString("newuser");
+                connectedMsg["username"] = simplifiedUser;
+                broadcast(connectedMsg, sender);
             }
-        }
-
-        //signup
-        if(typeVal.toString().compare("signup", Qt::CaseInsensitive) == 0) {
-            const QJsonValue userVal = doc.value("username");
-            if(userVal.isNull() || !userVal.isString())
-                return;
-
-            const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
-            const QString password = doc.value("password").toString(); //TODO: hash password from client
-            qUser.bindValue(":username", simplifiedUser);
-            qUser.bindValue(":password", password);
-
-            if(queryDatabase(qUser)) {
-                if(qSignup.size()!=0) {
-                    QJsonObject failmsg;
-                    failmsg["type"] = QString("signup");
-                    failmsg["success"] = false;
-                    failmsg["reason"] = QString("Username already present");
-                    sendJson(sender,failmsg);
-                    return;
-                }
-                //TODO: check password and hash
-                qSignup.bindValue(":username", simplifiedUser);
-                qSignup.bindValue(":password", password);
-                if(!queryDatabase(qSignup)) {
-                    QJsonObject failmsg;
-                    failmsg["type"] = QString("signup");
-                    failmsg["success"] = false;
-                    failmsg["reason"] = QString("Problem with database");
-                    sendJson(sender,failmsg);
-                    return;
-                }
-                sender->setUserName(simplifiedUser);
-                QJsonObject successMsg;
-                successMsg["type"] = QString("signup");
-                successMsg["success"] = true;
-                sendJson(sender,successMsg);
+            else { //no user found
+                QJsonObject failmsg2;
+                failmsg2["type"] = QString("login");
+                failmsg2["success"] = false;
+                failmsg2["reason"] = QString("Non existing user");
+                sendJson(sender,failmsg2);
             }
         }
     }
 
+    //signup
+    if(typeVal.toString().compare("signup", Qt::CaseInsensitive) == 0) {
+        const QJsonValue userVal = doc.value("username");
+        if(userVal.isNull() || !userVal.isString())
+            return;
+
+        const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
+        const QString password = doc.value("password").toString(); //TODO: hash password from client
+        qUser.bindValue(":username", simplifiedUser);
+        qUser.bindValue(":password", password);
+
+        if(queryDatabase(&qUser)) {
+            if(qSignup.size()!=0) {
+                QJsonObject failmsg;
+                failmsg["type"] = QString("signup");
+                failmsg["success"] = false;
+                failmsg["reason"] = QString("Username already present");
+                sendJson(sender,failmsg);
+                return;
+            }
+            //TODO: check password and hash
+            qSignup.bindValue(":username", simplifiedUser);
+            qSignup.bindValue(":password", password);
+            if(!queryDatabase(&qSignup)) {
+                QJsonObject failmsg;
+                failmsg["type"] = QString("signup");
+                failmsg["success"] = false;
+                failmsg["reason"] = QString("Problem with database");
+                sendJson(sender,failmsg);
+                return;
+            }
+            QJsonObject successMsg;
+            successMsg["type"] = QString("signup");
+            successMsg["success"] = true;
+            sendJson(sender,successMsg);
+        }
+    }
+
+}
+
+int Server::countReturnedRows(QSqlQuery executedQuery){
+
+    int cnt = 0;
+
+    while(executedQuery.next())
+        cnt++;
+
+    emit logMessage("Query returned " +  QString::number(cnt) + " results");
+    return cnt;
 }
 
 void Server::jsonFromLoggedIn(WorkerServer *sender, const QJsonObject &doc) {
