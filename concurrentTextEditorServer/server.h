@@ -64,7 +64,10 @@ private:
     QVector<WorkerServer *> m_clients;
     void jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc);
     void jsonFromLoggedIn(WorkerServer *sender, const QJsonObject &doc);
-    void sendJson(WorkerServer *dest, const QJsonObject &msg);    
+    void sendJson(WorkerServer *dest, const QJsonObject &msg);
+    void login(QSqlQuery *q, const QJsonObject &doc, WorkerServer *sender);
+    void signup(QSqlQuery *qUser, QSqlQuery *qSignup, const QJsonObject &doc, WorkerServer *sender);
+    void bindValues(QSqlQuery *q, const QJsonObject &doc);
 };
 
 #endif // SERVER_H
