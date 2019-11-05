@@ -29,7 +29,6 @@ void ServerWindow::toggleStartServer() {
             return;
         }
         logMessage("Server Started");
-        m_server->ConnectToDatabase();
         ui->startStopButton->setText(tr("Stop Server"));
     }
 }
