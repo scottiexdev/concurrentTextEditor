@@ -18,8 +18,7 @@ public:
     void sendJson(const QJsonObject &jsonData);
 
 signals:
-    void jsonReceived(const QJsonObject &jsonDoc);
-    void disconnectedFromClient();
+    void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
     void error();
     void logMessage(const QString &msg);
 
