@@ -28,10 +28,14 @@ private slots:
 
     void on_pushButtonSignup_clicked();
 
+public slots:
+
+    void myLoggedIn();
+
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
     homeLoggedIn *hli;
-    WorkerClient * _workerClient;
+    WorkerClient *_workerClient;
 };
 #endif // CLIENTMAINWINDOW_H

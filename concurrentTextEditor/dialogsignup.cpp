@@ -1,5 +1,8 @@
 #include "dialogsignup.h"
 #include "ui_dialogsignup.h"
+#include "workerclient.h"
+#include <QHostAddress>
+
 
 dialogsignup::dialogsignup(QWidget *parent) :
     QDialog(parent),
@@ -15,6 +18,9 @@ dialogsignup::~dialogsignup()
 
 void dialogsignup::on_pushButton_clicked()
 {
+    WorkerClient* wc = new WorkerClient(this);
+    wc->connectToServer(QHostAddress::LocalHost, 1967);
+
     QString usr = ui->lineEdit_Usr->text();
     QString pwd1 = ui->lineEdit_PwdIns->text();
     QString pwd2 = ui->lineEdit_PwdConf->text();
@@ -31,4 +37,8 @@ void dialogsignup::on_pushButton_clicked()
     signup["type"] = "signup";
     signup["username"] = usr;
     signup["password"] = pwd1;
+
+    wc->SendLoginCred(signup);
+
+    //TODO signup corretto
 }
