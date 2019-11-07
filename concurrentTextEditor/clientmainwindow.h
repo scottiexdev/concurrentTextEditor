@@ -25,11 +25,7 @@ public:
 
 private slots:
     void on_pushButtonLogin_clicked();
-
     void on_pushButtonSignup_clicked();
-
-public slots:
-
     void myLoggedIn();
 
 private:

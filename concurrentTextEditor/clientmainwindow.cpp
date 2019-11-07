@@ -8,7 +8,6 @@ clientmainwindow::clientmainwindow(QWidget *parent)
     , ui(new Ui::clientmainwindow)
 {
     ui->setupUi(this);
-    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
 }
 
 clientmainwindow::~clientmainwindow()
@@ -21,6 +20,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 {
     _workerClient = new WorkerClient(this);
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
+
+    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
 
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
