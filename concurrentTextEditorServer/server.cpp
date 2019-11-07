@@ -247,6 +247,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             QJsonObject msg;
             msg["type"] = QString("login");
             msg["success"] = true;
+            msg["user"] = doc.value("username").toString().simplified();
             sendJson(sender, msg);
 
             //now sending information to update other clients' GUI

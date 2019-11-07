@@ -19,8 +19,8 @@ void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
 }
 
 void WorkerClient::SendLoginCred(QJsonObject qj) {
-    QDataStream loginStream(_clientSocket);
 
+    QDataStream loginStream(_clientSocket);
     loginStream << QJsonDocument(qj).toJson();
 }
 
@@ -108,7 +108,8 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         const bool loginSuccess = resultVal.toBool();
         if (loginSuccess) {
             // we logged in succesfully and we notify it via the loggedIn signal
-            emit myLoggedIn();
+            const QJsonValue resultVal = docObj.value(QLatin1String("user"));
+            emit myLoggedIn(resultVal.toString());
             return;
         }
         // the login attempt failed, we extract the reason of the failure from the JSON
@@ -143,4 +144,12 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
 //        // we notify of the user disconnection the userLeft signal
 //        emit userLeft(usernameVal.toString());
 //    }
+}
+
+void WorkerClient::setUser(QString loggedUser){
+    _loggedUser = (loggedUser.isNull() || loggedUser.isEmpty()) ? DEFAULT_USER : loggedUser;
+}
+
+QString WorkerClient::getUser(){
+    return _loggedUser;
 }

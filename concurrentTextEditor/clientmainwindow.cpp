@@ -1,8 +1,6 @@
 #include "clientmainwindow.h"
 #include "ui_clientmainwindow.h"
 
-QString user;
-
 clientmainwindow::clientmainwindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::clientmainwindow)
@@ -27,7 +25,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     QString usr = ui->lineEditUsr->text();
     QString pwd = ui->lineEditPwd->text();
 
-    user = usr;
+    _loggedUser = usr;
 
     //create a json message with credentials for login
     QJsonObject cred;
@@ -36,23 +34,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["username"] = usr;
     cred["password"] = pwd;
 
-
-    //make query and update bool accordingly
     _workerClient->SendLoginCred(cred);
-
-//    credentialok = workerClient->receiveLoginResult();
-
-//    if(!credentialok){
-//        QMessageBox nok;
-//        nok.setText("Invalid Username or Password.");
-//        nok.exec();
-//    }
-
-//    if(credentialok) {
-//        hli = new homeLoggedIn(this, usr, _workerClient);
-//        hide();
-//        hli->exec();
-//    }
 }
 
 void clientmainwindow::on_pushButtonSignup_clicked()
@@ -61,8 +43,8 @@ void clientmainwindow::on_pushButtonSignup_clicked()
     d->exec();
 }
 
-void clientmainwindow::myLoggedIn() {
-    hli = new homeLoggedIn(this, user, _workerClient);
+void clientmainwindow::myLoggedIn(QString loggedUser) {
+    hli = new homeLoggedIn(this, loggedUser,  _workerClient);
     hide();
     hli->exec();
 }
