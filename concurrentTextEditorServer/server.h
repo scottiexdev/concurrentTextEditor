@@ -32,6 +32,8 @@ public:
     QString GetName(void);
     bool ConnectToDatabase(QString databaseLocation = nullptr);
     bool queryDatabase(QSqlQuery& query);
+    void logQueryResults(QSqlQuery query);
+
 
 signals:
     void logMessage(const QString &msg);
@@ -39,6 +41,7 @@ signals:
 public slots:
     void sendListFile();
     void stopServer();
+    void executeCommand(QString cmd);
 
 private slots:
     void broadcast(const QJsonObject &message, WorkerServer& exclude);

@@ -25,6 +25,7 @@ signals:
 public slots:
     void disconnectFromClient();
 
+
 private slots:
     void receiveJson();
 

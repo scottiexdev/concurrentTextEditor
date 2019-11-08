@@ -292,4 +292,32 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
 }
 
+void Server::logQueryResults(QSqlQuery executedQuery){
+
+    int cnt = 0;
+    QString records;
+
+    while(executedQuery.next()){
+        cnt++;
+        auto record = executedQuery.record();
+        for(int i=0; i < record.count(); i++){
+            QSqlField field=record.field(i);
+            records.append(field.name() + ":" + field.value().toString() + "\t");
+        }
+        records.append("\n");
+    }
+    records = cnt == 0 ? "Query returned 0 results" : records.prepend("Query returned " + QString::number(cnt) + " results:\n");
+    emit logMessage(records);
+}
+
+void Server::executeCommand(QString cmd){
+
+    emit logMessage("Executing command: " + cmd);
+    ConnectToDatabase();
+    QSqlQuery query (cmd);
+    queryDatabase(query);
+    logQueryResults(query);
+}
+
+
 

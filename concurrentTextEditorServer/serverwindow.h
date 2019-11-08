@@ -21,6 +21,11 @@ private:
     Ui::ServerWindow *ui;
     Server* m_server;
 
+signals:
+    void executeCmd(QString cmd);
+
+public slots:
+
 private slots:
     void toggleStartServer();
     void logMessage(const QString &msg);

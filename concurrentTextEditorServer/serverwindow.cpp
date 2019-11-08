@@ -2,6 +2,8 @@
 #include "ui_serverwindow.h"
 #include <QMessageBox>
 #include "server.h"
+#include <QEvent>
+#include <QKeyEvent>
 
 ServerWindow::ServerWindow(QWidget *parent) :
     QWidget(parent),
@@ -11,6 +13,7 @@ ServerWindow::ServerWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->startStopButton, &QPushButton::clicked, this, &ServerWindow::toggleStartServer);
     connect(m_server, &Server::logMessage, this, &ServerWindow::logMessage);
+    connect(ui->serverConsole, &ServerConsole::executeCommand, m_server, &Server::executeCommand);
 }
 
 ServerWindow::~ServerWindow()
@@ -36,3 +39,4 @@ void ServerWindow::toggleStartServer() {
 void ServerWindow::logMessage(const QString &msg)  {
     ui->logEditor->appendPlainText(msg + '\n');
 }
+
