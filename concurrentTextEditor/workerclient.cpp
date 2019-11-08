@@ -18,7 +18,7 @@ void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
     _clientSocket->connectToHost(address, port);
 }
 
-void WorkerClient::SendLoginCred(QJsonObject qj) {
+void WorkerClient::sendLoginCred(QJsonObject qj) {
 
     QDataStream loginStream(_clientSocket);
     loginStream << QJsonDocument(qj).toJson();
@@ -92,31 +92,24 @@ void WorkerClient::onReadyRead()
     }
 }
 
-void WorkerClient::jsonReceived(const QJsonObject &docObj)
+//DROPPED CONST MODIFIER ON QJSONOBJECT - TO CHECK WHY IT WAS THERE
+void WorkerClient::jsonReceived(QJsonObject &docObj)
 {
-    // actions depend on the type of message
-    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
-    if (typeVal.isNull() || !typeVal.isString())
-        return; // a message with no type was received so we just ignore it
-    if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { //It's a login message
-        if (_loggedIn)
-            return; // if we are already logged in we ignore
-        // the success field will contain the result of our attempt to login
-        const QJsonValue resultVal = docObj.value(QLatin1String("success"));
-        if (resultVal.isNull() || !resultVal.isBool())
-            return; // the message had no success field so we ignore
-        const bool loginSuccess = resultVal.toBool();
-        if (loginSuccess) {
-            // we logged in succesfully and we notify it via the loggedIn signal
-            const QJsonValue resultVal = docObj.value(QLatin1String("user"));
-            emit myLoggedIn(resultVal.toString());
+
+    messageType type = getMessageType(docObj);
+
+    switch (type) {
+
+        case messageType::login:
+            loginHandler(docObj);
+            break;
+
+        case messageType::filesRequest:
+            //TODO: filesRequest handler - get file list and show on UI
+        default:
             return;
-        }
-        // the login attempt failed, we extract the reason of the failure from the JSON
-        // and notify it via the loginError signal
-        //************** ADAPT LOGIN ERROR MSG TO BE CONSISTENT WITH CURRENT IMPLEMENTATION ********
-        //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
-        //emit loginError(reasonVal.toString());
+    }
+
     }
 //    else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { //It's a chat message
 //        // we extract the text field containing the chat text
@@ -152,4 +145,62 @@ void WorkerClient::setUser(QString loggedUser){
 
 QString WorkerClient::getUser(){
     return _loggedUser;
+}
+
+//Setup and send Json asking for file list
+void WorkerClient::getFileList(){
+
+    //Request message
+    QJsonObject filesRequest;
+
+    filesRequest["type"] = "filesRequest";
+    filesRequest["requestedFiles"] = "all";
+
+    //Send request message
+    QDataStream filesRequestStream(_clientSocket);
+    filesRequestStream << QJsonDocument(filesRequest).toJson();
+}
+
+WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj){
+
+    //Get type of message received
+    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
+
+    if (typeVal.isNull() || !typeVal.isString())
+        return WorkerClient::messageType::invalid; // a message with no type was received so we just ignore it
+
+    const QString type = typeVal.toString();
+
+    if(type.compare(QLatin1String("login"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::login;
+
+    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::filesRequest;
+}
+
+void WorkerClient::loginHandler(QJsonObject& docObj){
+
+    if (_loggedIn)
+        return;
+
+    const QJsonValue resultVal = docObj.value(QLatin1String("success"));
+
+    //No success field
+    if (resultVal.isNull() || !resultVal.isBool())
+        return;
+
+    const bool loginSuccess = resultVal.toBool();
+
+    //Check success field
+    if (loginSuccess) {
+        //Notify with signal that the login was successfull
+        const QJsonValue resultVal = docObj.value(QLatin1String("user"));
+        emit myLoggedIn(resultVal.toString());
+        return;
+    }
+    // the login attempt failed, we extract the reason of the failure from the JSON
+    // and notify it via the loginError signal
+    //************** ADAPT LOGIN ERROR MSG TO BE CONSISTENT WITH CURRENT IMPLEMENTATION ********
+    //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
+    //emit loginError(reasonVal.toString());
 }

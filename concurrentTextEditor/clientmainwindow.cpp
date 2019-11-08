@@ -34,7 +34,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["username"] = usr;
     cred["password"] = pwd;
 
-    _workerClient->SendLoginCred(cred);
+    _workerClient->sendLoginCred(cred);
+    _workerClient->getFileList();
 }
 
 void clientmainwindow::on_pushButtonSignup_clicked()

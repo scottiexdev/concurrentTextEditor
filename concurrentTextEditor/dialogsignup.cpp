@@ -25,7 +25,6 @@ void dialogsignup::on_pushButton_clicked()
     QString pwd1 = ui->lineEdit_PwdIns->text();
     QString pwd2 = ui->lineEdit_PwdConf->text();
 
-
     if(pwd1 != pwd2){
         QMessageBox pwd_not_eq;
         pwd_not_eq.setText("Passwords do not match.");
@@ -38,7 +37,7 @@ void dialogsignup::on_pushButton_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
 
-    wc->SendLoginCred(signup);
+    wc->sendLoginCred(signup);
 
     //TODO signup corretto
 }
