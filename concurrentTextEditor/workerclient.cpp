@@ -1,10 +1,5 @@
 #include "workerclient.h"
-#include <QTcpSocket>
-#include <QDataStream>
-#include <QJsonParseError>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
+
 
 WorkerClient::WorkerClient(QObject *parent)
     : QObject(parent)
@@ -18,45 +13,15 @@ void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
     _clientSocket->connectToHost(address, port);
 }
 
+<<<<<<< Updated upstream
 void WorkerClient::SendLoginCred(QJsonObject qj) {
+=======
+void WorkerClient::sendLoginCred(QJsonObject qj) {
+>>>>>>> Stashed changes
     QDataStream loginStream(_clientSocket);
 
     loginStream << QJsonDocument(qj).toJson();
 }
-
-/*bool WorkerClient::receiveLoginResult() {
-    QByteArray res;
-    QDataStream socketStream(_clientSocket);
-
-    for(;;) {
-        socketStream>>res;
-        if(socketStream.commitTransaction()) {
-            QJsonParseError check;
-            const QJsonDocument jDoc = QJsonDocument::fromJson(res, &check);
-
-            if(check.error == QJsonParseError::NoError) {
-                if(jDoc.isObject()){
-                    //start Json parsing - TODO errors to be displayed
-                    const QJsonValue typeVal = jDoc.object().value(QLatin1String("type"));
-                    //check integrity
-                    if (typeVal.isNull() || !typeVal.isString())
-                        return false;
-                    //check type
-                    if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { //it's login msg
-                        const QJsonValue resultVal = jDoc.object().value(QLatin1String("success"));
-                        if (resultVal.isNull() || !resultVal.isBool())
-                            return false;
-                        if(resultVal.toBool())
-                            return true;
-                        else return false;
-                    } else
-                        return false;
-                }
-            }
-        } else
-            return false;
-    }
-}*/
 
 void WorkerClient::onReadyRead()
 {
@@ -92,6 +57,7 @@ void WorkerClient::onReadyRead()
     }
 }
 
+<<<<<<< Updated upstream
 void WorkerClient::jsonReceived(const QJsonObject &docObj)
 {
     // actions depend on the type of message
@@ -109,6 +75,26 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         if (loginSuccess) {
             // we logged in succesfully and we notify it via the loggedIn signal
             emit myLoggedIn();
+=======
+//DROPPED CONST MODIFIER ON QJSONOBJECT - TO CHECK WHY IT WAS THERE
+void WorkerClient::jsonReceived(QJsonObject docObj)
+{
+
+    messageType type = getMessageType(docObj);
+
+    switch (type) {
+
+        case messageType::login:
+            loginHandler(docObj);
+            break;
+        case messageType::signup:
+            signupHandler(docObj);
+            break;
+        case messageType::filesRequest:
+            showallFilesHandler(docObj);
+            break;
+        default:
+>>>>>>> Stashed changes
             return;
         }
         // the login attempt failed, we extract the reason of the failure from the JSON
@@ -117,6 +103,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
         //emit loginError(reasonVal.toString());
     }
+<<<<<<< Updated upstream
 //    else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { //It's a chat message
 //        // we extract the text field containing the chat text
 //        const QJsonValue textVal = docObj.value(QLatin1String("text"));
@@ -143,4 +130,100 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
 //        // we notify of the user disconnection the userLeft signal
 //        emit userLeft(usernameVal.toString());
 //    }
+=======
+
+void WorkerClient::setUser(QString loggedUser){
+    _loggedUser = (loggedUser.isNull() || loggedUser.isEmpty()) ? DEFAULT_USER : loggedUser;
+}
+
+QString WorkerClient::getUser(){
+    return _loggedUser;
+}
+
+//Setup and send Json asking for file list
+void WorkerClient::getFileList(){
+
+    //Request message
+    QJsonObject filesRequest;
+
+    filesRequest["type"] = "filesRequest";
+    filesRequest["requestedFiles"] = "all";
+
+    //Send request message
+    QDataStream filesRequestStream(_clientSocket);
+    filesRequestStream << QJsonDocument(filesRequest).toJson();
+}
+
+WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj){
+
+    //Get type of message received
+    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
+
+    if (typeVal.isNull() || !typeVal.isString())
+        return WorkerClient::messageType::invalid; // a message with no type was received so we just ignore it
+
+    const QString type = typeVal.toString();
+
+    if(type.compare(QLatin1String("signup"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::signup;
+
+    if(type.compare(QLatin1String("login"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::login;
+
+    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::filesRequest;
+
+    //added else to mute warning about reaching end of non void function
+    else {
+        return WorkerClient::messageType::invalid;
+    }
+}
+
+void WorkerClient::loginHandler(QJsonObject& docObj){
+
+    if (_loggedIn) //we are already logged in
+        return;
+
+    const QJsonValue resultVal = docObj.value(QLatin1String("success"));
+
+    //No success field
+    if (resultVal.isNull() || !resultVal.isBool())
+        return;
+
+    const bool loginSuccess = resultVal.toBool();
+
+    //Check success field
+    if (loginSuccess) {
+        //Notify with signal that the login was successfull
+        const QJsonValue resultVal = docObj.value(QLatin1String("user"));
+        emit myLoggedIn(resultVal.toString());
+        return;
+    }
+
+    // the login attempt failed, we extract the reason of the failure from the JSON
+    // and notify it via the loginError signal
+    //************** ADAPT LOGIN ERROR MSG TO BE CONSISTENT WITH CURRENT IMPLEMENTATION ********
+    //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
+    //emit loginError(reasonVal.toString());
+}
+
+void WorkerClient::signupHandler(QJsonObject &jsonObj) {
+    const QJsonValue res = jsonObj.value(QLatin1String("success"));
+
+    //No success field
+    if (res.isNull() || !res.isBool())
+        return;
+    const bool signSucc = res.toBool();
+
+    if(signSucc) {
+        //signup is ok, i can close dialogsignup window and open homeloggedin
+        const QJsonValue resultVal = jsonObj.value(QLatin1String("username"));
+        emit mySignupOk(resultVal.toString());
+        return;
+    }
+}
+
+void WorkerClient::showallFilesHandler(QJsonObject &qjo) {
+
+>>>>>>> Stashed changes
 }

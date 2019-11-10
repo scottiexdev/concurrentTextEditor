@@ -58,8 +58,12 @@ private:
     std::string  _serverName;
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
+<<<<<<< Updated upstream
     const QString _defaultDatabaseLocation = "/home/the_albo/Music/concurrentDb.db";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
+=======
+    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentdb.db";
+>>>>>>> Stashed changes
     QVector<WorkerServer *> m_clients;
     void jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc);
     void jsonFromLoggedIn(WorkerServer *sender, const QJsonObject &doc);

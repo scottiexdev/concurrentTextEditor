@@ -32,6 +32,7 @@ public slots:
 
     void myLoggedIn();
 
+
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;

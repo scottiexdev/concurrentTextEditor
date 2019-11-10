@@ -79,9 +79,11 @@ void Server::sendListFile() {
     QJsonArray listFile;
 
     //set directory
-    dir.filePath("Files"); //what path?
+    dir.filePath("Files "); //what path? C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/
     dir.setFilter(QDir::Files);
     dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QString name = dir.dirName();
 
     //create filelist
     QFileInfoList list = dir.entryInfoList();
@@ -98,6 +100,7 @@ void Server::sendListFile() {
     out << final_list.toJson(QJsonDocument::Indented);
 
     //send to client
+    //******** next instruction causes exception: read access violation *********
     QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
     connect(clientConnection, &QAbstractSocket::disconnected, clientConnection, &QObject::deleteLater);
     clientConnection->write(block);
@@ -119,9 +122,16 @@ void Server::sendJson(WorkerServer *dest, const QJsonObject &msg) {
 void Server::jsonReceived(WorkerServer *sender, const QJsonObject &doc) {
     Q_ASSERT(sender);
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
+<<<<<<< Updated upstream
     if(sender->userName().isEmpty())
+=======
+    //log just to debug
+    //emit logMessage("USERNAME: " + sender.userName());
+
+    if(sender.userName().isEmpty())
+>>>>>>> Stashed changes
         return jsonFromLoggedOut(sender, doc);
-    //jsonFromLoggedIn(sender, doc);
+    jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {
@@ -150,6 +160,7 @@ void Server::userError(WorkerServer *sender)  {
     emit logMessage("Error from "+ sender->userName());
 }
 
+<<<<<<< Updated upstream
 void Server::broadcast(const QJsonObject &message, WorkerServer *exclude) {
     for(WorkerServer *worker : m_clients) {
         Q_ASSERT(worker);
@@ -167,6 +178,73 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
         qSignup.prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
         const QJsonValue typeVal = doc.value("type");
         if(typeVal.isNull() || !typeVal.isString())
+=======
+void Server::broadcastAll(const QJsonObject& message) {
+
+    for(WorkerServer* worker : m_clients) {
+        sendJson(*worker, message);
+    }
+}
+
+void Server::broadcast(const QJsonObject& message, WorkerServer& exclude) {
+
+    for(WorkerServer* worker : m_clients) {
+
+        //TO CHECK - comparing addresses here?
+        if(worker == &exclude)
+        continue;
+
+        sendJson(*worker, message);
+    }
+}
+
+void Server::jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc) {
+
+    //Q_ASSERT(&sender);   //cosa fa? Fa debug nel caso in cui il sender non esista - passando per
+    //reference il sender non puo' essere null: ci serve ancora una Q_Assert??
+
+    if(!ConnectToDatabase())
+        return;
+
+    QSqlQuery qUser, qSignup, qVerify;
+    qUser.prepare("SELECT * FROM users WHERE username = :USERNAME AND password = :PASSWORD");
+    qVerify.prepare("SELECT * FROM users WHERE username =:USERNAME");
+    qSignup.prepare("INSERT INTO users (username, password) VALUES (:USERNAME, :PASSWORD)");
+    const QJsonValue typeVal = doc.value("type");
+
+    if(typeVal.isNull() || !typeVal.isString())
+        return;
+
+    //login
+    if(typeVal.toString().compare("login", Qt::CaseInsensitive) == 0){
+        login(qUser, doc, sender);
+        return;
+    }
+
+    //signup
+    if(typeVal.toString().compare("signup", Qt::CaseInsensitive) == 0){
+        signup(qVerify, qSignup, doc, sender);
+        return;
+    }
+}
+
+//signup handler
+void Server::signup(QSqlQuery& qVerify, QSqlQuery& qSignup, const QJsonObject& doc, WorkerServer& sender) {
+
+    const QString simplifiedUser = doc.value("username").toString().simplified();
+    QJsonObject failmsg, successmsg;
+    if(simplifiedUser.isNull()) return;
+    qVerify.bindValue(":USERNAME", simplifiedUser);
+    bindValues(qSignup,doc);
+
+    if(queryDatabase(qVerify)) {
+
+        if(this->countReturnedRows(qVerify) != 0) {
+            failmsg["type"] = QString("signup");
+            failmsg["success"] = false;
+            failmsg["reason"] = QString("Username already present");
+            sendJson(sender,failmsg);
+>>>>>>> Stashed changes
             return;
 
         //login
@@ -204,6 +282,7 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
             }
         }
 
+<<<<<<< Updated upstream
         //signup
         if(typeVal.toString().compare("signup", Qt::CaseInsensitive) == 0) {
             const QJsonValue userVal = doc.value("username");
@@ -240,9 +319,101 @@ void Server::jsonFromLoggedOut(WorkerServer *sender, const QJsonObject &doc) {
                 successMsg["success"] = true;
                 sendJson(sender,successMsg);
             }
+=======
+        successmsg["type"] = QString("signup");
+        successmsg["success"] = true;
+        sendJson(sender,successmsg);
+    }
+}
+
+//login handler
+void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
+
+    bindValues(q,doc);
+
+    if(queryDatabase(q)) {
+        if(this->countReturnedRows(q) == 1) {
+            QJsonObject msg;
+            msg["type"] = QString("login");
+            msg["success"] = true;
+            msg["user"] = doc.value("username").toString().simplified();
+            sendJson(sender, msg);
+
+            //set this field seems to be necessary to enter the section in which we send
+            //the file list - even if it is not working right now - otherwise it will always be called
+            // jsonFromLoggedOut and we will never enter the jsonFromLoggedIn function
+            // ******************** => see jsonReceived Function *****************************
+            //sender.setUserName(doc.value("username").toString().simplified());
+
+            //now sending information to update other clients' GUI
+            QJsonObject connectedMsg;
+            connectedMsg["type"] = QString("newuser");
+            connectedMsg["username"] = doc.value("username").toString().simplified();
+            broadcast(connectedMsg, sender);
+        }
+        else { //no user found
+            QJsonObject failmsg2;
+            failmsg2["type"] = QString("login");
+            failmsg2["success"] = false;
+            failmsg2["reason"] = QString("Incorrect username and password");
+            sendJson(sender,failmsg2);
+>>>>>>> Stashed changes
         }
     }
 
 }
 
+<<<<<<< Updated upstream
+=======
+int Server::countReturnedRows(QSqlQuery& executedQuery){
+
+    int cnt = 0;
+
+    while(executedQuery.next())
+        cnt++;
+
+    emit logMessage("Query returned " +  QString::number(cnt) + " results");
+    return cnt;
+}
+
+void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
+
+    const QJsonValue typeVal = doc.value("type");
+
+    //files request
+    if(typeVal.toString().compare("filesRequest", Qt::CaseInsensitive) == 0){
+        sendListFile();
+        return;
+    }
+}
+
+void Server::logQueryResults(QSqlQuery executedQuery){
+
+    int cnt = 0;
+    QString records;
+
+    while(executedQuery.next()){
+        cnt++;
+        auto record = executedQuery.record();
+        for(int i=0; i < record.count(); i++){
+            QSqlField field=record.field(i);
+            records.append(field.name() + ":" + field.value().toString() + "\t");
+        }
+        records.append("\n");
+    }
+    records = cnt == 0 ? "Query returned 0 results" : records.prepend("Query returned " + QString::number(cnt) + " results:\n");
+    emit logMessage(records);
+}
+
+void Server::executeCommand(QString cmd){
+
+    emit logMessage("Executing command: " + cmd);
+    ConnectToDatabase();
+    QSqlQuery query (cmd);
+    queryDatabase(query);
+    logQueryResults(query);
+}
+
+
+>>>>>>> Stashed changes
 

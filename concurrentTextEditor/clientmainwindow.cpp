@@ -8,7 +8,11 @@ clientmainwindow::clientmainwindow(QWidget *parent)
     , ui(new Ui::clientmainwindow)
 {
     ui->setupUi(this);
+<<<<<<< Updated upstream
     connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
+=======
+    _workerClient = new WorkerClient(this);
+>>>>>>> Stashed changes
 }
 
 clientmainwindow::~clientmainwindow()
@@ -19,9 +23,13 @@ clientmainwindow::~clientmainwindow()
 
 void clientmainwindow::on_pushButtonLogin_clicked()
 {
-    _workerClient = new WorkerClient(this);
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
+<<<<<<< Updated upstream
+=======
+    //connecting signals and slots
+    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
+>>>>>>> Stashed changes
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
     QString pwd = ui->lineEditPwd->text();
@@ -56,7 +64,12 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 
 void clientmainwindow::on_pushButtonSignup_clicked()
 {
-    d = new dialogsignup(this);
+    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
+
+    d = new dialogsignup(this, _workerClient);
+
+    connect(d, &dialogsignup::logIn, this, &clientmainwindow::myLoggedIn);
+
     d->exec();
 }
 

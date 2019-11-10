@@ -2,7 +2,12 @@
 #include "ui_homeloggedin.h"
 #include "workerclient.h"
 
+<<<<<<< Updated upstream
 homeLoggedIn::homeLoggedIn(QWidget *parent, QString usrname, WorkerClient* worker) :
+=======
+
+homeLoggedIn::homeLoggedIn(QWidget *parent, QString loggedUser, WorkerClient* worker) :
+>>>>>>> Stashed changes
     QDialog(parent),
     ui(new Ui::homeLoggedIn),
     _workerClient(worker)

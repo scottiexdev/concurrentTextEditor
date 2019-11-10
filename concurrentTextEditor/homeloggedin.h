@@ -2,6 +2,8 @@
 #define HOMELOGGEDIN_H
 
 #include <QDialog>
+#include <QDir>
+#include <QFileInfo>
 #include "accountsettings.h"
 #include "workerclient.h"
 
