@@ -8,11 +8,7 @@ clientmainwindow::clientmainwindow(QWidget *parent)
     , ui(new Ui::clientmainwindow)
 {
     ui->setupUi(this);
-<<<<<<< Updated upstream
-    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
-=======
     _workerClient = new WorkerClient(this);
->>>>>>> Stashed changes
 }
 
 clientmainwindow::~clientmainwindow()
@@ -25,16 +21,13 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 {
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
-<<<<<<< Updated upstream
-=======
     //connecting signals and slots
     connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
->>>>>>> Stashed changes
+
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
     QString pwd = ui->lineEditPwd->text();
 
-    user = usr;
 
     //create a json message with credentials for login
     QJsonObject cred;
@@ -43,11 +36,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["username"] = usr;
     cred["password"] = pwd;
 
-
     //make query and update bool accordingly
-    _workerClient->SendLoginCred(cred);
-
-//    credentialok = workerClient->receiveLoginResult();
+    _workerClient->sendLoginCred(cred);
 
 //    if(!credentialok){
 //        QMessageBox nok;

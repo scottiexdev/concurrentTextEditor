@@ -2,23 +2,19 @@
 #include "ui_homeloggedin.h"
 #include "workerclient.h"
 
-<<<<<<< Updated upstream
-homeLoggedIn::homeLoggedIn(QWidget *parent, QString usrname, WorkerClient* worker) :
-=======
-
 homeLoggedIn::homeLoggedIn(QWidget *parent, QString loggedUser, WorkerClient* worker) :
->>>>>>> Stashed changes
     QDialog(parent),
     ui(new Ui::homeLoggedIn),
-    _workerClient(worker)
+    _workerClient(worker)    
 {
     ui->setupUi(this);
+    _workerClient->setUser(loggedUser);
+    _workerClient->getFileList();
 
-    if(usrname == nullptr)
-        QString usrname = "usr_default_value";
+    if(loggedUser == nullptr)
+            QString usrname = "usr_default_value";
 
-    ui->welcomeLabel->setText("Welcome, "+usrname); //used to show Username in home window
-
+    ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
 }
 
 homeLoggedIn::~homeLoggedIn()

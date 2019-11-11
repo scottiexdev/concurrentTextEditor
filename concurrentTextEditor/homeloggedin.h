@@ -2,8 +2,6 @@
 #define HOMELOGGEDIN_H
 
 #include <QDialog>
-#include <QDir>
-#include <QFileInfo>
 #include "accountsettings.h"
 #include "workerclient.h"
 
@@ -16,7 +14,7 @@ class homeLoggedIn : public QDialog
     Q_OBJECT
 
 public:
-    explicit homeLoggedIn(QWidget *parent, QString usrname, WorkerClient* worker);
+    explicit homeLoggedIn(QWidget *parent,QString loggedUser,WorkerClient* worker);
     ~homeLoggedIn();
 
 private slots:

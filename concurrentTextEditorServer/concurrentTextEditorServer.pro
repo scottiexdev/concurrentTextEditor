@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         server.cpp \
+        serverconsole.cpp \
         serverwindow.cpp \
         workerserver.cpp
 
@@ -29,9 +30,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     server.h \
+    serverconsole.h \
     serverhelpers.h \
     serverwindow.h \
-    workerserver.h
+    workerserver.h \
 
 DISTFILES += \
     concurrentDb.db \

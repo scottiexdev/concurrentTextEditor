@@ -21,11 +21,11 @@ dialogsignup::~dialogsignup()
 void dialogsignup::on_pushButton_clicked()
 {
     connect(_workerClient, &WorkerClient::mySignupOk, this, &dialogsignup::mySignupOk);
+    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
     QString usr = ui->lineEdit_Usr->text();
     QString pwd1 = ui->lineEdit_PwdIns->text();
     QString pwd2 = ui->lineEdit_PwdConf->text();
-
 
     if(pwd1 != pwd2){
         QMessageBox pwd_not_eq;
@@ -39,13 +39,9 @@ void dialogsignup::on_pushButton_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
 
-<<<<<<< Updated upstream
-    wc->SendLoginCred(signup);
-=======
     usr_temp = usr;
 
     _workerClient->sendLoginCred(signup);
->>>>>>> Stashed changes
 
     //TODO signup corretto
 }

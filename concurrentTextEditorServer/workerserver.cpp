@@ -32,7 +32,7 @@ void WorkerServer::sendJson(const QJsonObject &json) {
 
 void WorkerServer::receiveJson() {
     QByteArray jsonData; //prepare container
-    QDataStream socketStream(m_serverSocket); //datastrea on the socket
+    QDataStream socketStream(m_serverSocket); //datastream on the socket
     socketStream.setVersion(QDataStream::Qt_5_10);
     //INFINITE LOOP
     for (;;) {
@@ -46,7 +46,7 @@ void WorkerServer::receiveJson() {
             if(parseError.error == QJsonParseError::NoError) {
                 //the data is a valid JSON
                 if(jsonDoc.isObject()) //and an object
-                    emit jsonReceived(jsonDoc.object());
+                    emit jsonReceived(*this, jsonDoc.object());
                 else
                     emit logMessage("Invalid message: " + QString::fromUtf8(jsonData));
             } else {
@@ -59,7 +59,7 @@ void WorkerServer::receiveJson() {
     }
 }
 
-void WorkerServer::disconnectFromClient() {
+void WorkerServer::disconnectFromClient(){
     m_serverSocket->disconnectFromHost();
 }
 
