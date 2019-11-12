@@ -6,6 +6,10 @@ clientmainwindow::clientmainwindow(QWidget *parent)
     , ui(new Ui::clientmainwindow)
 {
     ui->setupUi(this);
+    _workerClient = new WorkerClient(this);
+
+    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
+    connect(_workerClient, &WorkerClient::mySignupOk, this, &clientmainwindow::mySignupOk);
 }
 
 clientmainwindow::~clientmainwindow()
@@ -16,7 +20,6 @@ clientmainwindow::~clientmainwindow()
 
 void clientmainwindow::on_pushButtonLogin_clicked()
 {
-    _workerClient = new WorkerClient(this);
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
     connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
@@ -24,8 +27,6 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
     QString pwd = ui->lineEditPwd->text();
-
-    _loggedUser = usr;
 
     //create a json message with credentials for login
     QJsonObject cred;
@@ -40,12 +41,20 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 
 void clientmainwindow::on_pushButtonSignup_clicked()
 {
-    d = new dialogsignup(this);
+    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
+    d = new dialogsignup(this, _workerClient);
     d->exec();
 }
 
-void clientmainwindow::myLoggedIn(QString loggedUser) {
-    hli = new homeLoggedIn(this, loggedUser,  _workerClient);
+void clientmainwindow::myLoggedIn() {
+    hli = new homeLoggedIn(this, _workerClient);
+    hide();
+    hli->exec();
+}
+
+void clientmainwindow::mySignupOk(){
+    hli = new homeLoggedIn(this, _workerClient);
+    d->close();
     hide();
     hli->exec();
 }
