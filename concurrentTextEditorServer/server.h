@@ -39,7 +39,6 @@ signals:
     void logMessage(const QString &msg);
 
 public slots:
-    void sendListFile();
     void stopServer();
     void executeCommand(QString cmd);
 
@@ -53,6 +52,7 @@ private slots:
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
     int countReturnedRows(QSqlQuery& executedQuery);
+    enum messageType { filesRequest, invalid };
 
 private:    
     QTcpServer *tcpServer = nullptr;
@@ -62,12 +62,16 @@ private:
     const QString _defaultDatabaseLocation = "/home/albo/Documents/concurrentDb.db";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     QVector<WorkerServer *> m_clients;
+    messageType getMessageType(const QJsonObject &docObj);
+
     void jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc);
     void jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc);
     void sendJson(WorkerServer& dest, const QJsonObject& msg);
     void login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender);
     void signup(QSqlQuery& qUser, QSqlQuery& qSignup, const QJsonObject &doc, WorkerServer& sender);
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
+    void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
+    void sendListFile(WorkerServer& sender);
 };
 
 #endif // SERVER_H
