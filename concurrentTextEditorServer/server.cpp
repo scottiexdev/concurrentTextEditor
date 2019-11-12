@@ -234,7 +234,7 @@ void Server::signup(QSqlQuery& qVerify, QSqlQuery& qSignup, const QJsonObject& d
         sender.setUserName(simplifiedUser);
         successmsg["type"] = QString("signup");
         successmsg["success"] = true;
-        successmsg["user"] = simplifiedUser;
+        successmsg["username"] = simplifiedUser;
         sendJson(sender,successmsg);
     }
 }
@@ -248,7 +248,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             QJsonObject msg;
             msg["type"] = QString("login");
             msg["success"] = true;
-            msg["user"] = doc.value("username").toString().simplified();
+            msg["username"] = doc.value("username").toString().simplified();
             sender.setUserName(msg["user"].toString());
             sendJson(sender, msg);
 

@@ -199,7 +199,7 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
     //Check success field
     if (loginSuccess) {
         //Notify with signal that the login was successfull
-        const QJsonValue resultVal = docObj.value(QLatin1String("user"));
+        const QJsonValue resultVal = docObj.value(QLatin1String("username"));
         _loggedUser = resultVal.toString();
         emit myLoggedIn();
         return;
@@ -221,7 +221,7 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 
     if(signSucc) {
         //signup is ok, i can close dialogsignup window and open homeloggedin
-        const QJsonValue resultVal = jsonObj.value(QLatin1String("user"));
+        const QJsonValue resultVal = jsonObj.value(QLatin1String("username"));
         this->_loggedUser = resultVal.toString();
         emit mySignupOk();
         return;
