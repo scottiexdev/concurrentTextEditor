@@ -41,7 +41,6 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 
 void clientmainwindow::on_pushButtonSignup_clicked()
 {
-    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
     d = new dialogsignup(this, _workerClient);
     d->exec();
 }
