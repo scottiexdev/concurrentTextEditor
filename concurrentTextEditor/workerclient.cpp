@@ -93,7 +93,7 @@ void WorkerClient::onReadyRead()
 }
 
 //DROPPED CONST MODIFIER ON QJSONOBJECT - TO CHECK WHY IT WAS THERE
-void WorkerClient::jsonReceived(QJsonObject &docObj)
+void WorkerClient::jsonReceived(const QJsonObject &docObj)
 {
 
     messageType type = getMessageType(docObj);
@@ -103,14 +103,17 @@ void WorkerClient::jsonReceived(QJsonObject &docObj)
         case messageType::login:
             loginHandler(docObj);
             break;
-
+        case messageType::signup:
+            signupHandler(docObj);
+            break;
         case messageType::filesRequest:
-            //TODO: filesRequest handler - get file list and show on UI
+            showallFilesHandler(docObj);
+            break;
         default:
             return;
     }
 
-    }
+}
 //    else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { //It's a chat message
 //        // we extract the text field containing the chat text
 //        const QJsonValue textVal = docObj.value(QLatin1String("text"));
@@ -137,7 +140,6 @@ void WorkerClient::jsonReceived(QJsonObject &docObj)
 //        // we notify of the user disconnection the userLeft signal
 //        emit userLeft(usernameVal.toString());
 //    }
-}
 
 void WorkerClient::setUser(QString loggedUser){
     _loggedUser = (loggedUser.isNull() || loggedUser.isEmpty()) ? DEFAULT_USER : loggedUser;
@@ -171,6 +173,9 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
 
     const QString type = typeVal.toString();
 
+    if(type.compare(QLatin1String("signup"), Qt::CaseInsensitive) == 0)
+                return WorkerClient::messageType::signup;
+
     if(type.compare(QLatin1String("login"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::login;
 
@@ -178,7 +183,7 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
         return WorkerClient::messageType::filesRequest;
 }
 
-void WorkerClient::loginHandler(QJsonObject& docObj){
+void WorkerClient::loginHandler(const QJsonObject& docObj){
 
     if (_loggedIn)
         return;
@@ -195,7 +200,8 @@ void WorkerClient::loginHandler(QJsonObject& docObj){
     if (loginSuccess) {
         //Notify with signal that the login was successfull
         const QJsonValue resultVal = docObj.value(QLatin1String("user"));
-        emit myLoggedIn(resultVal.toString());
+        _loggedUser = resultVal.toString();
+        emit myLoggedIn();
         return;
     }
     // the login attempt failed, we extract the reason of the failure from the JSON
@@ -203,4 +209,25 @@ void WorkerClient::loginHandler(QJsonObject& docObj){
     //************** ADAPT LOGIN ERROR MSG TO BE CONSISTENT WITH CURRENT IMPLEMENTATION ********
     //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
     //emit loginError(reasonVal.toString());
+}
+
+void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
+    const QJsonValue res = jsonObj.value(QLatin1String("success"));
+
+    //No success field
+    if (res.isNull() || !res.isBool())
+        return;
+    const bool signSucc = res.toBool();
+
+    if(signSucc) {
+        //signup is ok, i can close dialogsignup window and open homeloggedin
+        const QJsonValue resultVal = jsonObj.value(QLatin1String("user"));
+        this->_loggedUser = resultVal.toString();
+        emit mySignupOk();
+        return;
+    }
+}
+
+void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
+
 }
