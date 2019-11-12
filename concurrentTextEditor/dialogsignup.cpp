@@ -3,10 +3,12 @@
 #include "workerclient.h"
 #include <QHostAddress>
 
+QString usr_temp;
 
-dialogsignup::dialogsignup(QWidget *parent) :
+dialogsignup::dialogsignup(QWidget *parent, WorkerClient *worker) :
     QDialog(parent),
-    ui(new Ui::dialogsignup)
+    ui(new Ui::dialogsignup),
+    _workerClient(worker)
 {
     ui->setupUi(this);
 }
@@ -18,8 +20,8 @@ dialogsignup::~dialogsignup()
 
 void dialogsignup::on_pushButton_clicked()
 {
-    WorkerClient* wc = new WorkerClient(this);
-    wc->connectToServer(QHostAddress::LocalHost, 1967);
+    connect(_workerClient, &WorkerClient::mySignupOk, this, &dialogsignup::mySignupOk);
+    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
     QString usr = ui->lineEdit_Usr->text();
     QString pwd1 = ui->lineEdit_PwdIns->text();
@@ -37,7 +39,14 @@ void dialogsignup::on_pushButton_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
 
-    wc->sendLoginCred(signup);
+    usr_temp = usr;
+
+    _workerClient->sendLoginCred(signup);
 
     //TODO signup corretto
+}
+
+//used usr_temp since signedUser is a void string - TO FIX
+void dialogsignup::mySignupOk(QString signedUser){
+    emit logIn(usr_temp);
 }
