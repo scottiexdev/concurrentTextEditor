@@ -229,5 +229,6 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 }
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
+    //emit verso la gui per update della gui
 
 }

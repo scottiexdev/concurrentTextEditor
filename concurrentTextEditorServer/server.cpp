@@ -78,15 +78,16 @@ bool Server::queryDatabase(QSqlQuery& query){
 }
 
 
-void Server::sendListFile() {
+void Server::sendListFile(WorkerServer &sender) {
 
     QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
+    QDataStream out(sender.getSocket());
     QDir dir;
     QJsonArray listFile;
 
     //set directory
     dir.filePath("Files"); //what path?
+    dir.filePath("C:\\Users\\silvi\\Google Drive\\Politecnico\\Magistrale\\Progetto\\concurrentTextEditor\\concurrentTextEditorServer\\Files"); //what path?
     dir.setFilter(QDir::Files);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -95,7 +96,7 @@ void Server::sendListFile() {
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
         QJsonObject file_data;
-        file_data.insert("Filename", QJsonValue(fileName));
+        file_data.insert("Name", QJsonValue(fileName));
         listFile.push_back(QJsonValue(file_data));
     }
 
@@ -103,6 +104,7 @@ void Server::sendListFile() {
     QJsonDocument final_list(listFile);
     out.setVersion(QDataStream::Qt_5_10);
     out << final_list.toJson(QJsonDocument::Indented);
+
 
     //send to client
     QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
@@ -123,7 +125,7 @@ void Server::jsonReceived(WorkerServer& sender, const QJsonObject &doc) {
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if(sender.userName().isEmpty())
         return jsonFromLoggedOut(sender, doc);
-    //jsonFromLoggedIn(sender, doc);
+    jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {
@@ -176,9 +178,6 @@ void Server::broadcast(const QJsonObject& message, WorkerServer& exclude) {
 }
 
 void Server::jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc) {
-
-    //Q_ASSERT(&sender);   //cosa fa? Fa debug nel caso in cui il sender non esista - passando per
-    //reference il sender non puo' essere null: ci serve ancora una Q_Assert??
 
     if(!ConnectToDatabase())
         return;
@@ -291,7 +290,18 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 }
 
 void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
+    messageType type = getMessageType(doc);
 
+    switch(type) {
+        case messageType::filesRequest:
+            filesRequestHandler(sender, doc);
+    }
+}
+
+void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
+    QString type = doc.value(QLatin1String("requestedFiles")).toString();
+    if(type == "all")
+        sendListFile(sender);
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -321,5 +331,16 @@ void Server::executeCommand(QString cmd){
     logQueryResults(query);
 }
 
+Server::messageType Server::getMessageType(const QJsonObject &docObj) {
+    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
 
+    if(typeVal.isNull() || !typeVal.isString())
+        return Server::messageType::invalid;
+
+    const QString type = typeVal.toString();
+
+    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
+                return Server::messageType::filesRequest;
+    return invalid;
+}
 
