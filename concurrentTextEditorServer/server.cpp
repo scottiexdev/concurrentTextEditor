@@ -78,39 +78,42 @@ bool Server::queryDatabase(QSqlQuery& query){
 }
 
 
-void Server::sendListFile() {
+void Server::sendListFile(WorkerServer& sender) {
 
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
-    QDir dir;
+    QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
     QJsonArray listFile;
 
     //set directory
-    dir.filePath("Files"); //what path?
-    dir.setFilter(QDir::Files);
-    dir.setSorting(QDir::Size | QDir::Reversed);
+    dir->setFilter(QDir::Files);
+    dir->setSorting(QDir::Size | QDir::Reversed);
 
     //create filelist
-    QFileInfoList list = dir.entryInfoList();
+    QFileInfoList list = dir->entryInfoList();
+
+    //TODO: if directory is empty
+    QJsonObject file_data;
+    file_data["type"] = "filesRequest";
+    file_data["num"] = list.size();
+
+    QString buf;
+
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
-        QJsonObject file_data;
-        file_data.insert("Filename", QJsonValue(fileName));
-        listFile.push_back(QJsonValue(file_data));
+        buf+="," + fileName;
+
+//        listFile.push_back(QJsonValue(file_data));
     }
+    file_data.insert("Filename", QJsonValue(buf));
 
+    //******* NOT NEEDED ********
     //put in json document
-    QJsonDocument final_list(listFile);
-    out.setVersion(QDataStream::Qt_5_10);
-    out << final_list.toJson(QJsonDocument::Indented);
+//    QJsonDocument final_list(listFile);
+//    out.setVersion(QDataStream::Qt_5_10);
+//    out << final_list.toJson(QJsonDocument::Indented);
 
-    //send to client
-    QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-    connect(clientConnection, &QAbstractSocket::disconnected, clientConnection, &QObject::deleteLater);
-    clientConnection->write(block);
-
-    //than disconnect(?)
-    //clientConn->disconnectFromHost();
+    sendJson(sender, file_data);
 }
 
 void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
@@ -123,7 +126,7 @@ void Server::jsonReceived(WorkerServer& sender, const QJsonObject &doc) {
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if(sender.userName().isEmpty())
         return jsonFromLoggedOut(sender, doc);
-    //jsonFromLoggedIn(sender, doc);
+    jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {
@@ -177,9 +180,6 @@ void Server::broadcast(const QJsonObject& message, WorkerServer& exclude) {
 
 void Server::jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc) {
 
-    //Q_ASSERT(&sender);   //cosa fa? Fa debug nel caso in cui il sender non esista - passando per
-    //reference il sender non puo' essere null: ci serve ancora una Q_Assert??
-
     if(!ConnectToDatabase())
         return;
 
@@ -231,9 +231,10 @@ void Server::signup(QSqlQuery& qVerify, QSqlQuery& qSignup, const QJsonObject& d
             sendJson(sender,failmsg);
             return;
         }
-
+        sender.setUserName(simplifiedUser);
         successmsg["type"] = QString("signup");
         successmsg["success"] = true;
+        successmsg["username"] = simplifiedUser;
         sendJson(sender,successmsg);
     }
 }
@@ -247,7 +248,8 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             QJsonObject msg;
             msg["type"] = QString("login");
             msg["success"] = true;
-            msg["user"] = doc.value("username").toString().simplified();
+            msg["username"] = doc.value("username").toString().simplified();
+            sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
             //now sending information to update other clients' GUI
@@ -289,7 +291,18 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 }
 
 void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
+    messageType type = getMessageType(doc);
 
+    switch(type) {
+        case messageType::filesRequest:
+            filesRequestHandler(sender, doc);
+    }
+}
+
+void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
+    QString type = doc.value(QLatin1String("requestedFiles")).toString();
+    if(type == "all")
+        sendListFile(sender);
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -319,5 +332,16 @@ void Server::executeCommand(QString cmd){
     logQueryResults(query);
 }
 
+Server::messageType Server::getMessageType(const QJsonObject &docObj) {
+    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
 
+    if(typeVal.isNull() || !typeVal.isString())
+        return Server::messageType::invalid;
+
+    const QString type = typeVal.toString();
+
+    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
+                return Server::messageType::filesRequest;
+    return invalid;
+}
 
