@@ -19,10 +19,43 @@ void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
 }
 
 void WorkerClient::sendLoginCred(QJsonObject qj) {
-
     QDataStream loginStream(_clientSocket);
     loginStream << QJsonDocument(qj).toJson();
 }
+
+/*bool WorkerClient::receiveLoginResult() {
+    QByteArray res;
+    QDataStream socketStream(_clientSocket);
+
+    for(;;) {
+        socketStream>>res;
+        if(socketStream.commitTransaction()) {
+            QJsonParseError check;
+            const QJsonDocument jDoc = QJsonDocument::fromJson(res, &check);
+
+            if(check.error == QJsonParseError::NoError) {
+                if(jDoc.isObject()){
+                    //start Json parsing - TODO errors to be displayed
+                    const QJsonValue typeVal = jDoc.object().value(QLatin1String("type"));
+                    //check integrity
+                    if (typeVal.isNull() || !typeVal.isString())
+                        return false;
+                    //check type
+                    if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { //it's login msg
+                        const QJsonValue resultVal = jDoc.object().value(QLatin1String("success"));
+                        if (resultVal.isNull() || !resultVal.isBool())
+                            return false;
+                        if(resultVal.toBool())
+                            return true;
+                        else return false;
+                    } else
+                        return false;
+                }
+            }
+        } else
+            return false;
+    }
+}*/
 
 void WorkerClient::onReadyRead()
 {
@@ -70,15 +103,42 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
             loginHandler(docObj);
             break;
         case messageType::signup:
-                signupHandler(docObj);
-                break;
+            signupHandler(docObj);
+            break;
         case messageType::filesRequest:
-                showallFilesHandler(docObj);
-                break;
+            showallFilesHandler(docObj);
+            break;
         default:
-                return;
+            return;
     }
+
 }
+//    else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { //It's a chat message
+//        // we extract the text field containing the chat text
+//        const QJsonValue textVal = docObj.value(QLatin1String("text"));
+//        // we extract the sender field containing the username of the sender
+//        const QJsonValue senderVal = docObj.value(QLatin1String("sender"));
+//        if (textVal.isNull() || !textVal.isString())
+//            return; // the text field was invalid so we ignore
+//        if (senderVal.isNull() || !senderVal.isString())
+//            return; // the sender field was invalid so we ignore
+//        // we notify a new message was received via the messageReceived signal
+//        emit messageReceived(senderVal.toString(), textVal.toString());
+//    } else if (typeVal.toString().compare(QLatin1String("newuser"), Qt::CaseInsensitive) == 0) { // A user joined the chat
+//        // we extract the username of the new user
+//        const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
+//        if (usernameVal.isNull() || !usernameVal.isString())
+//            return; // the username was invalid so we ignore
+//        // we notify of the new user via the userJoined signal
+//        emit userJoined(usernameVal.toString());
+//    } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // A user left the chat
+//         // we extract the username of the new user
+//        const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
+//        if (usernameVal.isNull() || !usernameVal.isString())
+//            return; // the username was invalid so we ignore
+//        // we notify of the user disconnection the userLeft signal
+//        emit userLeft(usernameVal.toString());
+//    }
 
 void WorkerClient::setUser(QString loggedUser){
     _loggedUser = (loggedUser.isNull() || loggedUser.isEmpty()) ? DEFAULT_USER : loggedUser;
@@ -113,7 +173,7 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
     const QString type = typeVal.toString();
 
     if(type.compare(QLatin1String("signup"), Qt::CaseInsensitive) == 0)
-            return WorkerClient::messageType::signup;
+                return WorkerClient::messageType::signup;
 
     if(type.compare(QLatin1String("login"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::login;
@@ -138,8 +198,9 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
     //Check success field
     if (loginSuccess) {
         //Notify with signal that the login was successfull
-        const QJsonValue resultVal = docObj.value(QLatin1String("user"));
-        emit myLoggedIn(resultVal.toString());
+        const QJsonValue resultVal = docObj.value(QLatin1String("username"));
+        _loggedUser = resultVal.toString();
+        emit myLoggedIn();
         return;
     }
     // the login attempt failed, we extract the reason of the failure from the JSON
@@ -160,11 +221,15 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
     if(signSucc) {
         //signup is ok, i can close dialogsignup window and open homeloggedin
         const QJsonValue resultVal = jsonObj.value(QLatin1String("username"));
-        emit mySignupOk(resultVal.toString());
+        this->_loggedUser = resultVal.toString();
+        emit mySignupOk();
         return;
     }
 }
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
-
+    //emit verso la gui per update della gui
+    int n = qjo["num"].toInt();
+    QString buf = qjo["Filename"].toString();
+    QStringList list = buf.split(",", QString::SkipEmptyParts);
 }

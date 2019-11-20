@@ -26,16 +26,13 @@ public:
 private slots:
     void on_pushButtonLogin_clicked();
     void on_pushButtonSignup_clicked();
-
-public slots:
-
     void myLoggedIn();
+    void mySignupOk();
 
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
     homeLoggedIn *hli;
-    WorkerClient *_workerClient;
-    QString _loggedUser;
+    WorkerClient *_workerClient;    
 };
 #endif // CLIENTMAINWINDOW_H

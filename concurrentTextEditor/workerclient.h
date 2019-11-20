@@ -21,11 +21,10 @@ private slots:
     void onReadyRead();
 
 signals:
-    void myLoggedIn(QString loggedUser);
-    void mySignupOk(QString signedUser);
+    void myLoggedIn();
+    void mySignupOk();
 
 private:
-    //void jsonReceived(const QJsonObject &qjo);
     QTcpSocket* _clientSocket;
     bool _loggedIn;
     QString _loggedUser;
@@ -38,6 +37,7 @@ private:
     void loginHandler(const QJsonObject& jsonObj);
     void signupHandler(const QJsonObject& jsonObj);
     void showallFilesHandler(const QJsonObject& qjo);
+
 };
 
 #endif // WORKERCLIENT_H

@@ -2,18 +2,13 @@
 #include "ui_homeloggedin.h"
 #include "workerclient.h"
 
-homeLoggedIn::homeLoggedIn(QWidget *parent, QString loggedUser, WorkerClient* worker) :
+homeLoggedIn::homeLoggedIn(QWidget *parent, WorkerClient* worker) :
     QDialog(parent),
     ui(new Ui::homeLoggedIn),
     _workerClient(worker)    
 {
-    ui->setupUi(this);
-    _workerClient->setUser(loggedUser);
+    ui->setupUi(this);    
     _workerClient->getFileList();
-
-    if(loggedUser == nullptr)
-            QString usrname = "usr_default_value";
-
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
 }
 

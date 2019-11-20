@@ -14,7 +14,7 @@ class homeLoggedIn : public QDialog
     Q_OBJECT
 
 public:
-    explicit homeLoggedIn(QWidget *parent,QString loggedUser,WorkerClient* worker);
+    explicit homeLoggedIn(QWidget *parent, WorkerClient* worker);
     ~homeLoggedIn();
 
 private slots:
