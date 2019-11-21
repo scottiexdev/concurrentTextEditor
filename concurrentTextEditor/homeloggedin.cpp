@@ -1,9 +1,11 @@
 #include "homeloggedin.h"
 #include "ui_homeloggedin.h"
 #include "workerclient.h"
+#include <QtWidgets/QMainWindow>
+
 
 homeLoggedIn::homeLoggedIn(QWidget *parent, WorkerClient* worker) :
-    QDialog(parent),
+    QMainWindow(parent),
     ui(new Ui::homeLoggedIn),
     _workerClient(worker)    
 {
@@ -19,7 +21,7 @@ homeLoggedIn::~homeLoggedIn()
 void homeLoggedIn::on_pushButtonSettings_clicked()
 {
     ac_st = new accountSettings(this);
-    ac_st->exec();
+    ac_st->show();
 }
 
 void homeLoggedIn::on_pushButtonLogout_clicked()

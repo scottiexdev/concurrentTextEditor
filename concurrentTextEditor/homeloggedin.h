@@ -1,7 +1,7 @@
 #ifndef HOMELOGGEDIN_H
 #define HOMELOGGEDIN_H
 
-#include <QDialog>
+#include <QtWidgets/QMainWindow>
 #include "accountsettings.h"
 #include "workerclient.h"
 
@@ -9,7 +9,7 @@ namespace Ui {
 class homeLoggedIn;
 }
 
-class homeLoggedIn : public QDialog
+class homeLoggedIn : public QMainWindow
 {
     Q_OBJECT
 
