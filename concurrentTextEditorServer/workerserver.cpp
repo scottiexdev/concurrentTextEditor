@@ -25,9 +25,18 @@ void WorkerServer::sendJson(const QJsonObject &json) {
     emit logMessage("Sending to "+ userName() + " - " + QString::fromUtf8(jsonData));
 
     //send message to the socket
-    QDataStream socketStream(m_serverSocket);
+//    QDataStream socketStream(m_serverSocket);
+//    socketStream.setVersion(QDataStream::Qt_5_10);
+//    socketStream << jsonData;
+
+    QDataStream socketStream(jsonData);
+    socketStream.setDevice(m_serverSocket);
     socketStream.setVersion(QDataStream::Qt_5_10);
     socketStream << jsonData;
+//    this->m_serverSocket->write(jsonData);
+//    socketStream.startTransaction();
+//    socketStream << jsonData;
+//    socketStream.commitTransaction();
 }
 
 void WorkerServer::receiveJson() {

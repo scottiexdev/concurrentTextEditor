@@ -16,6 +16,7 @@ class homeLoggedIn : public QDialog
 public:
     explicit homeLoggedIn(QWidget *parent, WorkerClient* worker);
     ~homeLoggedIn();
+    void requestFileList();
 
 private slots:
     void on_pushButtonSettings_clicked();

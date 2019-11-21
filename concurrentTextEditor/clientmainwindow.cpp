@@ -22,7 +22,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
 {
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
-    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
+//    connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
 
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
@@ -36,24 +36,26 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["password"] = pwd;
 
     _workerClient->sendLoginCred(cred);
-    _workerClient->getFileList();
+//    _workerClient->getFileList();
 }
 
 void clientmainwindow::on_pushButtonSignup_clicked()
 {
     d = new dialogsignup(this, _workerClient);
-    d->exec();
+    d->show();
 }
 
 void clientmainwindow::myLoggedIn() {
     hli = new homeLoggedIn(this, _workerClient);
     hide();
-    hli->exec();
+    hli->show();
+    hli->requestFileList();
 }
 
 void clientmainwindow::mySignupOk(){
     hli = new homeLoggedIn(this, _workerClient);
     d->close();
     hide();
-    hli->exec();
+    hli->show();
+    hli->requestFileList();
 }

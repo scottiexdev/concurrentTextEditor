@@ -101,10 +101,12 @@ void Server::sendListFile(WorkerServer& sender) {
 
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
-        buf+="," + fileName;
-
-//        listFile.push_back(QJsonValue(file_data));
+        if(i == 0)
+            buf += fileName;
+        else
+            buf += "," + fileName;
     }
+
     file_data.insert("Filename", QJsonValue(buf));
 
     //******* NOT NEEDED ********
@@ -294,8 +296,14 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
     messageType type = getMessageType(doc);
 
     switch(type) {
+
         case messageType::filesRequest:
             filesRequestHandler(sender, doc);
+            break;
+
+        default:
+            emit logMessage("JSON type request non handled");
+            break;
     }
 }
 
@@ -333,15 +341,17 @@ void Server::executeCommand(QString cmd){
 }
 
 Server::messageType Server::getMessageType(const QJsonObject &docObj) {
+
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
 
     if(typeVal.isNull() || !typeVal.isString())
-        return Server::messageType::invalid;
+        return messageType::invalid;
 
     const QString type = typeVal.toString();
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-                return Server::messageType::filesRequest;
-    return invalid;
+                return messageType::filesRequest;
+
+    return messageType::invalid;
 }
 

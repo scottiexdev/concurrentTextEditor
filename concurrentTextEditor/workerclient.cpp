@@ -180,6 +180,8 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::filesRequest;
+
+    return WorkerClient::messageType::invalid;
 }
 
 void WorkerClient::loginHandler(const QJsonObject& docObj){
@@ -200,6 +202,7 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
         //Notify with signal that the login was successfull
         const QJsonValue resultVal = docObj.value(QLatin1String("username"));
         _loggedUser = resultVal.toString();
+        _loggedIn = true;
         emit myLoggedIn();
         return;
     }
@@ -222,6 +225,7 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
         //signup is ok, i can close dialogsignup window and open homeloggedin
         const QJsonValue resultVal = jsonObj.value(QLatin1String("username"));
         this->_loggedUser = resultVal.toString();
+        this->_loggedIn = true;
         emit mySignupOk();
         return;
     }
