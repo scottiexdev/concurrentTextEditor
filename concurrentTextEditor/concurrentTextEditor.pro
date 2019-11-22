@@ -17,25 +17,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    accountsettings.cpp \
     dialogsignup.cpp \
-    homeloggedin.cpp \
+    loggedinmainwindow.cpp \
     main.cpp \
     clientmainwindow.cpp \
     workerclient.cpp
 
 HEADERS += \
-    accountsettings.h \
     clientmainwindow.h \
     dialogsignup.h \
-    homeloggedin.h \
+    loggedinmainwindow.h \
     workerclient.h
 
 FORMS += \
-    accountsettings.ui \
     clientmainwindow.ui \
     dialogsignup.ui \
-    homeloggedin.ui
+    loggedinmainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

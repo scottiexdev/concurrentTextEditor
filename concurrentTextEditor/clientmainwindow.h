@@ -10,6 +10,7 @@
 #include "dialogsignup.h"
 #include "homeloggedin.h"
 #include "workerclient.h"
+#include "loggedinmainwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class clientmainwindow; }
@@ -32,7 +33,7 @@ private slots:
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
-    homeLoggedIn *hli;
+    loggedinmainwindow *hli;
     WorkerClient *_workerClient;    
 };
 #endif // CLIENTMAINWINDOW_H

@@ -23,6 +23,7 @@ private slots:
 signals:
     void myLoggedIn();
     void mySignupOk();
+    void showFiles(QStringList list);
 
 private:
     QTcpSocket* _clientSocket;

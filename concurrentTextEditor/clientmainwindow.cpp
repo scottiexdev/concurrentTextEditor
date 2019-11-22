@@ -43,15 +43,18 @@ void clientmainwindow::on_pushButtonSignup_clicked()
 }
 
 void clientmainwindow::myLoggedIn() {
-    hli = new homeLoggedIn(this, _workerClient);
+    hli = new loggedinmainwindow(this, _workerClient);
+    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);void showFiles(QStringList list);
     hide();
     hli->show();
     hli->requestFileList();
 }
 
 void clientmainwindow::mySignupOk(){
-    hli = new homeLoggedIn(this, _workerClient);
+    hli = new loggedinmainwindow(this, _workerClient);
+    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);void showFiles(QStringList list);
     d->close();
+    hide();
     hli->show();
     hli->requestFileList();
 }

@@ -237,5 +237,5 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     int n = qjo["num"].toInt();
     QString buf = qjo["Filename"].toString();
     QStringList list = buf.split(",", QString::SkipEmptyParts);
-
+    emit showFiles(list);
 }
