@@ -10,14 +10,11 @@ Naming conventions
 Practical coding notes:
  - Usare il passaggio delle variabile per reference e non i puntatori: se passiamo per reference non dobbiamo preoccuparci che il puntatore possa avere valore nullo: si scatena un'eccezione automaticamente
  
- Sending a file in JSON:
-  - https://forum.qt.io/topic/56319/solved-pass-a-binary-file-in-json/3
-  CLIENT:
-m_jsonObject["data"] = QString(data.toBase64());
-
-SERVER:
-QByteArray ba;
-ba.append(json["data"].toString());
-QByteArray data = QByteArray::fromBase64(ba);
-
-It works fine :)
+TODO's:
+ - QDialog popup lato client se il login fallisce
+ - QDialog popup lato client se il signup fallisce
+ - Visualizzare lista file
+ - Bottone open che chiama funzione per aprire il file
+ - Funzione che richiede il file
+ - Funzione che manda il file
+ - Finestra con text editor all'apertura di un file
