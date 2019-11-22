@@ -37,8 +37,6 @@ void dialogsignup::on_pushButton_clicked()
     signup["password"] = pwd1;
 
     _workerClient->sendLoginCred(signup);
-
-    //TODO signup corretto
 }
 
 

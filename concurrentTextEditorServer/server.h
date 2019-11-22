@@ -60,6 +60,7 @@ private:
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
     const QString _defaultDatabaseLocation = "/home/albo/Documents/concurrentDb.db";
+    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/files";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     QVector<WorkerServer *> m_clients;
     messageType getMessageType(const QJsonObject &docObj);

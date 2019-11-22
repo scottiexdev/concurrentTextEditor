@@ -81,38 +81,41 @@ bool Server::queryDatabase(QSqlQuery& query){
 void Server::sendListFile(WorkerServer &sender) {
 
     QByteArray block;
-    QDataStream out(sender.getSocket());
-    QDir dir;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
     QJsonArray listFile;
 
     //set directory
-    dir.filePath("Files"); //what path?
-    dir.filePath("C:\\Users\\silvi\\Google Drive\\Politecnico\\Magistrale\\Progetto\\concurrentTextEditor\\concurrentTextEditorServer\\Files"); //what path?
-    dir.setFilter(QDir::Files);
-    dir.setSorting(QDir::Size | QDir::Reversed);
+    dir->setFilter(QDir::Files);
+    dir->setSorting(QDir::Size | QDir::Reversed);
 
     //create filelist
-    QFileInfoList list = dir.entryInfoList();
+    QFileInfoList list = dir->entryInfoList();
+
+    //TODO: if directory is empty
+    QJsonObject file_data;
+    file_data["type"] = "filesRequest";
+    file_data["num"] = list.size();
+
+    QString buf;
+
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
-        QJsonObject file_data;
-        file_data.insert("Name", QJsonValue(fileName));
-        listFile.push_back(QJsonValue(file_data));
+        if(i == 0)
+            buf += fileName;
+        else
+            buf += "," + fileName;
     }
 
+    file_data.insert("Filename", QJsonValue(buf));
+
+    //******* NOT NEEDED ********
     //put in json document
-    QJsonDocument final_list(listFile);
-    out.setVersion(QDataStream::Qt_5_10);
-    out << final_list.toJson(QJsonDocument::Indented);
+//    QJsonDocument final_list(listFile);
+//    out.setVersion(QDataStream::Qt_5_10);
+//    out << final_list.toJson(QJsonDocument::Indented);
 
-
-    //send to client
-    QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-    connect(clientConnection, &QAbstractSocket::disconnected, clientConnection, &QObject::deleteLater);
-    clientConnection->write(block);
-
-    //than disconnect(?)
-    //clientConn->disconnectFromHost();
+    sendJson(sender, file_data);
 }
 
 void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
@@ -123,8 +126,10 @@ void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
 void Server::jsonReceived(WorkerServer& sender, const QJsonObject &doc) {
 
     emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
+
     if(sender.userName().isEmpty())
         return jsonFromLoggedOut(sender, doc);
+
     jsonFromLoggedIn(sender, doc);
 }
 
@@ -248,7 +253,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             msg["type"] = QString("login");
             msg["success"] = true;
             msg["username"] = doc.value("username").toString().simplified();
-            sender.setUserName(msg["user"].toString());
+            sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
             //now sending information to update other clients' GUI
@@ -293,12 +298,20 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
     messageType type = getMessageType(doc);
 
     switch(type) {
+
         case messageType::filesRequest:
             filesRequestHandler(sender, doc);
+            break;
+
+        case messageType::invalid:
+            emit logMessage("JSON type request non handled");
+            break;
+
     }
 }
 
 void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
+
     QString type = doc.value(QLatin1String("requestedFiles")).toString();
     if(type == "all")
         sendListFile(sender);
@@ -332,6 +345,7 @@ void Server::executeCommand(QString cmd){
 }
 
 Server::messageType Server::getMessageType(const QJsonObject &docObj) {
+
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
 
     if(typeVal.isNull() || !typeVal.isString())
@@ -341,6 +355,7 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
                 return Server::messageType::filesRequest;
-    return invalid;
+
+    return Server::messageType::invalid;
 }
 

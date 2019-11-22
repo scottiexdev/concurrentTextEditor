@@ -2,8 +2,6 @@
 #define DIALOGSIGNUP_H
 
 #include <QDialog>
-
-//custom includes
 #include <QMessageBox>
 #include <QJsonObject>
 #include <QDataStream>
