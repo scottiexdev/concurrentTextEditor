@@ -109,12 +109,6 @@ void Server::sendListFile(WorkerServer &sender) {
 
     file_data.insert("Filename", QJsonValue(buf));
 
-    //******* NOT NEEDED ********
-    //put in json document
-//    QJsonDocument final_list(listFile);
-//    out.setVersion(QDataStream::Qt_5_10);
-//    out << final_list.toJson(QJsonDocument::Indented);
-
     sendJson(sender, file_data);
 }
 
@@ -283,16 +277,6 @@ void Server::bindValues(QSqlQuery& q, const QJsonObject &doc) {
     q.bindValue(":PASSWORD", password);
 }
 
-int Server::countReturnedRows(QSqlQuery& executedQuery){
-
-    int cnt = 0;
-
-    while(executedQuery.next())
-        cnt++;
-
-    emit logMessage("Query returned " +  QString::number(cnt) + " results");
-    return cnt;
-}
 
 void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
     messageType type = getMessageType(doc);
@@ -312,9 +296,18 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
 void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 
-    QString type = doc.value(QLatin1String("requestedFiles")).toString();
-    if(type == "all")
+    QString requestedFile = doc.value(QLatin1String("requestedFiles")).toString();
+
+    if(requestedFile == "all")
         sendListFile(sender);
+    else {
+        sendFile(sender, requestedFile);
+    }
+}
+
+void Server::sendFile(WorkerServer& sender, QString fileName){
+
+    //Get file and send it through the WorkerServer sender
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -343,6 +336,18 @@ void Server::executeCommand(QString cmd){
     queryDatabase(query);
     logQueryResults(query);
 }
+
+int Server::countReturnedRows(QSqlQuery& executedQuery){
+
+    int cnt = 0;
+
+    while(executedQuery.next())
+        cnt++;
+
+    emit logMessage("Query returned " +  QString::number(cnt) + " results");
+    return cnt;
+}
+
 
 Server::messageType Server::getMessageType(const QJsonObject &docObj) {
 

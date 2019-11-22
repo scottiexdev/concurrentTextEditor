@@ -64,7 +64,7 @@ private:
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     QVector<WorkerServer *> m_clients;
     messageType getMessageType(const QJsonObject &docObj);
-
+    void sendFile(WorkerServer& sender, QString fileName);
     void jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc);
     void jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc);
     void sendJson(WorkerServer& dest, const QJsonObject& msg);

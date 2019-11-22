@@ -16,6 +16,7 @@ public:
     void setUser(QString loggedUser);
     QString getUser();
     void getFileList();
+    void requestFile(QString fileName);
 
 private slots:
     void onReadyRead();

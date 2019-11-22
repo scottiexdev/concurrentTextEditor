@@ -239,3 +239,13 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     QStringList list = buf.split(",", QString::SkipEmptyParts);
     emit showFiles(list);
 }
+
+void WorkerClient::requestFile(QString fileName){
+    QJsonObject fileRequest;
+
+    fileRequest["type"] = "filesRequest";
+    fileRequest["requestedFiles"] = fileName;
+
+    QDataStream filesRequestStream(_clientSocket);
+    filesRequestStream << QJsonDocument(fileRequest).toJson();
+}

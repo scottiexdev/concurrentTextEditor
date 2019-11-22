@@ -44,3 +44,9 @@ void loggedinmainwindow::showFiles(QStringList filesList){
 
 }
 
+
+void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
+{
+    auto fileName = ui->fileListTable->selectedItems().first();
+    _workerClient->requestFile(fileName);
+}

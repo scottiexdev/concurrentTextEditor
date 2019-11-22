@@ -18,6 +18,7 @@ public:
     void sendJson(const QJsonObject &jsonData);
     QTcpSocket* getSocket() {return m_serverSocket;}
 
+
 signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
     void error();
