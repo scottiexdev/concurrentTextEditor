@@ -30,4 +30,5 @@ void homeLoggedIn::on_pushButtonLogout_clicked()
 
 void homeLoggedIn::requestFileList(){
     _workerClient->getFileList();
+
 }

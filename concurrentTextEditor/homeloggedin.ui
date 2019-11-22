@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>homeLoggedIn</class>
- <widget class="QDialog" name="homeLoggedIn">
+ <widget class="QMainWindow" name="homeLoggedIn">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -158,6 +158,16 @@
    <property name="title">
     <string>Files</string>
    </property>
+   <widget class="QListWidget" name="fileListWindow">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>581</width>
+      <height>271</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QLabel" name="welcomeLabel">
    <property name="geometry">
