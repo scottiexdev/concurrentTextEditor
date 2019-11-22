@@ -24,6 +24,10 @@ private slots:
 //    void on_pushButtonSettings_clicked();
     void on_pushButtonLogout_clicked();
 
+public:
+    void on_pushButtonOpenFile_2_clicked();
+
+
 private:
     Ui::loggedinmainwindow *ui;
     WorkerClient* _workerClient;

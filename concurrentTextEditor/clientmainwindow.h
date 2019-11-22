@@ -8,7 +8,6 @@
 //custom includes
 #include <QDataStream>
 #include "dialogsignup.h"
-#include "homeloggedin.h"
 #include "workerclient.h"
 #include "loggedinmainwindow.h"
 
