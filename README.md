@@ -13,8 +13,9 @@ Practical coding notes:
 TODO's:
  - QDialog popup lato client se il login fallisce
  - QDialog popup lato client se il signup fallisce
- - Visualizzare lista file
+ - Visualizzare lista file - done
  - Bottone open che chiama funzione per aprire il file
  - Funzione che richiede il file
  - Funzione che manda il file
  - Finestra con text editor all'apertura di un file
+ - Arricchire il json che manda la lista dei file con piu' info sul file (ex owner, created etc)
