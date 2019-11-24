@@ -19,3 +19,14 @@ TODO's:
  - Funzione che manda il file
  - Finestra con text editor all'apertura di un file
  - Arricchire il json che manda la lista dei file con piu' info sul file (ex owner, created etc)
+
+
+Git from command line:
+1. clone repo
+2. git pull origin master
+3. git branch <new_branch_name>
+4. git checkout <new_branch_name>
+5. Fare modifiche e quel si deve fare
+6. git add <file_modificato_1> <file_modificato_2>    ------ per vedere i file che sono stati cambiati fare "git status"
+7. Dopo aver controllato con git status quali file sono pronti per essere committati si procede a commiattare con: git commit -m "commit message"
+8. Push dei cambiamenti sul proprio branch: git push origin <new_branch_name>
