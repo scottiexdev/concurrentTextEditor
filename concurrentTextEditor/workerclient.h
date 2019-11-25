@@ -3,6 +3,12 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QDataStream>
+#include <QJsonParseError>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMessageBox>
 
 class WorkerClient : public QObject
 {

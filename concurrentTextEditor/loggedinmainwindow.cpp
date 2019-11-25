@@ -38,7 +38,8 @@ void loggedinmainwindow::showFiles(QStringList filesList){
     int cnt = 0;
 
     foreach(auto file, filesList){
-        ui->fileListTable->setItem(cnt, 0, new QTableWidgetItem(filesList.first()));
+        ui->fileListTable->setItem(cnt, 0, new QTableWidgetItem(filesList.at(cnt)));
+        // ^ changed filesList.first() into filesList.at(cnt) to get right item and not always the first one repeated
         cnt++;
     }
 
