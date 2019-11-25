@@ -1,10 +1,5 @@
 #include "workerclient.h"
-#include <QTcpSocket>
-#include <QDataStream>
-#include <QJsonParseError>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
+
 
 WorkerClient::WorkerClient(QObject *parent)
     : QObject(parent)
@@ -207,11 +202,14 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
         emit myLoggedIn();
         return;
     }
-    // the login attempt failed, we extract the reason of the failure from the JSON
-    // and notify it via the loginError signal
-    //************** ADAPT LOGIN ERROR MSG TO BE CONSISTENT WITH CURRENT IMPLEMENTATION ********
-    //const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
-    //emit loginError(reasonVal.toString());
+
+    //added sub.handler to handle unsuccessful login attempts
+    if(!loginSuccess) {
+        QString msg = docObj.value(QLatin1String("reason")).toString();
+        QMessageBox err;
+        err.setText(msg);
+        err.exec();
+    }
 }
 
 void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
@@ -229,6 +227,14 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
         this->_loggedIn = true;
         emit mySignupOk();
         return;
+    }
+
+    //added sub.handler to handle unsuccessful signup attempts
+    if(!signSucc) {
+        QString msg = jsonObj.value(QLatin1String("reason")).toString();
+        QMessageBox err;
+        err.setText(msg);
+        err.exec();
     }
 }
 
