@@ -290,7 +290,9 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
         case messageType::invalid:
             emit logMessage("JSON type request non handled");
             break;
-
+        case messageType::newFile:
+            newFileHandler(sender, doc);
+            break;
     }
 }
 
@@ -360,7 +362,19 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
                 return Server::messageType::filesRequest;
+    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
+                return Server::messageType::newFile;
 
     return Server::messageType::invalid;
 }
 
+void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
+     //TODO: IF to check availability of filename
+
+     QString filename = _defaultAbsoluteFilesLocation + doc.value("filename").toString() + ".txt";
+     QFile file(filename);
+     file.open(QIODevice::WriteOnly);
+     file.close();
+
+     sendListFile(sender);
+}

@@ -23,6 +23,7 @@ public:
     QString getUser();
     void getFileList();
     void requestFile(QString fileName);
+    void newFileRequest(const QJsonObject& qjo);
 
 private slots:
     void onReadyRead();
@@ -45,6 +46,7 @@ private:
     void loginHandler(const QJsonObject& jsonObj);
     void signupHandler(const QJsonObject& jsonObj);
     void showallFilesHandler(const QJsonObject& qjo);
+
 
 };
 

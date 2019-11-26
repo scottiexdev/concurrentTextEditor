@@ -255,3 +255,11 @@ void WorkerClient::requestFile(QString fileName){
     QDataStream filesRequestStream(_clientSocket);
     filesRequestStream << QJsonDocument(fileRequest).toJson();
 }
+
+void WorkerClient::newFileRequest(const QJsonObject &qjo){
+    //Json with filename and request type is passed as argument
+
+    //I Just send it to the server
+    QDataStream newFileReq(_clientSocket);
+    newFileReq << QJsonDocument(qjo).toJson();
+}

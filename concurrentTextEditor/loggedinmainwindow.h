@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "workerclient.h"
+#include <QInputDialog>
 
 namespace Ui {
 class loggedinmainwindow;
@@ -21,12 +22,13 @@ public slots:
     void showFiles(QStringList list);
 
 private slots:
-//    void on_pushButtonSettings_clicked();
-    void on_pushButtonLogout_clicked();
+
+    void on_pushButtonNewFile_2_clicked();
+
+    void on_pushButtonLogout_2_clicked();
 
 public:
     void on_pushButtonOpenFile_2_clicked();
-
 
 private:
     Ui::loggedinmainwindow *ui;

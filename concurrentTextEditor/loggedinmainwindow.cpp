@@ -15,11 +15,6 @@ loggedinmainwindow::~loggedinmainwindow()
     delete ui;
 }
 
-void loggedinmainwindow::on_pushButtonLogout_clicked()
-{
-    QApplication::quit();
-}
-
 void loggedinmainwindow::requestFileList(){
     _workerClient->getFileList();
 }
@@ -51,3 +46,23 @@ void loggedinmainwindow::showFiles(QStringList filesList){
 //    auto fileName = ui->fileListTable->selectedItems().first();
 //    _workerClient->requestFile(fileName);
 //}
+
+
+void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
+{
+    QString fn = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
+
+    QJsonObject filename_req ;
+
+    if(!fn.isEmpty()) {
+        filename_req["type"] = "newFile";
+        filename_req["filename"] = fn;
+    }
+
+    _workerClient->newFileRequest(filename_req);
+}
+
+void loggedinmainwindow::on_pushButtonLogout_2_clicked()
+{
+    QApplication::quit();
+}
