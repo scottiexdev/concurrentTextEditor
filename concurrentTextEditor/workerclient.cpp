@@ -104,6 +104,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::filesRequest:
             showallFilesHandler(docObj);
             break;
+        case messageType::fileRequest:
+            showFileHandler(docObj);
+            break;
         default:
             return;
     }
@@ -176,6 +179,9 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::filesRequest;
+
+    if(type.compare(QLatin1String("fileRequest"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::fileRequest;
 
     return WorkerClient::messageType::invalid;
 }
@@ -254,4 +260,9 @@ void WorkerClient::requestFile(QString fileName){
 
     QDataStream filesRequestStream(_clientSocket);
     filesRequestStream << QJsonDocument(fileRequest).toJson();
+}
+
+void WorkerClient::showFileHandler(const QJsonObject &qjo) {
+    QString buf = qjo["content"].toString();
+    emit showFileLine(buf);
 }

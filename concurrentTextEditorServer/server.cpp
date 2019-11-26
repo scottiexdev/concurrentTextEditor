@@ -308,6 +308,23 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 void Server::sendFile(WorkerServer& sender, QString fileName){
 
     //Get file and send it through the WorkerServer sender
+    QDir::setCurrent("C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/");
+    QFile f(fileName);
+    if(!f.open(QIODevice::Text | QIODevice::ReadWrite))
+        return; //handle error, if it is deleted or else
+
+    QJsonObject msgF;
+    msgF["type"] = QString("fileRequest");
+    msgF["name"] = fileName;
+
+    QTextStream in(&f);
+    while(!in.atEnd()) {
+        //try with QByteArray it doesn't convert bytes, while
+        //QTextStream: convers 8.bit data in 16-bit unicode
+        QString line = in.readLine().toLatin1();
+        msgF["content"] = line;
+        sendJson(sender, msgF);
+    }
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){

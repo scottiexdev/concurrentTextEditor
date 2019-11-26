@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "workerclient.h"
+#include "editor.h"
 
 namespace Ui {
 class loggedinmainwindow;
@@ -23,13 +24,15 @@ public slots:
 private slots:
 //    void on_pushButtonSettings_clicked();
     void on_pushButtonLogout_clicked();
+    void on_pushButtonOpenFile_2_clicked();
 
 public:
-    void on_pushButtonOpenFile_2_clicked();
+
 
 
 private:
     Ui::loggedinmainwindow *ui;
+    Editor *_e;
     WorkerClient* _workerClient;
 };
 
