@@ -94,8 +94,9 @@ void Server::sendListFile(WorkerServer &sender) {
 
     //TODO: if directory is empty
     QJsonObject file_data;
-    file_data["type"] = "filesRequest";
+    file_data["type"] = QString("filesRequest");
     file_data["num"] = list.size();
+    file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
 
     QString buf;
 
@@ -308,18 +309,17 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 void Server::sendFile(WorkerServer& sender, QString fileName){
 
     //Get file and send it through the WorkerServer sender
+    //add your path and comment the others
     QDir::setCurrent("C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/");
     QFile f(fileName);
     if(!f.open(QIODevice::Text | QIODevice::ReadWrite))
         return; //handle error, if it is deleted or else
-
     QJsonObject msgF;
-    msgF["type"] = QString("fileRequest");
-    msgF["name"] = fileName;
+    msgF["type"] = QString("filesRequest");
+    msgF["requestedFiles"] = fileName;
 
     QTextStream in(&f);
     while(!in.atEnd()) {
-        //try with QByteArray it doesn't convert bytes, while
         //QTextStream: convers 8.bit data in 16-bit unicode
         QString line = in.readLine().toLatin1();
         msgF["content"] = line;
@@ -376,7 +376,7 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
     const QString type = typeVal.toString();
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-                return Server::messageType::filesRequest;
+         return Server::messageType::filesRequest;
 
     return Server::messageType::invalid;
 }

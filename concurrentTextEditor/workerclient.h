@@ -38,7 +38,7 @@ private:
     bool _loggedIn;
     QString _loggedUser;
     const QString DEFAULT_USER  = "unknownUsername";
-    enum messageType  { login, filesRequest, fileRequest, invalid, signup };
+    enum messageType  { login, filesRequest, invalid, signup };
 
     //Methods
     void jsonReceived(const QJsonObject &qjo);
@@ -46,7 +46,6 @@ private:
     void loginHandler(const QJsonObject& jsonObj);
     void signupHandler(const QJsonObject& jsonObj);
     void showallFilesHandler(const QJsonObject& qjo);
-    void showFileHandler(const QJsonObject& qjo);
 
 };
 
