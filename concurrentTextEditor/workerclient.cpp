@@ -104,9 +104,6 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::filesRequest:
             showallFilesHandler(docObj);
             break;
-        case messageType::fileRequest:
-            showFileHandler(docObj);
-            break;
         default:
             return;
     }
@@ -180,9 +177,6 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::filesRequest;
 
-    if(type.compare(QLatin1String("fileRequest"), Qt::CaseInsensitive) == 0)
-        return WorkerClient::messageType::fileRequest;
-
     return WorkerClient::messageType::invalid;
 }
 
@@ -246,10 +240,15 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     //emit verso la gui per update della gui
-    int n = qjo["num"].toInt();
-    QString buf = qjo["Filename"].toString();
-    QStringList list = buf.split(",", QString::SkipEmptyParts);
-    emit showFiles(list);
+    if(qjo["requestedFiles"] == "all") {
+        int n = qjo["num"].toInt();
+        QString buf = qjo["Filename"].toString();
+        QStringList list = buf.split(",", QString::SkipEmptyParts);
+        emit showFiles(list);
+    } else {
+        QString buf = qjo["content"].toString();
+        emit showFileLine(buf);
+    }
 }
 
 void WorkerClient::requestFile(QString fileName){
@@ -260,9 +259,4 @@ void WorkerClient::requestFile(QString fileName){
 
     QDataStream filesRequestStream(_clientSocket);
     filesRequestStream << QJsonDocument(fileRequest).toJson();
-}
-
-void WorkerClient::showFileHandler(const QJsonObject &qjo) {
-    QString buf = qjo["content"].toString();
-    emit showFileLine(buf);
 }
