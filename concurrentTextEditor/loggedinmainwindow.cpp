@@ -45,12 +45,6 @@ void loggedinmainwindow::errorDisplay(QString str){
     QMessageBox::information(this, tr("Error"), str);
 }
 
-//void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
-//{
-//    auto fileName = ui->fileListTable->selectedItems().first();
-//    _workerClient->requestFile(fileName);
-//}
-
 
 void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 {
@@ -69,4 +63,15 @@ void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
     QApplication::quit();
+}
+
+void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
+{
+    auto fileName = ui->fileListTable->selectedItems().first()->text();
+    if(fileName.isEmpty())
+        return;
+    //_workerClient->requestFile(fileName);
+    _e = new Editor(this, _workerClient, fileName);
+    hide();
+    _e->show();
 }

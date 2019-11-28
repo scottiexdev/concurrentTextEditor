@@ -95,8 +95,9 @@ void Server::sendListFile(WorkerServer &sender) {
     //TODO: if directory is empty - why not just display 0 files?
     // or better this app comes with a Welcome.txt file explaining briefly how it works
     QJsonObject file_data;
-    file_data["type"] = "filesRequest";
+    file_data["type"] = QString("filesRequest");
     file_data["num"] = list.size();
+    file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
 
     QString buf;
 
@@ -311,6 +312,22 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 void Server::sendFile(WorkerServer& sender, QString fileName){
 
     //Get file and send it through the WorkerServer sender
+    //add your path and comment the others
+    QDir::setCurrent("C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/");
+    QFile f(fileName);
+    if(!f.open(QIODevice::Text | QIODevice::ReadWrite))
+        return; //handle error, if it is deleted or else
+    QJsonObject msgF;
+    msgF["type"] = QString("filesRequest");
+    msgF["requestedFiles"] = fileName;
+
+    QTextStream in(&f);
+    while(!in.atEnd()) {
+        //QTextStream: convers 8.bit data in 16-bit unicode
+        QString line = in.readLine().toLatin1();
+        msgF["content"] = line;
+        sendJson(sender, msgF);
+    }
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -365,8 +382,6 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
                 return Server::messageType::filesRequest;
     if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
                 return Server::messageType::newFile;
-
-    return Server::messageType::invalid;
 }
 
 bool Server::checkFilenameAvailability(QString fn){

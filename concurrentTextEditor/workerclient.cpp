@@ -247,10 +247,15 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     //emit verso la gui per update della gui
-    //int n = qjo["num"].toInt();
-    QString buf = qjo["Filename"].toString();
-    QStringList list = buf.split(",", QString::SkipEmptyParts);
-    emit showFiles(list);
+    if(qjo["requestedFiles"] == "all") {
+        int n = qjo["num"].toInt();
+        QString buf = qjo["Filename"].toString();
+        QStringList list = buf.split(",", QString::SkipEmptyParts);
+        emit showFiles(list);
+    } else {
+        QString buf = qjo["content"].toString();
+        emit showFileLine(buf);
+    }
 }
 
 void WorkerClient::requestFile(QString fileName){

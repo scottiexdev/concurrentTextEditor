@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     dialogsignup.cpp \
+    editor.cpp \
     loggedinmainwindow.cpp \
     main.cpp \
     clientmainwindow.cpp \
@@ -26,12 +27,14 @@ SOURCES += \
 HEADERS += \
     clientmainwindow.h \
     dialogsignup.h \
+    editor.h \
     loggedinmainwindow.h \
     workerclient.h
 
 FORMS += \
     clientmainwindow.ui \
     dialogsignup.ui \
+    editor.ui \
     loggedinmainwindow.ui
 
 # Default rules for deployment.

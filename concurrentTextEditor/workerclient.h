@@ -33,6 +33,7 @@ signals:
     void mySignupOk();
     void genericError(QString str="Error");
     void showFiles(QStringList list);
+    void showFileLine(QString buf);
 
 private:
     QTcpSocket* _clientSocket;

@@ -64,8 +64,11 @@ private:
     //const QString _defaultDatabaseLocation = "/home/albo/Documents/concurrentDb.db";
     //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/files";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
-    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files/";
+    //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files";
+    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+
     QVector<WorkerServer *> m_clients;
     messageType getMessageType(const QJsonObject &docObj);
     void sendFile(WorkerServer& sender, QString fileName);
