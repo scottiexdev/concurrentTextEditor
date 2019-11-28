@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "workerclient.h"
+
+#include <QInputDialog>
 #include "editor.h"
 
 namespace Ui {
@@ -20,14 +22,18 @@ public:
 
 public slots:
     void showFiles(QStringList list);
+    void errorDisplay(QString str="Error");
 
 private slots:
-//    void on_pushButtonSettings_clicked();
-    void on_pushButtonLogout_clicked();
+
+    void on_pushButtonNewFile_2_clicked();
+
+    void on_pushButtonLogout_2_clicked();
+
     void on_pushButtonOpenFile_2_clicked();
 
-public:
 
+public:
 
 
 private:

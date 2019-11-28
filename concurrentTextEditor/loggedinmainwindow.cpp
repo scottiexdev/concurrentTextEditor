@@ -8,16 +8,12 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
 {
     ui->setupUi(this);    
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
+    connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
 }
 
 loggedinmainwindow::~loggedinmainwindow()
 {
     delete ui;
-}
-
-void loggedinmainwindow::on_pushButtonLogout_clicked()
-{
-    QApplication::quit();
 }
 
 void loggedinmainwindow::requestFileList(){
@@ -45,6 +41,29 @@ void loggedinmainwindow::showFiles(QStringList filesList){
 
 }
 
+void loggedinmainwindow::errorDisplay(QString str){
+    QMessageBox::information(this, tr("Error"), str);
+}
+
+
+void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
+{
+    QString fn = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
+
+    QJsonObject filename_req ;
+
+    if(!fn.isEmpty()) {
+        filename_req["type"] = "newFile";
+        filename_req["filename"] = fn;
+    }
+
+    _workerClient->newFileRequest(filename_req);
+}
+
+void loggedinmainwindow::on_pushButtonLogout_2_clicked()
+{
+    QApplication::quit();
+}
 
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 {

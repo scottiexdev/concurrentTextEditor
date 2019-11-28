@@ -11,13 +11,13 @@ Practical coding notes:
  - Usare il passaggio delle variabile per reference e non i puntatori: se passiamo per reference non dobbiamo preoccuparci che il puntatore possa avere valore nullo: si scatena un'eccezione automaticamente
  
 TODO's:
- - QDialog popup lato client se il login fallisce
- - QDialog popup lato client se il signup fallisce
+ - QDialog popup lato client se il login fallisce - done
+ - QDialog popup lato client se il signup fallisce - done
  - Visualizzare lista file - done
- - Bottone open che chiama funzione per aprire il file
- - Funzione che richiede il file
- - Funzione che manda il file
- - Finestra con text editor all'apertura di un file
+ - Bottone open che chiama funzione per aprire il file -done
+ - Funzione che richiede il file - done 
+ - Funzione che manda il file - done
+ - Finestra con text editor all'apertura di un file - done
  - Arricchire il json che manda la lista dei file con piu' info sul file (ex owner, created etc)
 
 

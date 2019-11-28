@@ -1,5 +1,6 @@
 #include "workerclient.h"
 
+#include <QErrorMessage>
 
 WorkerClient::WorkerClient(QObject *parent)
     : QObject(parent)
@@ -104,6 +105,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::filesRequest:
             showallFilesHandler(docObj);
             break;
+        case messageType::newFile:
+            newFileError();
+            break;
         default:
             return;
     }
@@ -176,6 +180,9 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::filesRequest;
+
+    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::newFile;
 
     return WorkerClient::messageType::invalid;
 }
@@ -259,4 +266,16 @@ void WorkerClient::requestFile(QString fileName){
 
     QDataStream filesRequestStream(_clientSocket);
     filesRequestStream << QJsonDocument(fileRequest).toJson();
+}
+
+void WorkerClient::newFileRequest(const QJsonObject &qjo){
+    //Json with filename and request type is passed as argument
+
+    //I Just send it to the server
+    QDataStream newFileReq(_clientSocket);
+    newFileReq << QJsonDocument(qjo).toJson();
+}
+
+void WorkerClient::newFileError() {
+    emit genericError("File with this name is already present. Please choose another");
 }
