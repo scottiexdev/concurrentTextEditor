@@ -17,6 +17,8 @@
 #include <QFileDialog>
 #include <QDialog>
 #include <QTcpSocket>
+#include <exception>
+#include <stdexcept>
 #include "workerserver.h"
 
 class Server : public QTcpServer
@@ -52,7 +54,7 @@ private slots:
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
     int countReturnedRows(QSqlQuery& executedQuery);
-    enum messageType { filesRequest, invalid };
+    enum messageType { filesRequest, newFile ,invalid };
 
 private:    
     QTcpServer *tcpServer = nullptr;
@@ -66,6 +68,7 @@ private:
     //const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files";
     const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+
     QVector<WorkerServer *> m_clients;
     messageType getMessageType(const QJsonObject &docObj);
     void sendFile(WorkerServer& sender, QString fileName);
@@ -77,6 +80,8 @@ private:
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void sendListFile(WorkerServer& sender);
+    void newFileHandler(WorkerServer& sender, const QJsonObject &doc);
+    bool checkFilenameAvailability(QString fn);
 };
 
 #endif // SERVER_H

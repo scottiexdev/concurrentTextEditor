@@ -92,7 +92,8 @@ void Server::sendListFile(WorkerServer &sender) {
     //create filelist
     QFileInfoList list = dir->entryInfoList();
 
-    //TODO: if directory is empty
+    //TODO: if directory is empty - why not just display 0 files?
+    // or better this app comes with a Welcome.txt file explaining briefly how it works
     QJsonObject file_data;
     file_data["type"] = QString("filesRequest");
     file_data["num"] = list.size();
@@ -291,7 +292,9 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
         case messageType::invalid:
             emit logMessage("JSON type request non handled");
             break;
-
+        case messageType::newFile:
+            newFileHandler(sender, doc);
+            break;
     }
 }
 
@@ -376,8 +379,45 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
     const QString type = typeVal.toString();
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-         return Server::messageType::filesRequest;
-
-    return Server::messageType::invalid;
+                return Server::messageType::filesRequest;
+    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
+                return Server::messageType::newFile;
 }
 
+bool Server::checkFilenameAvailability(QString fn){
+    QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
+    QJsonArray listFile;
+    bool ok=true;
+
+    //set directory
+    dir->setFilter(QDir::Files);
+    dir->setSorting(QDir::Size | QDir::Reversed);
+
+    //create filelist
+    QFileInfoList list = dir->entryInfoList();
+
+    for(int i=0; i< list.size(); i++) {
+        if (list.at(i) == fn)
+            ok=false;
+    }
+
+    return ok;
+}
+
+void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
+     //TODO: implement this with exceptions
+
+     QString filename = _defaultAbsoluteFilesLocation + doc.value("filename").toString() + ".txt";
+
+     if (checkFilenameAvailability(filename)){
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly);
+        file.close();
+        sendListFile(sender);
+     } else {
+         QJsonObject err;
+         err["type"] = "newFile";
+         err["success"] = false;
+         sender.sendJson(err);
+     }
+}
