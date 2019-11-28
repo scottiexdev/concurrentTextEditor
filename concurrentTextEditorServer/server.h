@@ -17,6 +17,8 @@
 #include <QFileDialog>
 #include <QDialog>
 #include <QTcpSocket>
+#include <exception>
+#include <stdexcept>
 #include "workerserver.h"
 
 class Server : public QTcpServer
@@ -76,6 +78,7 @@ private:
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void sendListFile(WorkerServer& sender);
     void newFileHandler(WorkerServer& sender, const QJsonObject &doc);
+    bool checkFilenameAvailability(QString fn);
 };
 
 #endif // SERVER_H

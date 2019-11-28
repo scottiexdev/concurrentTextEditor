@@ -20,6 +20,7 @@ public:
 
 public slots:
     void showFiles(QStringList list);
+    void errorDisplay(QString str="Error");
 
 private slots:
 

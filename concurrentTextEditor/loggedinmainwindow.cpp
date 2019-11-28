@@ -8,6 +8,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
 {
     ui->setupUi(this);    
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
+    connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
 }
 
 loggedinmainwindow::~loggedinmainwindow()
@@ -40,6 +41,9 @@ void loggedinmainwindow::showFiles(QStringList filesList){
 
 }
 
+void loggedinmainwindow::errorDisplay(QString str){
+    QMessageBox::information(this, tr("Error"), str);
+}
 
 //void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 //{

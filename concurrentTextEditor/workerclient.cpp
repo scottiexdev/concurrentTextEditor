@@ -1,5 +1,6 @@
 #include "workerclient.h"
 
+#include <QErrorMessage>
 
 WorkerClient::WorkerClient(QObject *parent)
     : QObject(parent)
@@ -104,6 +105,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::filesRequest:
             showallFilesHandler(docObj);
             break;
+        case messageType::newFile:
+            newFileError();
+            break;
         default:
             return;
     }
@@ -177,6 +181,9 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::filesRequest;
 
+    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::newFile;
+
     return WorkerClient::messageType::invalid;
 }
 
@@ -240,7 +247,7 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     //emit verso la gui per update della gui
-    int n = qjo["num"].toInt();
+    //int n = qjo["num"].toInt();
     QString buf = qjo["Filename"].toString();
     QStringList list = buf.split(",", QString::SkipEmptyParts);
     emit showFiles(list);
@@ -262,4 +269,8 @@ void WorkerClient::newFileRequest(const QJsonObject &qjo){
     //I Just send it to the server
     QDataStream newFileReq(_clientSocket);
     newFileReq << QJsonDocument(qjo).toJson();
+}
+
+void WorkerClient::newFileError() {
+    emit genericError("File with this name is already present. Please choose another");
 }
