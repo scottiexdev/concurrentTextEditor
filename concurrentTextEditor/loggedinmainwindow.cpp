@@ -67,11 +67,12 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 {
-    auto fileName = ui->fileListTable->selectedItems().first()->text();
-    if(fileName.isEmpty())
-        return;
+    QString fileName = ui->fileListTable->selectedItems().first()->text();
+    if(fileName.isEmpty()){
+        QMessageBox::information(this, tr("Error"), "Please select a file by clicking on it.");
+    }
     //_workerClient->requestFile(fileName);
     _e = new Editor(this, _workerClient, fileName);
-    hide();
+    //hide();
     _e->show();
 }

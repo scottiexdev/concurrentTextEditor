@@ -313,7 +313,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
 
     //Get file and send it through the WorkerServer sender
     //add your path and comment the others
-    QDir::setCurrent("C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/");
+    QDir::setCurrent(_defaultAbsoluteFilesLocation);
     QFile f(fileName);
     if(!f.open(QIODevice::Text | QIODevice::ReadWrite))
         return; //handle error, if it is deleted or else
@@ -328,6 +328,8 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
         msgF["content"] = line;
         sendJson(sender, msgF);
     }
+
+    f.close();
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -407,7 +409,8 @@ bool Server::checkFilenameAvailability(QString fn){
 void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
      //TODO: implement this with exceptions
 
-     QString filename = _defaultAbsoluteFilesLocation + doc.value("filename").toString() + ".txt";
+     QDir::setCurrent(_defaultAbsoluteFilesLocation);
+     QString filename = doc.value("filename").toString() + ".txt";
 
      if (checkFilenameAvailability(filename)){
         QFile file(filename);

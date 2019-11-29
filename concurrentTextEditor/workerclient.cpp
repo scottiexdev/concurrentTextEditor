@@ -248,7 +248,7 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     //emit verso la gui per update della gui
     if(qjo["requestedFiles"] == "all") {
-        int n = qjo["num"].toInt();
+        //int n = qjo["num"].toInt();
         QString buf = qjo["Filename"].toString();
         QStringList list = buf.split(",", QString::SkipEmptyParts);
         emit showFiles(list);
@@ -270,7 +270,6 @@ void WorkerClient::requestFile(QString fileName){
 
 void WorkerClient::newFileRequest(const QJsonObject &qjo){
     //Json with filename and request type is passed as argument
-
     //I Just send it to the server
     QDataStream newFileReq(_clientSocket);
     newFileReq << QJsonDocument(qjo).toJson();
