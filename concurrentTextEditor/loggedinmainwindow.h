@@ -21,7 +21,7 @@ public:
     void requestFileList();
 
 public slots:
-    void showFiles(QStringList list);
+    void showFiles(QStringList list, QStringList list2, QStringList list3);
     void errorDisplay(QString str="Error");
 
 private slots:

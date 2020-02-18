@@ -18,6 +18,10 @@ public:
     void sendJson(const QJsonObject &jsonData);
     QTcpSocket* getSocket() {return m_serverSocket;}
 
+    void delOpenFile(const QString &fileName);
+    void addOpenFile(const QString &fileName);
+    QList<QString> openedFileList() const;
+
 
 signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
@@ -34,6 +38,7 @@ private slots:
 private:
     QTcpSocket *m_serverSocket;
     QString m_userName;
+    QList<QString> _openedFileList;
 };
 
 #endif // WORKERSERVER_H

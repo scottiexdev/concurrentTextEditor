@@ -111,6 +111,28 @@ void Server::sendListFile(WorkerServer &sender) {
 
     file_data.insert("Filename", QJsonValue(buf));
 
+    QString buf2; //for data creation
+    for(int i=0; i<list.size(); ++i) {
+        QString created = list.at(i).birthTime().toString();
+        if(i == 0)
+            buf2 += created;
+        else
+            buf2 += "," + created;
+    }
+
+    file_data.insert("Created", QJsonValue(buf2));
+
+    QString buf3; //for data owner
+    for(int i=0; i<list.size(); ++i) {
+        QString owner = list.at(i).owner();
+        if(i == 0)
+            buf3 += owner;
+        else
+            buf3 += "," + owner;
+    }
+
+    file_data.insert("Owner", QJsonValue(buf3));
+
     sendJson(sender, file_data);
 }
 
@@ -292,8 +314,13 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
         case messageType::invalid:
             emit logMessage("JSON type request non handled");
             break;
+
         case messageType::newFile:
             newFileHandler(sender, doc);
+            break;
+
+        case messageType::userList:
+            userListHandler(sender, doc); //qua ci metto la gestione della rimozione di un utente da mandare in broadcast
             break;
     }
 }
@@ -328,7 +355,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
         msgF["content"] = line;
         sendJson(sender, msgF);
     }
-
+    sender.addOpenFile(fileName);
     f.close();
 }
 
@@ -384,6 +411,8 @@ Server::messageType Server::getMessageType(const QJsonObject &docObj) {
                 return Server::messageType::filesRequest;
     if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
                 return Server::messageType::newFile;
+    if(type.compare(QLatin1String("userList"), Qt::CaseInsensitive) == 0)
+                return Server::messageType::userList;
 }
 
 bool Server::checkFilenameAvailability(QString fn){
@@ -423,4 +452,65 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
          err["success"] = false;
          sender.sendJson(err);
      }
+}
+
+void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
+    QString action = doc.value("action").toString();
+
+    if(action=="request") {
+        QJsonObject userList;
+        QString buf;
+        QString fileName = doc.value("fileName").toString();
+        userList["type"] = QString("userListRequest");
+        userList["action"] = QString("show");
+        int i=0;
+        for(WorkerServer* c : m_clients) {
+            QList<QString> openedFile = c->openedFileList();
+            if(openedFile.contains(fileName)) {
+                if(i==0) {
+                    buf += c->userName();
+                    i++;
+                }
+                else {
+                    buf += "," + c->userName();
+                }
+            }
+        }
+        userList["username"] = buf;
+        sender.sendJson(userList);
+    }
+
+    if(action=="add") {
+        QJsonObject userAdd;
+        QString fileName = doc.value("fileName").toString();
+        userAdd["type"] = QString("userListRequest");
+        userAdd["action"] = QString("add");
+        userAdd["username"] = QString(doc["user"].toString());
+        //broadcast specifico, invio solo a quelli che hanno il file aperto
+        for(WorkerServer* worker : m_clients) {
+
+            if(worker == &sender)
+            continue;
+            QList<QString> openedFile = worker->openedFileList();
+            if(openedFile.contains(fileName))
+                sendJson(*worker, userAdd);
+        }
+    }
+
+    if(action=="delete") {
+        QJsonObject userDel;
+        QString fileName = doc.value("fileName").toString();
+        userDel["type"] = QString("userListRequest");
+        userDel["action"] = QString("delete");
+        userDel["username"] = QString(doc["user"].toString());
+
+        //broadcast specifico, invio solo a quelli che hanno il file aperto
+        for(WorkerServer* worker : m_clients) {
+            QList<QString> openedFile = worker->openedFileList();
+            if(openedFile.contains(fileName)) {
+                sender.delOpenFile(fileName);
+                sendJson(*worker, userDel);
+            }
+        }
+    }
 }
