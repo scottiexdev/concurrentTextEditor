@@ -59,14 +59,15 @@ private:
     QString  _serverName;
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
-    //const QString _defaultDatabaseLocation = "/home/the_albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultAbsoluteFilesLocation = "/home/the_albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
+    const QString _defaultDatabaseLocation = "/home/the_albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultAbsoluteFilesLocation = "/home/the_albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
 //    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 //    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
-    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+//    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+//    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     QVector<WorkerServer *> m_clients;
+    QString _defaultDocument = "Welcome.txt";
 
     messageType getMessageType(const QJsonObject &docObj);
     void sendJson(WorkerServer& dest, const QJsonObject& msg);
@@ -81,6 +82,7 @@ private:
     void sendFile(WorkerServer& sender, QString fileName);
     void sendListFile(WorkerServer& sender);
     bool checkFilenameAvailability(QString fn);
+    QJsonObject createFileData(QFileInfoList file_data);
 
     void newFileHandler(WorkerServer &sender, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);

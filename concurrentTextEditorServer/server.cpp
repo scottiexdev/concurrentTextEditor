@@ -94,12 +94,29 @@ void Server::sendListFile(WorkerServer &sender) {
 
     //TODO: if directory is empty - why not just display 0 files?
     // or better this app comes with a Welcome.txt file explaining briefly how it works
+
+    QJsonObject file_data = createFileData(list);
+    sendJson(sender, file_data);
+}
+
+
+QJsonObject Server::createFileData(QFileInfoList list){
+
     QJsonObject file_data;
     file_data["type"] = QString("filesRequest");
     file_data["num"] = list.size();
     file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
 
     QString buf;
+
+    //TO CHECK and think through when CRDT is set up
+    if(list.size() == 1 && list.at(0).fileName() == _defaultDocument){
+        file_data.insert("Filename", _defaultDocument);
+        file_data.insert("Created", list.at(0).birthTime().toString());
+        file_data.insert("Owner", "ConcurrentTextEditorTeam");
+
+        return file_data;
+    }
 
     for(int i=0; i<list.size(); ++i) {
         QString fileName = list.at(i).fileName();
@@ -131,9 +148,7 @@ void Server::sendListFile(WorkerServer &sender) {
             buf3 += "," + owner;
     }
 
-    file_data.insert("Owner", QJsonValue(buf3));
-
-    sendJson(sender, file_data);
+    return file_data;
 }
 
 void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
