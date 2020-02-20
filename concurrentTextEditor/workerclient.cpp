@@ -108,6 +108,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::newFile:
             newFileError();
             break;
+        case messageType::userListRequest:
+            showUserListHandler(docObj); //qua ci metto anche la rimozione di un utente da mandare in broadcast
+            break;
         default:
             return;
     }
@@ -184,6 +187,9 @@ WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj
     if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
         return WorkerClient::messageType::newFile;
 
+    if(type.compare(QLatin1String("userListRequest"), Qt::CaseInsensitive) == 0)
+        return WorkerClient::messageType::userListRequest;
+
     return WorkerClient::messageType::invalid;
 }
 
@@ -251,7 +257,11 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
         //int n = qjo["num"].toInt();
         QString buf = qjo["Filename"].toString();
         QStringList list = buf.split(",", QString::SkipEmptyParts);
-        emit showFiles(list);
+        QString buf2 = qjo["Created"].toString();
+        QStringList list2 = buf2.split(",", QString::SkipEmptyParts);
+        QString buf3 = qjo["Owner"].toString();
+        QStringList list3 = buf3.split(",", QString::SkipEmptyParts);
+        emit showFiles(list,list2,list3);
     } else {
         QString buf = qjo["content"].toString();
         emit showFileLine(buf);
@@ -277,4 +287,53 @@ void WorkerClient::newFileRequest(const QJsonObject &qjo){
 
 void WorkerClient::newFileError() {
     emit genericError("File with this name is already present. Please choose another");
+}
+
+void WorkerClient::requestUserList(QString fileName) {
+    QJsonObject userListRequest;
+
+    userListRequest["type"] = QString("userList");
+    userListRequest["action"] = QString("request");
+    userListRequest["fileName"] = fileName;
+    QDataStream userListRequestStream(_clientSocket);
+    userListRequestStream << QJsonDocument(userListRequest).toJson();
+}
+
+void WorkerClient::showUserListHandler(const QJsonObject &qjo) {
+    QString action = qjo["action"].toString();
+
+    if(action=="show") {
+        QString buf = qjo["username"].toString();
+        QStringList list = buf.split(",", QString::SkipEmptyParts);
+        for(QString user : list) {
+            emit showUser(user); //one user at time to permit to use the same signal when somebody else connects
+        }
+    }
+
+    if(action=="add") {
+        emit showUser(qjo["username"].toString());
+    }
+    if(action=="delete") {
+        emit deleteUser(qjo["username"].toString());
+    }
+}
+
+void WorkerClient::userJoined(QString fileName, QString user) {
+    QJsonObject userJoined;
+    userJoined["type"] = QString("userList");
+    userJoined["action"] = QString("add");
+    userJoined["fileName"] = QString(fileName);
+    userJoined["user"] = QString(user);
+    QDataStream userJoinedStream(_clientSocket);
+    userJoinedStream << QJsonDocument(userJoined).toJson();
+}
+
+void WorkerClient::userLeft(QString fileName, QString user) {
+    QJsonObject userLeft;
+    userLeft["type"] = QString("userList");
+    userLeft["action"] = QString("delete");
+    userLeft["fileName"] = QString(fileName);
+    userLeft["user"] = QString(user);
+    QDataStream userLeftStream(_clientSocket);
+    userLeftStream << QJsonDocument(userLeft).toJson();
 }

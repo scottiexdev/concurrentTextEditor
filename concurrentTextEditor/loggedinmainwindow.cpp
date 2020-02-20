@@ -20,15 +20,15 @@ void loggedinmainwindow::requestFileList(){
     _workerClient->getFileList();
 }
 
-void loggedinmainwindow::showFiles(QStringList filesList){
+void loggedinmainwindow::showFiles(QStringList filesList, QStringList createdList, QStringList ownerList){
 
     ui->fileListTable->setRowCount(filesList.count());
-    ui->fileListTable->setColumnCount(3);
+    ui->fileListTable->setColumnCount(2);
 
     QStringList headers;
     headers.push_back("Filename");
     headers.push_back("Created");
-    headers.push_back("Owner");
+    //headers.push_back("Owner"); #da risolvere la questione dell'owner
     ui->fileListTable->setHorizontalHeaderLabels(headers);
 
     int cnt = 0;
@@ -36,6 +36,8 @@ void loggedinmainwindow::showFiles(QStringList filesList){
     foreach(auto file, filesList){
         ui->fileListTable->setItem(cnt, 0, new QTableWidgetItem(filesList.at(cnt)));
         // ^ changed filesList.first() into filesList.at(cnt) to get right item and not always the first one repeated
+        ui->fileListTable->setItem(cnt, 1, new QTableWidgetItem(createdList.at(cnt)));
+        //ui->fileListTable->setItem(cnt, 2, new QTableWidgetItem(ownerList.at(cnt)));
         cnt++;
     }
 
