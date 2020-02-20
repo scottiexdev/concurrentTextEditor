@@ -10,11 +10,13 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
 {
     ui->setupUi(this);
     this->setWindowTitle(fileName);
-    connect(_workerClient, &WorkerClient::showFileLine, this, &Editor::showFileLine);
+    connect(_workerClient, &WorkerClient::handleFile, this, &Editor::handleFile);
     connect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
     connect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     _workerClient->requestFile(fileName);
+    //Prende lista degli utenti attivi su quel file
     _workerClient->requestUserList(fileName);
+    //Notifica il server che l'utente si e' connesso a quel file
     _workerClient->userJoined(fileName, _workerClient->getUser());
 }
 
@@ -23,8 +25,14 @@ Editor::~Editor()
     delete ui;
 }
 
-void Editor::showFileLine(QString buf) {
-    ui->textEdit->append(buf);
+//Al posto di QString avremo il JSonDocument ricevuto, che corrisponde al file
+void Editor::handleFile(QJsonDocument unparsedFile) {
+    //Il document ricevuto viene passato a editorcontroller che lo converte il data structures
+    //c++ e lo visualizza
+    if(!ui->editorController->parseCteFile(unparsedFile)){
+        //throw exception;
+    }
+    ui->editorController->write();
 }
 
 void Editor::showUser(QString user) {
@@ -43,6 +51,6 @@ QString Editor::deleteUser(QString user) {
 void Editor::closeEvent(QCloseEvent *event) {
     QString user;
     user = _workerClient->getUser();
-    _workerClient->userLeft(this->windowTitle(), user);
+    _workerClient->userLeft(ui->editorController->getFileName(), user);
 }
 

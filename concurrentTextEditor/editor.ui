@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="EditorController" name="textEdit">
+   <widget class="EditorController" name="editorController">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -41,7 +41,7 @@ signals:
     void mySignupOk();
     void genericError(QString str="Error");
     void showFiles(QStringList list, QStringList list2, QStringList list3);
-    void showFileLine(QString buf);
+    void handleFile(QJsonDocument buf);
     void showUser(QString user);
     void deleteUser(QString user);
 

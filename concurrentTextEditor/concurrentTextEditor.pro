@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    crdt.cpp \
     dialogsignup.cpp \
     editor.cpp \
     editorcontroller.cpp \
@@ -26,7 +27,10 @@ SOURCES += \
     workerclient.cpp
 
 HEADERS += \
+    Identifier.h \
+    char.h \
     clientmainwindow.h \
+    crdt.h \
     dialogsignup.h \
     editor.h \
     editorcontroller.h \

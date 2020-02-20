@@ -20,7 +20,7 @@ public:
     ~Editor();
 
 public slots:
-    void showFileLine(QString buf);
+    void handleFile(QJsonDocument buf);
     void showUser(QString user);
     QString deleteUser(QString user);
 

@@ -69,6 +69,10 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 {
+    //Da rivedere: interfaccia per aprire va cambiata con FILE CONDIVISI e FILE PRIVATI
+    //Controllo che un file sia selezionato
+    //Cambiare anche come viene preso il nome del file: click su data deve selezionare tutta la riga
+    //E prendere il primo campo (filename)
     QString fileName = ui->fileListTable->selectedItems().first()->text();
     if(fileName.isEmpty()){
         QMessageBox::information(this, tr("Error"), "Please select a file by clicking on it.");
