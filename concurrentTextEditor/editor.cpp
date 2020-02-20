@@ -45,3 +45,4 @@ void Editor::closeEvent(QCloseEvent *event) {
     user = _workerClient->getUser();
     _workerClient->userLeft(this->windowTitle(), user);
 }
+
