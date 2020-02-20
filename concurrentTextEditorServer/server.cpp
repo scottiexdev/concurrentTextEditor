@@ -357,19 +357,21 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
     //add your path and comment the others
     QDir::setCurrent(_defaultAbsoluteFilesLocation);
     QFile f(fileName);
-    if(!f.open(QIODevice::Text | QIODevice::ReadWrite))
+    if(!f.open(QIODevice::ReadWrite))
         return; //handle error, if it is deleted or else
     QJsonObject msgF;
     msgF["type"] = QString("filesRequest");
     msgF["requestedFiles"] = fileName;
-
-    QTextStream in(&f);
-    while(!in.atEnd()) {
-        //QTextStream: convers 8.bit data in 16-bit unicode
-        QString line = in.readLine().toLatin1();
-        msgF["content"] = line;
-        sendJson(sender, msgF);
-    }
+    QString buf = f.readAll();
+    msgF["content"] = buf;
+    sendJson(sender, msgF);
+//    QTextStream in(&f);
+//    while(!in.atEnd()) {
+//        //QTextStream: convers 8.bit data in 16-bit unicode
+//        QString line = in.readLine().toLatin1();
+//        msgF["content"] = line;
+//        sendJson(sender, msgF);
+//    }
     sender.addOpenFile(fileName);
     f.close();
 }
@@ -454,7 +456,7 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
      //TODO: implement this with exceptions
 
      QDir::setCurrent(_defaultAbsoluteFilesLocation);
-     QString filename = doc.value("filename").toString() + ".txt";
+     QString filename = doc.value("filename").toString() + ".cte";
 
      if (checkFilenameAvailability(filename)){
         QFile file(filename);

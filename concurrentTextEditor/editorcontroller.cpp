@@ -17,6 +17,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if( pressed_key >= 0x20 && pressed_key <= 0x0ff){
         //Init
         int cursorPosition = this->textCursor().position();
+
     }
 
     //    if ( (key->key() == Qt::Key_Enter) || (key->key()==Qt::Key_Return) )

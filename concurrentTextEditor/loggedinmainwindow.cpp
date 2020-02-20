@@ -50,16 +50,18 @@ void loggedinmainwindow::errorDisplay(QString str){
 
 void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 {
-    QString fn = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
+    QString fileName = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
 
     QJsonObject filename_req ;
 
-    if(!fn.isEmpty()) {
+    if(!fileName.isEmpty()) {
         filename_req["type"] = "newFile";
-        filename_req["filename"] = fn;
+        filename_req["filename"] = fileName;
     }
 
     _workerClient->newFileRequest(filename_req);
+    _e = new Editor(this, _workerClient, fileName);
+    _e->show();
 }
 
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()

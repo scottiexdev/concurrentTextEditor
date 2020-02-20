@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QObject>
 #include <QRandomGenerator>
+#include <QVector>
 
 #include "char.h"
 
