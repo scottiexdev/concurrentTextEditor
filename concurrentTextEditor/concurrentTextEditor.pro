@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     dialogsignup.cpp \
     editor.cpp \
+    editorcontroller.cpp \
     loggedinmainwindow.cpp \
     main.cpp \
     clientmainwindow.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     clientmainwindow.h \
     dialogsignup.h \
     editor.h \
+    editorcontroller.h \
     loggedinmainwindow.h \
     workerclient.h
 
