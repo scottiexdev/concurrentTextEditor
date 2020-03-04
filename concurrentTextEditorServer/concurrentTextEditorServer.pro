@@ -29,6 +29,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    char.h \
+    identifier.h \
     server.h \
     serverconsole.h \
     serverhelpers.h \
