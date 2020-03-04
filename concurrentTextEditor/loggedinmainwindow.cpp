@@ -52,11 +52,11 @@ void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 {
     QString fileName = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
 
-    QJsonObject filename_req ;
+    QJsonObject filename_req;
 
     if(!fileName.isEmpty()) {
         filename_req["type"] = "newFile";
-        filename_req["filename"] = fileName;
+        filename_req["filename"] = fileName.append(".cte");
     }
 
     _workerClient->newFileRequest(filename_req);

@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QJsonArray>
 #include <QMessageBox>
 
 #include "char.h"
@@ -67,6 +68,7 @@ private:
     void showallFilesHandler(const QJsonObject& qjo);
     void showUserListHandler(const QJsonObject& qjo);
     void newFileError();
+    void sendJson(const QJsonObject &doc);
 
 };
 

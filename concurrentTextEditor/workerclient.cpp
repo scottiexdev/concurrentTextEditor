@@ -161,8 +161,7 @@ void WorkerClient::getFileList(){
     filesRequest["requestedFiles"] = "all";
 
     //Send request message
-    QDataStream filesRequestStream(_clientSocket);
-    filesRequestStream << QJsonDocument(filesRequest).toJson();
+    sendJson(filesRequest);
 }
 
 WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj){
@@ -276,16 +275,13 @@ void WorkerClient::requestFile(QString fileName){
 
     fileRequest["type"] = "filesRequest";
     fileRequest["requestedFiles"] = fileName;
-
-    QDataStream filesRequestStream(_clientSocket);
-    filesRequestStream << QJsonDocument(fileRequest).toJson();
+    sendJson(fileRequest);
 }
 
 void WorkerClient::newFileRequest(const QJsonObject &qjo){
     //Json with filename and request type is passed as argument
     //I Just send it to the server
-    QDataStream newFileReq(_clientSocket);
-    newFileReq << QJsonDocument(qjo).toJson();
+    sendJson(qjo);
 }
 
 void WorkerClient::newFileError() {
@@ -327,8 +323,7 @@ void WorkerClient::userJoined(QString fileName, QString user) {
     userJoined["action"] = QString("add");
     userJoined["fileName"] = QString(fileName);
     userJoined["user"] = QString(user);
-    QDataStream userJoinedStream(_clientSocket);
-    userJoinedStream << QJsonDocument(userJoined).toJson();
+    sendJson(userJoined);
 }
 
 void WorkerClient::userLeft(QString fileName, QString user) {
@@ -337,10 +332,34 @@ void WorkerClient::userLeft(QString fileName, QString user) {
     userLeft["action"] = QString("delete");
     userLeft["fileName"] = QString(fileName);
     userLeft["user"] = QString(user);
-    QDataStream userLeftStream(_clientSocket);
-    userLeftStream << QJsonDocument(userLeft).toJson();
+    sendJson(userLeft);
 }
 
 void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType){
+    QJsonObject edit;
+    QJsonObject content;
 
+    content["value"] = QJsonValue(c._value);
+    content["counter"] = QJsonValue(c._counter);
+    content["siteID"] = QJsonValue(c._siteID.toString());
+    QJsonArray position;
+    for(Identifier id : c._position) {
+        QJsonObject pos;
+        pos["digit"] = QJsonValue(id._digit);
+        pos["siteID"] = QJsonValue(id._siteID.toString());
+        position.append(pos);
+    }
+    content["position"] = position;
+
+    edit["fileName"] = fileName;
+    edit["type"] = "edit";
+    edit["editType"] = editType;
+    edit["content"] = content;
+
+    sendJson(edit);
+}
+
+void WorkerClient::sendJson(const QJsonObject &doc) {
+    QDataStream stream(_clientSocket);
+    stream << QJsonDocument(doc).toJson();
 }

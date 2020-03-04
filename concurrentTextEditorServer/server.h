@@ -18,6 +18,7 @@
 #include <QDialog>
 #include <QTcpSocket>
 #include "workerserver.h"
+#include "enums.h"
 
 class Server : public QTcpServer
 {
@@ -52,20 +53,19 @@ private slots:
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
     int countReturnedRows(QSqlQuery& executedQuery);
-    enum messageType { filesRequest, invalid, newFile, userList };
 
 private:    
     QTcpServer *tcpServer = nullptr;
     QString  _serverName;
     QSqlDatabase _db;
     const QString _database = "QSQLITE";
-    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
+//    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+//    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
 //    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 //    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-//    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
-//    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     QVector<WorkerServer *> m_clients;
     QString _defaultDocument = "Welcome.txt";
 
@@ -87,6 +87,7 @@ private:
     void newFileHandler(WorkerServer &sender, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void userListHandler(WorkerServer& sender, const QJsonObject &doc);
+    void editHandler(WorkerServer& sender, const QJsonObject &doc);
 
     void write(QJsonObject &qjo, QString filename) const;
 };

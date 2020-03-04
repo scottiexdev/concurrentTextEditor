@@ -337,6 +337,9 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
         case messageType::userList:
             userListHandler(sender, doc); //qua ci metto la gestione della rimozione di un utente da mandare in broadcast
             break;
+
+        case messageType::edit:
+            editHandler(sender, doc);
     }
 }
 
@@ -415,21 +418,23 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 }
 
 
-Server::messageType Server::getMessageType(const QJsonObject &docObj) {
+messageType Server::getMessageType(const QJsonObject &docObj) {
 
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
 
     if(typeVal.isNull() || !typeVal.isString())
-        return Server::messageType::invalid;
+        return messageType::invalid;
 
     const QString type = typeVal.toString();
 
     if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-                return Server::messageType::filesRequest;
+                return messageType::filesRequest;
     if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
-                return Server::messageType::newFile;
+                return messageType::newFile;
     if(type.compare(QLatin1String("userList"), Qt::CaseInsensitive) == 0)
-                return Server::messageType::userList;
+                return messageType::userList;
+    if(type.compare(QLatin1String("edit"), Qt::CaseInsensitive) == 0)
+                return messageType::edit;
 }
 
 bool Server::checkFilenameAvailability(QString fn){
@@ -456,7 +461,7 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
      //TODO: implement this with exceptions
 
      QDir::setCurrent(_defaultAbsoluteFilesLocation);
-     QString filename = doc.value("filename").toString() + ".cte";
+     QString filename = doc.value("filename").toString();
 
      if (checkFilenameAvailability(filename)){
         QFile file(filename);
@@ -537,5 +542,26 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
                 sendJson(*worker, userDel);
             }
         }
+    }
+}
+
+void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
+    EditType edit = static_cast<EditType>(doc["editType"].toInt());
+    switch(edit) {
+
+        case EditType::insertion:
+            QFile file(doc["fileName"].toString());
+            file.open(QIODevice::ReadWrite);
+            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+            QJsonObject cteData = cteFile.object();
+            QJsonArray content = cteData["content"].toArray();
+            QJsonObject newChar = doc["content"].toObject();
+            content.append(newChar);
+            cteData["content"] = content;
+            QJsonDocument updatedFile(cteData);
+            file.flush();
+            file.write(updatedFile.toJson());
+            file.close();
+        break;
     }
 }

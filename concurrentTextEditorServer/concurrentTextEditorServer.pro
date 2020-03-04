@@ -30,6 +30,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     char.h \
+    enums.h \
     identifier.h \
     server.h \
     serverconsole.h \
