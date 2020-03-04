@@ -460,7 +460,9 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 
      if (checkFilenameAvailability(filename)){
         QFile file(filename);
+        QJsonObject qjo;
         file.open(QIODevice::WriteOnly);
+        write(qjo, filename);
         file.close();
         sendListFile(sender);
      } else {
@@ -471,6 +473,10 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
      }
 }
 
+void Server::write(QJsonObject &qjo, QString filename) const {
+    qjo["filename"] = filename;
+    qjo["content"] = QJsonValue::Null;
+}
 void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
     QString action = doc.value("action").toString();
 

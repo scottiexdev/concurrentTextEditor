@@ -265,9 +265,9 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     } else {
         //TODO: qui non verra piu' ricevuto un QString buf, ma un vettore/lista di
         //Il "content" avra' QJsonArray/list contenente Char per ricostruire il file
-        QString buf = qjo["content"].toString();
 
-//        emit handleFile(buf);
+        QJsonDocument doc(qjo);
+        emit handleFile(doc);
     }
 }
 

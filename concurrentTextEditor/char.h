@@ -11,7 +11,7 @@ class Char
 public:
 
     //Costruttore
-    Char(int value, int counter, QUuid siteID, QList<Identifier> identifiers){
+    Char(QChar value, int counter, QUuid siteID, QList<Identifier> identifiers){
 
         _value  = value;
         _counter = counter;
@@ -21,7 +21,7 @@ public:
 
     Char(){}
 
-    int _value;
+    QChar _value;
     int _counter;
     QUuid _siteID;
     QList<Identifier> _position;

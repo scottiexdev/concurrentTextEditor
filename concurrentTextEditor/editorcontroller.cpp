@@ -4,7 +4,7 @@
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 {
-
+    _crdt = Crdt();
 }
 
 
@@ -17,7 +17,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if( pressed_key >= 0x20 && pressed_key <= 0x0ff){
         //Init
         int cursorPosition = this->textCursor().position();
-
+        _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
     }
 
     //    if ( (key->key() == Qt::Key_Enter) || (key->key()==Qt::Key_Return) )
@@ -30,7 +30,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 void EditorController::write(){
 
     QString _textBuffer = _crdt.getTextBuffer();
-    if(_textBuffer.isEmpty() || _textBuffer.isNull()){
+    if(_textBuffer.isNull()){
         //throw exception
     }
 

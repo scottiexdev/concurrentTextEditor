@@ -87,6 +87,8 @@ private:
     void newFileHandler(WorkerServer &sender, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void userListHandler(WorkerServer& sender, const QJsonObject &doc);
+
+    void write(QJsonObject &qjo, QString filename) const;
 };
 
 #endif // SERVER_H
