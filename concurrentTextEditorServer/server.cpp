@@ -463,6 +463,8 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
         QJsonObject qjo;
         file.open(QIODevice::WriteOnly);
         write(qjo, filename);
+        QByteArray data = QJsonDocument(qjo).toJson();
+        file.write(data);
         file.close();
         sendListFile(sender);
      } else {
