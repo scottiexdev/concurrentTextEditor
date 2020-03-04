@@ -27,6 +27,7 @@ SOURCES += \
     workerclient.cpp
 
 HEADERS += \
+    Enums.h \
     Identifier.h \
     char.h \
     clientmainwindow.h \
