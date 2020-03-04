@@ -10,10 +10,12 @@
 #include <QVector>
 #include <QtMath>
 
+#include "Enums.h"
 #include "char.h"
 
 class Crdt
 {
+
 public:
     Crdt();    
     QString getFileName();
@@ -26,6 +28,9 @@ public:
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
     void insertChar(Char val, int index);
     void insertText(QChar val, int index);
+    Char _lastChar;
+    EditType _lastOperation;
+
 private:
     QString parseFile(QJsonDocument unparsedFile);
     QUuid createQuuid();
@@ -38,6 +43,7 @@ private:
     QUuid _siteID;
     QString _textBuffer;
     QList<Char> _file;
+
 };
 
 

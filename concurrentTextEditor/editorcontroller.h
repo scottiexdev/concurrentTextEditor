@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QJsonDocument>
 
+#include "Enums.h"
 #include "crdt.h"
 
 class EditorController : public QTextEdit
@@ -21,6 +22,9 @@ public:
 
 private:
     Crdt _crdt;
+
+signals:
+    void broadcastEditWorker(QString fileName, Char c, EditType editType);
 
 };
 

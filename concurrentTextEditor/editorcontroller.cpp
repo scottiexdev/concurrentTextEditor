@@ -3,8 +3,8 @@
 #include <QRandomGenerator>
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
-{
-    _crdt = Crdt();
+{    
+    _crdt = Crdt();    
 }
 
 
@@ -13,15 +13,12 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 {
     int pressed_key = key->key();
 
-
     if( pressed_key >= 0x20 && pressed_key <= 0x0ff){
         //Init
         int cursorPosition = this->textCursor().position();
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
     }
-
-    //    if ( (key->key() == Qt::Key_Enter) || (key->key()==Qt::Key_Return) )
-
 
     QTextEdit::keyPressEvent(key);
 }

@@ -10,6 +10,9 @@
 #include <QJsonValue>
 #include <QMessageBox>
 
+#include "char.h"
+#include "Enums.h"
+
 class WorkerClient : public QObject
 {
     Q_OBJECT
@@ -35,6 +38,9 @@ public:
 
 private slots:
     void onReadyRead();
+
+public slots:
+    void broadcastEditWorker(QString fileName, Char c, EditType editType);
 
 signals:
     void myLoggedIn();

@@ -69,7 +69,8 @@ void Crdt::handleLocalInsert(QChar val, int index) {
     insertChar(c, index);
     insertText(c._value, index);
 
-    //this.controller.broadcastInsertion(char);
+    _lastChar = c;
+    _lastOperation = EditType::insertion;
 }
 
 void Crdt::insertChar(Char c, int index) {
@@ -84,10 +85,10 @@ Char Crdt::generateChar(QChar val, int index) {
     QList<Identifier> posBefore;
     QList<Identifier> posAfter;
     QList<Identifier> newPos;
-    if(index-1>0)
-        QList<Identifier> posBefore = _file.at(index - 1)._position;
-    if(index<_file.length())
-        QList<Identifier> posAfter = _file.at(index)._position;
+    if(index-1 >= 0)
+        posBefore = _file.at(index - 1)._position;
+    if(index < _file.length())
+        posAfter = _file.at(index)._position;
     newPos = generatePosBetween(posBefore, posAfter, newPos);
     //TODO: version counter per globality
     //const localCounter = this.vector.localVersion.counter;
@@ -101,27 +102,28 @@ QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Id
     Identifier id1;
     Identifier id2;
     QList<Identifier> emptyAfter;
+
     if(posBefore.isEmpty())
         id1 = Identifier(0, _siteID);
-    else {
+    else
         id1 = posBefore[0];
-    }
+
     if(posAfter.isEmpty())
         id2 = Identifier(base, _siteID);
-    else {
+    else
         id2 = posAfter[0];
-    }
+
     if (id2._digit - id1._digit > 1) {
       int newDigit = generateIdBetween(id1._digit, id2._digit, boundaryStrategy);
       newPos.append(Identifier(newDigit, _siteID));
       return newPos;
 
-    } else if (id2._digit - id1._digit == 1) {
-
+    }
+    else if (id2._digit - id1._digit == 1) {
       newPos.append(id1);
       return generatePosBetween(posBefore.mid(1), emptyAfter, newPos, level+1);
-
-    } else if (id1._digit == id2._digit) {
+    }
+    else if (id1._digit == id2._digit) {
       if (id1._siteID < id2._siteID) {
         newPos.append(id1);
         return generatePosBetween(posBefore.mid(1), emptyAfter, newPos, level+1);
@@ -136,18 +138,21 @@ QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Id
 }
 
 int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
+
     if ((max - min) < _boundary) {
       min = min + 1;
-    } else {
-      if (boundaryStrategy == '-') {
-        min = max - _boundary;
-      } else {
-        min = min + 1;
-        max = min + _boundary;
-      }
     }
-    return qFloor(QRandomGenerator().bounded(10000) * (max - min)) + min;
-  }
+    else {
+        if (boundaryStrategy == '-')
+            min = max - _boundary;
+        else {
+            min = min + 1;
+            max = min + _boundary;
+        }
+    }
+
+    return qFloor(QRandomGenerator().bounded((double)1) * (max - min)) + min;
+}
 
 int Crdt::findInsertIndex(Char c) {
 

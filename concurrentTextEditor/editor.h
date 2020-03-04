@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "workerclient.h"
+#include "char.h"
+#include "Enums.h"
 
 namespace Ui {
 class Editor;
@@ -22,7 +24,7 @@ public:
 public slots:
     void handleFile(QJsonDocument buf);
     void showUser(QString user);
-    QString deleteUser(QString user);
+    QString deleteUser(QString user);    
 
 private:
     Ui::Editor *ui;

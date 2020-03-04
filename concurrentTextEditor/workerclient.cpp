@@ -340,3 +340,7 @@ void WorkerClient::userLeft(QString fileName, QString user) {
     QDataStream userLeftStream(_clientSocket);
     userLeftStream << QJsonDocument(userLeft).toJson();
 }
+
+void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType){
+
+}

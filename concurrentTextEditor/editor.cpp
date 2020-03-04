@@ -13,6 +13,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
     connect(_workerClient, &WorkerClient::handleFile, this, &Editor::handleFile);
     connect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
     connect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
+    connect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     _workerClient->requestFile(fileName);
     //Prende lista degli utenti attivi su quel file
     _workerClient->requestUserList(fileName);
@@ -53,4 +54,5 @@ void Editor::closeEvent(QCloseEvent *event) {
     user = _workerClient->getUser();
     _workerClient->userLeft(ui->editorController->getFileName(), user);
 }
+
 
