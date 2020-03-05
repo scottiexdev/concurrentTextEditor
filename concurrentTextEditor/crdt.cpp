@@ -34,8 +34,15 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
     QJsonObject obj = unparsedFile.object();
     QString buf;
     _fileName = obj["requestedFiles"].toString();
-    if(!obj["content"].isNull()) {
-        QJsonArray arrayBuf = obj["content"].toArray();
+    QJsonValue val = obj.value("content");
+
+    auto contentObj = val["content"].toObject();
+
+    QJsonArray arrayBuf = unparsedFile["content"].toObject()["content"].toArray();
+
+    if(!arrayBuf.empty()) {
+        //QJsonArray arrayBuf = obj["content"].toArray();
+
         foreach (const QJsonValue & tmpChar, arrayBuf) {
             QJsonObject qjo = tmpChar.toObject();
             int val = qjo["value"].toInt();

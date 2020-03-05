@@ -550,18 +550,35 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
     switch(edit) {
 
         case EditType::insertion:
+//            QFile file(doc["fileName"].toString());
+//            file.open(QIODevice::ReadWrite);
+//            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+//            QJsonObject cteData = cteFile.object();
+//            QJsonArray content = cteData["content"].toArray();
+//            QJsonObject newChar = doc["content"].toObject();
+//            content.append(newChar);
+//            cteData["content"] = content;
+//            QJsonDocument updatedFile(cteData);
+//            //file.flush();
+//            file.write(updatedFile.toJson());
+//            file.close();
+
             QFile file(doc["fileName"].toString());
             file.open(QIODevice::ReadWrite);
             QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+            file.close();
             QJsonObject cteData = cteFile.object();
             QJsonArray content = cteData["content"].toArray();
             QJsonObject newChar = doc["content"].toObject();
             content.append(newChar);
             cteData["content"] = content;
-            QJsonDocument updatedFile(cteData);
-            file.flush();
-            file.write(updatedFile.toJson());
+            cteFile.setObject(cteData);
+            //QJsonDocument updatedFile(cteData);
+            //file.flush();
+            file.open(QIODevice::WriteOnly);
+            file.write(cteFile.toJson());
             file.close();
         break;
+
     }
 }
