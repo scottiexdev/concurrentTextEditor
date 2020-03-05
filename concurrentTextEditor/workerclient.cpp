@@ -262,8 +262,6 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
         QStringList list3 = buf3.split(",", QString::SkipEmptyParts);
         emit showFiles(list,list2,list3);
     } else {
-        //TODO: qui non verra piu' ricevuto un QString buf, ma un vettore/lista di
-        //Il "content" avra' QJsonArray/list contenente Char per ricostruire il file
 
         QJsonDocument doc(qjo);
         emit handleFile(doc);

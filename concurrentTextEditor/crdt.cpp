@@ -31,43 +31,55 @@ bool Crdt::parseCteFile(QJsonDocument unparsedFile){
 QString Crdt::parseFile(QJsonDocument unparsedFile){
 
     //costruzione della lista di Char
-    QJsonObject obj = unparsedFile.object();
     QString buf;
+    QJsonObject obj = unparsedFile.object();
+
     _fileName = obj["requestedFiles"].toString();
-    QJsonValue val = obj.value("content");
 
-    auto contentObj = val["content"].toObject();
+    QString fileContentString = unparsedFile["fileContent"].toString(); //string con tutto il content - QJsonValue
 
-    QJsonArray arrayBuf = unparsedFile["content"].toObject()["content"].toArray();
+    QByteArray strBytes = fileContentString.toUtf8();
 
-    if(!arrayBuf.empty()) {
-        //QJsonArray arrayBuf = obj["content"].toArray();
+    QJsonDocument contentDoc = QJsonDocument::fromJson(strBytes);
 
-        foreach (const QJsonValue & tmpChar, arrayBuf) {
-            QJsonObject qjo = tmpChar.toObject();
-            int val = qjo["value"].toInt();
-            QUuid siteID = qjo["siteID"].toString();
-            int counter = qjo["counter"].toInt();
-            QJsonArray identifiers = qjo["identifier"].toArray();
-            QList<Identifier> positions;
-            foreach (const QJsonValue &tmpID, identifiers) {
-                QJsonObject ID = tmpID.toObject();
-                int digit = ID["digit"].toInt();
-                QUuid oldSiteID = ID["siteID"].toString();
-                Identifier identifier(digit,oldSiteID);
-                positions.append(positions);
-            }
-            Char c(val,counter,siteID,positions);
-            _file.append(c);
+    QJsonObject fileContentObj = contentDoc.object();
+
+    QJsonArray arrayBuf = fileContentObj["content"].toArray();
+
+    if(arrayBuf.empty())
+        return "";
+
+    foreach (const QJsonValue & tmpChar, arrayBuf) {
+        QJsonObject charObject = tmpChar.toObject();
+        QChar val = charObject["value"].toString()[0];
+        QUuid siteID = charObject["siteID"].toString();
+        int counter = charObject["counter"].toInt();
+
+        //Now parse positions: conversion to array is needed, but to object first
+
+        QJsonArray identifiers = charObject["position"].toArray();
+
+        QList<Identifier> positions;
+        foreach (const QJsonValue &tmpID, identifiers) {
+            QJsonObject ID = tmpID.toObject();
+            int digit = ID["digit"].toInt();
+            QUuid oldSiteID = ID["siteID"].toString();
+            Identifier identifier(digit,oldSiteID);
+            positions.append(identifier);
         }
+
+        Char c(val,counter,siteID,positions);
+        _file.append(c);
     }
-    else return "";
+
     //lettura dei caratteri della QList<Char> e scrittura nel buffer
-    _textBuffer.resize(_file.length());
+    _textBuffer.clear();
+
     foreach(const Char &tmpC, _file) {
         int index = findInsertIndex(tmpC);
         _textBuffer.insert(index,tmpC._value);
     }
+
     return _textBuffer;
 }
 
@@ -81,10 +93,12 @@ void Crdt::handleLocalInsert(QChar val, int index) {
 }
 
 void Crdt::insertChar(Char c, int index) {
+
     _file.insert(index, c);
 }
 
 void Crdt::insertText(QChar val, int index) {
+
     _textBuffer = _textBuffer.insert(index, val);
 }
 
@@ -104,6 +118,7 @@ Char Crdt::generateChar(QChar val, int index) {
 }
 
 QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level) {
+
     int base = (int)qPow(_mult, level) * _base;
     int boundaryStrategy = qFloor(QRandomGenerator().bounded(0xffffffff)) == 0 ? '+' : '-';
     Identifier id1;

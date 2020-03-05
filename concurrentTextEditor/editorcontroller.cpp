@@ -15,10 +15,27 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     if( pressed_key >= 0x20 && pressed_key <= 0x0ff){
         //Init
-        int cursorPosition = this->textCursor().position();
+        int cursorPosition = this->textCursor().position(); // THIS IS WRONG
+        int line = this->textCursor().positionInBlock();
+        int lines = this->textCursor().blockNumber();
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
     }
+
+    //Return "\n"
+    if(key->key() == Qt::Key_Return){
+        int cursorPosition = this->textCursor().position(); // THIS IS WRONG
+        QChar first = key->text().data()[0];
+        QChar second = key->text().data()[1];
+        QChar* data = key->text().data();
+        QString keyText = key->text();
+        _crdt.handleLocalInsert(first, cursorPosition);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
+        //_crdt.handleLocalInsert(second, cursorPosition);
+        //emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
+    }
+
+    //Qt::Key_Return (0x1000004)
 
     QTextEdit::keyPressEvent(key);
 }

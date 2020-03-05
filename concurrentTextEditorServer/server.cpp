@@ -357,7 +357,6 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 void Server::sendFile(WorkerServer& sender, QString fileName){
 
     //Get file and send it through the WorkerServer sender
-    //add your path and comment the others
     QDir::setCurrent(_defaultAbsoluteFilesLocation);
     QFile f(fileName);
     if(!f.open(QIODevice::ReadWrite))
@@ -366,7 +365,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
     msgF["type"] = QString("filesRequest");
     msgF["requestedFiles"] = fileName;
     QString buf = f.readAll();
-    msgF["content"] = buf;
+    msgF["fileContent"] = buf;
     sendJson(sender, msgF);
 //    QTextStream in(&f);
 //    while(!in.atEnd()) {
