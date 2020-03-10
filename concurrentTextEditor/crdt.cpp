@@ -74,9 +74,11 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
 
     //lettura dei caratteri della QList<Char> e scrittura nel buffer
     _textBuffer.clear();
+    _CharBuffer.clear();
 
     foreach(const Char &tmpC, _file) {
         int index = findInsertIndex(tmpC);
+        _CharBuffer.insert(index,tmpC);
         _textBuffer.insert(index,tmpC._value);
     }
 
@@ -95,6 +97,7 @@ void Crdt::handleLocalInsert(QChar val, int index) {
 void Crdt::insertChar(Char c, int index) {
 
     _file.insert(index, c);
+    _CharBuffer.insert(index, c);
 }
 
 void Crdt::insertText(QChar val, int index) {
@@ -176,21 +179,21 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
     return qFloor(QRandomGenerator().bounded((double)1) * (max - min)) + min;
 }
 
-int Crdt::findInsertIndex(Char c) {
+int Crdt::findInsertIndex(Char c) { //changed _file with _CharBuffer
 
     int left = 0;
-    int right = _file.length() - 1;
+    int right = _CharBuffer.length() - 1;
     int mid, compareNum;
 
-    if (_file.length() == 0 || c.compareTo(_file.at(left)) < 0) {
+    if (_CharBuffer.length() == 0 || c.compareTo(_CharBuffer.at(left)) < 0) {
       return left;
-    } else if (c.compareTo(_file.at(right)) > 0) {
-      return _file.length();
+    } else if (c.compareTo(_CharBuffer.at(right)) > 0) {
+      return _CharBuffer.length();
     }
 
     while (left + 1 < right) {
       mid = qFloor(left + (right - left) / 2);
-      compareNum = c.compareTo(_file.at(mid));
+      compareNum = c.compareTo(_CharBuffer.at(mid));
 
       if (compareNum == 0) {
         return mid;
@@ -201,7 +204,7 @@ int Crdt::findInsertIndex(Char c) {
       }
     }
 
-    return c.compareTo(_file.at(left)) == 0 ? left : right;
+    return c.compareTo(_CharBuffer.at(left)) == 0 ? left : right;
 
 }
 

@@ -75,10 +75,11 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     //Controllo che un file sia selezionato
     //Cambiare anche come viene preso il nome del file: click su data deve selezionare tutta la riga
     //E prendere il primo campo (filename)
-    QString fileName = ui->fileListTable->selectedItems().first()->text();
-    if(fileName.isEmpty()){
+    if(ui->fileListTable->selectedItems().isEmpty()) {
         QMessageBox::information(this, tr("Error"), "Please select a file by clicking on it.");
+        return;
     }
+    QString fileName = ui->fileListTable->selectedItems().first()->text();
     //_workerClient->requestFile(fileName);
     _e = new Editor(this, _workerClient, fileName);
     //hide();

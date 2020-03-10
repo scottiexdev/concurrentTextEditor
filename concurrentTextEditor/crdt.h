@@ -43,6 +43,7 @@ private:
     QUuid _siteID;
     QString _textBuffer;
     QList<Char> _file;
+    QList<Char> _CharBuffer;
 
 };
 
