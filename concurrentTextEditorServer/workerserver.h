@@ -23,6 +23,7 @@ public:
     void addOpenFile(const QString &fileName);
     QList<QString> openedFileList() const;
     Crdt getCrdt();
+    void setCrdt(QString siteID);
 
 signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);

@@ -61,6 +61,10 @@ QString EditorController::getFileName(){
     return _crdt.getFileName();
 }
 
+QUuid EditorController::getSiteID() {
+    return _crdt.getSiteID();
+}
+
 bool EditorController::parseCteFile(QJsonDocument unparsedFile){
     return _crdt.parseCteFile(unparsedFile);
 }

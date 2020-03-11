@@ -18,6 +18,7 @@ public:
     void keyPressEvent(QKeyEvent *key);
     bool parseCteFile(QJsonDocument unparsedFile);
     QString getFileName();
+    QUuid getSiteID();
     void write();
 
 private:

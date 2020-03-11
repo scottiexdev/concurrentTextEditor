@@ -20,6 +20,7 @@
 #include "workerserver.h"
 #include "../concurrentTextEditor/Enums.h"
 
+
 class Server : public QTcpServer
 {
     Q_OBJECT

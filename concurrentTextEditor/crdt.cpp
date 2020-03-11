@@ -7,6 +7,10 @@ Crdt::Crdt()
      _siteID = createQuuid();
 }
 
+Crdt::Crdt(QString siteID) {
+    _siteID = QUuid(siteID);
+}
+
 QUuid Crdt::createQuuid(){
 
     auto generator = QRandomGenerator();
@@ -252,4 +256,8 @@ QString Crdt::getTextBuffer(){
         //throw exception
     }
     return _textBuffer;
+}
+
+QUuid Crdt::getSiteID() {
+    return _siteID;
 }

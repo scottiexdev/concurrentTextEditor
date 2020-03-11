@@ -18,6 +18,7 @@ class Crdt
 
 public:
     Crdt();    
+    Crdt(QString siteID);
     QString getFileName();
     QString getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
@@ -31,6 +32,7 @@ public:
     Char _lastChar;
     EditType _lastOperation;
     int retrieveStrategy(int level);
+    QUuid getSiteID();
 
 private:
     QString parseFile(QJsonDocument unparsedFile);

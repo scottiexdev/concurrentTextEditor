@@ -29,7 +29,7 @@ public:
     QString getUser();
 
     void getFileList();
-    void requestFile(QString fileName);
+    void requestFile(QString fileName, QUuid siteID);
     void newFileRequest(const QJsonObject& qjo);
 
     void requestUserList(QString fileName);

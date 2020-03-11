@@ -340,6 +340,11 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
         case messageType::edit:
             editHandler(sender, doc);
+            break;
+
+        default:
+            emit logMessage("Message type not handled");
+
     }
 }
 
@@ -350,6 +355,7 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
     if(requestedFile == "all")
         sendListFile(sender);
     else {
+        sender.setCrdt(doc["siteID"].toString());
         sendFile(sender, requestedFile);
     }
 }
@@ -375,6 +381,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
 //        sendJson(sender, msgF);
 //    }
     // PARSE FILE DA AGGIUNGERE NEL CRDT DEL SENDER
+
     //if(!sender.getCrdt().parseCteFile(msgF))
     // ALTRO DUBBIO: E SE APRISSI PIù DI UN FILE? => NON FACCIAMO APRIRE PIù DI UN FILE
 

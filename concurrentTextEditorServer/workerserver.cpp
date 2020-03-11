@@ -11,7 +11,6 @@ WorkerServer::WorkerServer(QObject *parent) : QObject(parent), m_serverSocket(ne
     //handlers of disconnection and errors
     connect(m_serverSocket, &QTcpSocket::disconnected, this, &WorkerServer::disconnectFromClient);
     connect(m_serverSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &WorkerServer::error);
-    _crdt = Crdt();
 }
 
 bool WorkerServer::setSocketDescriptor(qintptr socketDescriptor) {
@@ -85,5 +84,9 @@ QList<QString> WorkerServer::openedFileList() const {
 
 Crdt WorkerServer::getCrdt() {
     return _crdt;
+}
+
+void WorkerServer::setCrdt(QString siteID) {
+    _crdt = Crdt(siteID);
 }
 

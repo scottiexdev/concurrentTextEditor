@@ -268,11 +268,12 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     }
 }
 
-void WorkerClient::requestFile(QString fileName){
+void WorkerClient::requestFile(QString fileName, QUuid siteID){
     QJsonObject fileRequest;
 
     fileRequest["type"] = "filesRequest";
     fileRequest["requestedFiles"] = fileName;
+    fileRequest["siteID"] = siteID.toString();
     sendJson(fileRequest);
 }
 

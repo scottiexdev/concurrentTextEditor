@@ -22,6 +22,7 @@ SOURCES += \
         serverconsole.cpp \
         serverwindow.cpp \
         workerserver.cpp \
+        ../concurrentTextEditor/crdt.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -45,3 +46,4 @@ DISTFILES += \
 
 FORMS += \
     serverwindow.ui
+
