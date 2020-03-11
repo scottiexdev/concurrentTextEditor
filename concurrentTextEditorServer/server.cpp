@@ -103,7 +103,7 @@ void Server::sendListFile(WorkerServer &sender) {
 QJsonObject Server::createFileData(QFileInfoList list){
 
     QJsonObject file_data;
-    file_data["type"] = QString("filesRequest");
+    file_data["type"] = messageType::filesRequest;
     file_data["num"] = list.size();
     file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
 
@@ -318,7 +318,9 @@ void Server::bindValues(QSqlQuery& q, const QJsonObject &doc) {
 
 
 void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
-    messageType type = getMessageType(doc);
+
+    messageType type = static_cast<messageType>(doc["type"].toInt());
+
 
     switch(type) {
 
@@ -369,7 +371,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
     if(!f.open(QIODevice::ReadWrite))
         return; //handle error, if it is deleted or else
     QJsonObject msgF;
-    msgF["type"] = QString("filesRequest");
+    msgF["type"] = messageType::filesRequest;
     msgF["requestedFiles"] = fileName;
     QString buf = f.readAll();
     msgF["fileContent"] = buf;
@@ -425,25 +427,6 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 }
 
 
-messageType Server::getMessageType(const QJsonObject &docObj) {
-
-    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
-
-    if(typeVal.isNull() || !typeVal.isString())
-        return messageType::invalid;
-
-    const QString type = typeVal.toString();
-
-    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-                return messageType::filesRequest;
-    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
-                return messageType::newFile;
-    if(type.compare(QLatin1String("userList"), Qt::CaseInsensitive) == 0)
-                return messageType::userList;
-    if(type.compare(QLatin1String("edit"), Qt::CaseInsensitive) == 0)
-                return messageType::edit;
-}
-
 bool Server::checkFilenameAvailability(QString fn){
     QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
     QJsonArray listFile;
@@ -491,66 +474,72 @@ void Server::write(QJsonObject &qjo, QString filename) const {
     qjo["filename"] = filename;
     qjo["content"] = QJsonValue::Null;
 }
+
 void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
-    QString action = doc.value("action").toString();
+    //QString action = doc.value("action").toString();
+    action act = static_cast<action>(doc["action"].toInt());
+    QString fileName = doc.value("fileName").toString();
+    QJsonObject userList;
+    QJsonObject userAdd;
+    QJsonObject userDel;
+    QString buf;
 
-    if(action=="request") {
-        QJsonObject userList;
-        QString buf;
-        QString fileName = doc.value("fileName").toString();
-        userList["type"] = QString("userListRequest");
-        userList["action"] = QString("show");
-        int i=0;
-        for(WorkerServer* c : m_clients) {
-            QList<QString> openedFile = c->openedFileList();
-            if(openedFile.contains(fileName)) {
-                if(i==0) {
-                    buf += c->userName();
-                    i++;
-                }
-                else {
-                    buf += "," + c->userName();
+    switch(act) {
+        case action::request:
+
+            userList["type"] = messageType::userList;
+            userList["action"] = action::show;
+            for(WorkerServer* c : m_clients) {
+                int i=0;
+                QList<QString> openedFile = c->openedFileList();
+                if(openedFile.contains(fileName)) {
+                    if(i==0) {
+                        buf += c->userName();
+                        i++;
+                    }
+                    else {
+                        buf += "," + c->userName();
+                    }
                 }
             }
-        }
-        userList["username"] = buf;
-        sender.sendJson(userList);
-    }
+            userList["username"] = buf;
+            sender.sendJson(userList);
+            break;
 
-    if(action=="add") {
-        QJsonObject userAdd;
-        QString fileName = doc.value("fileName").toString();
-        userAdd["type"] = QString("userListRequest");
-        userAdd["action"] = QString("add");
-        userAdd["username"] = QString(doc["user"].toString());
-        //broadcast specifico, invio solo a quelli che hanno il file aperto
-        for(WorkerServer* worker : m_clients) {
+        case action::add:
 
-            if(worker == &sender)
-            continue;
-            QList<QString> openedFile = worker->openedFileList();
-            if(openedFile.contains(fileName))
-                sendJson(*worker, userAdd);
-        }
-    }
+            userAdd["type"] = messageType::userList;
+            userAdd["action"] = action::add;
+            userAdd["username"] = QString(doc["user"].toString());
+            //broadcast specifico, invio solo a quelli che hanno il file aperto
+            for(WorkerServer* worker : m_clients) {
 
-    if(action=="delete") {
-        QJsonObject userDel;
-        QString fileName = doc.value("fileName").toString();
-        userDel["type"] = QString("userListRequest");
-        userDel["action"] = QString("delete");
-        userDel["username"] = QString(doc["user"].toString());
-
-        //broadcast specifico, invio solo a quelli che hanno il file aperto
-        for(WorkerServer* worker : m_clients) {
-            QList<QString> openedFile = worker->openedFileList();
-            if(openedFile.contains(fileName)) {
-                sender.delOpenFile(fileName);
-                sendJson(*worker, userDel);
+                if(worker == &sender)
+                    continue;
+                QList<QString> openedFile = worker->openedFileList();
+                if(openedFile.contains(fileName))
+                    sendJson(*worker, userAdd);
             }
+            break;
+
+        case action::del:
+            userDel["type"] = messageType::userList;
+            userDel["action"] = action::del;
+            userDel["username"] = QString(doc["user"].toString());
+
+            //broadcast specifico, invio solo a quelli che hanno il file aperto
+            for(WorkerServer* worker : m_clients) {
+                QList<QString> openedFile = worker->openedFileList();
+                if(openedFile.contains(fileName)) {
+                    sender.delOpenFile(fileName);
+                    sendJson(*worker, userDel);
+                }
+            }
+            break;
         }
-    }
 }
+
+
 
 void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
 
@@ -608,7 +597,18 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.write(cteFile.toJson());
     file.close();
 
-    broadcast(doc, sender);
+    broadcastOnlyOpenedFile(filename, doc, sender);
+}
+
+void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, WorkerServer& sender) {
+    for(WorkerServer* worker : m_clients) {
+
+        if(worker == &sender)
+            continue;
+        QList<QString> openedFile = worker->openedFileList();
+        if(openedFile.contains(fileName))
+            sendJson(*worker, qjo);
+    }
 }
 
 void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
@@ -646,7 +646,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.write(cteFile.toJson());
     file.close();
 
-    broadcast(doc, sender);
+    broadcastOnlyOpenedFile(filename, doc, sender);
 }
 
 Char Server::getChar(QJsonObject jsonChar ){

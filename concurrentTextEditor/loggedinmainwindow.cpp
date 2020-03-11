@@ -56,7 +56,7 @@ void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
     QJsonObject filename_req;
 
     if(!fileName.isEmpty() && ok) {
-        filename_req["type"] = "newFile";
+        filename_req["type"] = messageType::newFile;
         filename_req["filename"] = fileName.append(".cte");
         _workerClient->newFileRequest(filename_req);
         _e = new Editor(this, _workerClient, fileName);

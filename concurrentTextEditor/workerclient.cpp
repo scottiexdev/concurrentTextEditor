@@ -91,8 +91,7 @@ void WorkerClient::onReadyRead()
 //DROPPED CONST MODIFIER ON QJSONOBJECT - TO CHECK WHY IT WAS THERE
 void WorkerClient::jsonReceived(const QJsonObject &docObj)
 {
-
-    messageType type = getMessageType(docObj);
+    messageType type = static_cast<messageType>(docObj["type"].toInt());
 
     switch (type) {
 
@@ -108,7 +107,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::newFile:
             newFileError();
             break;
-        case messageType::userListRequest:
+        case messageType::userList:
             showUserListHandler(docObj); //qua ci metto anche la rimozione di un utente da mandare in broadcast
             break;
         default:
@@ -157,39 +156,11 @@ void WorkerClient::getFileList(){
     //Request message
     QJsonObject filesRequest;
 
-    filesRequest["type"] = "filesRequest";
+    filesRequest["type"] = messageType::filesRequest;
     filesRequest["requestedFiles"] = "all";
 
     //Send request message
     sendJson(filesRequest);
-}
-
-WorkerClient::messageType WorkerClient::getMessageType(const QJsonObject &docObj){
-
-    //Get type of message received
-    const QJsonValue typeVal = docObj.value(QLatin1String("type"));
-
-    if (typeVal.isNull() || !typeVal.isString())
-        return WorkerClient::messageType::invalid; // a message with no type was received so we just ignore it
-
-    const QString type = typeVal.toString();
-
-    if(type.compare(QLatin1String("signup"), Qt::CaseInsensitive) == 0)
-                return WorkerClient::messageType::signup;
-
-    if(type.compare(QLatin1String("login"), Qt::CaseInsensitive) == 0)
-        return WorkerClient::messageType::login;
-
-    if(type.compare(QLatin1String("filesRequest"), Qt::CaseInsensitive) == 0)
-        return WorkerClient::messageType::filesRequest;
-
-    if(type.compare(QLatin1String("newFile"), Qt::CaseInsensitive) == 0)
-        return WorkerClient::messageType::newFile;
-
-    if(type.compare(QLatin1String("userListRequest"), Qt::CaseInsensitive) == 0)
-        return WorkerClient::messageType::userListRequest;
-
-    return WorkerClient::messageType::invalid;
 }
 
 void WorkerClient::loginHandler(const QJsonObject& docObj){
@@ -271,7 +242,7 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
 void WorkerClient::requestFile(QString fileName, QUuid siteID){
     QJsonObject fileRequest;
 
-    fileRequest["type"] = "filesRequest";
+    fileRequest["type"] = messageType::filesRequest;
     fileRequest["requestedFiles"] = fileName;
     fileRequest["siteID"] = siteID.toString();
     sendJson(fileRequest);
@@ -290,36 +261,37 @@ void WorkerClient::newFileError() {
 void WorkerClient::requestUserList(QString fileName) {
     QJsonObject userListRequest;
 
-    userListRequest["type"] = QString("userList");
-    userListRequest["action"] = QString("request");
+    userListRequest["type"] = messageType::userList;
+    userListRequest["action"] = action::request;
     userListRequest["fileName"] = fileName;
     QDataStream userListRequestStream(_clientSocket);
     userListRequestStream << QJsonDocument(userListRequest).toJson();
 }
 
 void WorkerClient::showUserListHandler(const QJsonObject &qjo) {
-    QString action = qjo["action"].toString();
+    action act = static_cast<action>(qjo["action"].toInt());
 
-    if(action=="show") {
-        QString buf = qjo["username"].toString();
-        QStringList list = buf.split(",", QString::SkipEmptyParts);
-        for(QString user : list) {
-            emit showUser(user); //one user at time to permit to use the same signal when somebody else connects
-        }
-    }
-
-    if(action=="add") {
-        emit showUser(qjo["username"].toString());
-    }
-    if(action=="delete") {
-        emit deleteUser(qjo["username"].toString());
+    switch(act) {
+        case action::add:
+            emit showUser(qjo["username"].toString());
+            break;
+        case action::del:
+            emit deleteUser(qjo["username"].toString());
+            break;
+        case action::show:
+            QString buf = qjo["username"].toString();
+            QStringList list = buf.split(",", QString::SkipEmptyParts);
+            for(QString user : list) {
+                emit showUser(user); //one user at time to permit to use the same signal when somebody else connects
+            }
+            break;
     }
 }
 
 void WorkerClient::userJoined(QString fileName, QString user) {
     QJsonObject userJoined;
-    userJoined["type"] = QString("userList");
-    userJoined["action"] = QString("add");
+    userJoined["type"] = messageType::userList;
+    userJoined["action"] = action::add;
     userJoined["fileName"] = QString(fileName);
     userJoined["user"] = QString(user);
     sendJson(userJoined);
@@ -327,8 +299,8 @@ void WorkerClient::userJoined(QString fileName, QString user) {
 
 void WorkerClient::userLeft(QString fileName, QString user) {
     QJsonObject userLeft;
-    userLeft["type"] = QString("userList");
-    userLeft["action"] = QString("delete");
+    userLeft["type"] = messageType::userList;
+    userLeft["action"] = action::del;
     userLeft["fileName"] = QString(fileName);
     userLeft["user"] = QString(user);
     sendJson(userLeft);
@@ -352,7 +324,7 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
     content["index"] = index;
 
     edit["fileName"] = fileName;
-    edit["type"] = "edit";
+    edit["type"] = messageType::edit;
     edit["editType"] = editType;
     edit["content"] = content;
 

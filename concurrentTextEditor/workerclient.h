@@ -58,11 +58,9 @@ private:
     bool _loggedIn;
     QString _loggedUser;
     const QString DEFAULT_USER  = "unknownUsername";
-    enum messageType  { login, filesRequest, invalid, signup, newFile, userListRequest };
 
     //Methods
     void jsonReceived(const QJsonObject &qjo);
-    WorkerClient::messageType getMessageType(const QJsonObject &docObj);
     void loginHandler(const QJsonObject& jsonObj);
     void signupHandler(const QJsonObject& jsonObj);
     void showallFilesHandler(const QJsonObject& qjo);
