@@ -73,12 +73,10 @@ void WorkerServer::setUserName(const QString &userName) {
 
 void WorkerServer::addOpenFile(const QString &fileName) {
     _openedFileList.append(fileName);
-    _openedFiles.insert(fileName, Crdt());
 }
 
 void WorkerServer::delOpenFile(const QString &fileName) {
-    _openedFileList.removeOne(fileName);
-    _openedFiles.remove(fileName);
+    _openedFileList.removeOne(fileName);    
 }
 QList<QString> WorkerServer::openedFileList() const {
     return _openedFileList;
@@ -90,85 +88,4 @@ Crdt WorkerServer::getCrdt() {
 
 void WorkerServer::setCrdt(QString siteID) {
     _crdt = Crdt(siteID);
-}
-
-void WorkerServer::insertionHandler(const QJsonObject &doc){
-
-    //Open file from database - cteFile
-    QFile file(doc["fileName"].toString());
-    file.open(QIODevice::ReadWrite);
-    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-    file.close();
-
-    //Estrazione campi del json
-    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
-
-    // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
-    QJsonObject newChar = doc["content"].toObject();
-    int index = newChar["index"].toInt();
-
-    /*
-    // Estrazione di Char da newChar JSonObject
-    QChar val = newChar["value"].toInt();
-    QUuid siteID = newChar["siteID"].toString();
-    int counter = newChar["counter"].toInt();
-    QJsonArray identifiers = newChar["position"].toArray();
-    QList<Identifier> positions;
-
-    foreach (const QJsonValue &tmpID, identifiers) {
-        QJsonObject ID = tmpID.toObject();
-        int digit = ID["digit"].toInt();
-        QUuid oldSiteID = ID["siteID"].toString();
-        Identifier identifier(digit,oldSiteID);
-        positions.append(identifier);
-    }
-
-    Char c(val,counter,siteID,positions);
-
-    */
-
-    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
-    cteContent.insert(index, newChar);
-
-    /*
-    // Find correct index in file
-    int index = sender.getCrdt().findInsertIndex(c);
-    // Insert in Json file at correct index
-    cteContent.insert(index, newChar);
-    // Insert Char in file Crdt
-    sender.getCrdt().updateFileAtIndex(index, c);
-    */
-
-    cteData["content"] = cteContent;
-    cteFile.setObject(cteData);
-
-    // Write Json file to disk
-    file.open(QIODevice::WriteOnly);
-    file.write(cteFile.toJson());
-    file.close();
-}
-
-void WorkerServer::deletionHandler(const QJsonObject &doc){
-    //Open file from database - cteFile
-    QFile file(doc["fileName"].toString());
-    file.open(QIODevice::ReadWrite);
-    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-    file.close();
-
-    //Estrazione campi del json
-    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
-
-    // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    QJsonObject delChar = doc["content"].toObject();
-    int index = delChar["index"].toInt();
-    cteContent.removeAt(index);
-    cteData["content"] = cteContent;
-    cteFile.setObject(cteData);
-
-    // Write Json file to disk
-    file.open(QIODevice::WriteOnly);
-    file.write(cteFile.toJson());
-    file.close();
 }

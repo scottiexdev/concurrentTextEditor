@@ -28,13 +28,20 @@ public:
     Char generateChar(QChar val, int index);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
+
+    // Insertion
     void insertChar(Char val, int index);
     void insertText(QChar val, int index);
+
+    //  Deletion
+    void deleteChar(Char val, int index);
+
     Char _lastChar;
     EditType _lastOperation;
     int retrieveStrategy(int level);
     QUuid getSiteID();
     void updateFileAtIndex(int index, Char c);
+    int findIndexByPosition(Char c);
 
 private:
     QString parseFile(QJsonDocument unparsedFile);

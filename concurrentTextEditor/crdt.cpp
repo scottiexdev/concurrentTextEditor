@@ -273,3 +273,45 @@ QString Crdt::getTextBuffer(){
 QUuid Crdt::getSiteID() {
     return _siteID;
 }
+
+
+int Crdt::findIndexByPosition(Char c){
+    int left = 0;
+    int right = _file.length()- 1;
+    int mid, compareNum;
+
+    if (_file.length() == 0) {
+          // throw exception
+            return -1;
+    }
+
+    while (left + 1 < right) {
+      mid = qFloor(left + (right - left) / 2);
+      compareNum = c.compareTo(_file[mid]);
+
+      if (compareNum == 0) {
+        return mid;
+      }
+      else if (compareNum > 0) {
+        left = mid;
+      }
+      else {
+        right = mid;
+      }
+    }
+
+    if (c.compareTo(_file[left]) == 0) {
+      return left;
+    }
+    else if (c.compareTo(_file[right]) == 0) {
+      return right;
+    }
+    else {
+      // throw exception
+        return -1;
+    }
+}
+
+void Crdt::deleteChar(Char val, int index){
+    _file.removeAt(index);
+}
