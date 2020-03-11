@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QFile>
+
 #include "../concurrentTextEditor/crdt.h"
 class QJsonObject;
 
@@ -24,6 +26,8 @@ public:
     QList<QString> openedFileList() const;
     Crdt getCrdt();
     void setCrdt(QString siteID);
+    void insertionHandler(const QJsonObject &doc);
+    void deletionHandler(const QJsonObject &doc);
 
 signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
@@ -42,6 +46,7 @@ private:
     QString m_userName;
     QList<QString> _openedFileList;
     Crdt _crdt;
+    QMap<QString, Crdt> _openedFiles;
 };
 
 #endif // WORKERSERVER_H

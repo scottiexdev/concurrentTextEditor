@@ -355,6 +355,7 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
     if(requestedFile == "all")
         sendListFile(sender);
     else {
+        // sender.setCrdt(doc["siteID"].toString(), doc["siteID"].toString());
         sender.setCrdt(doc["siteID"].toString());
         sendFile(sender, requestedFile);
     }
@@ -372,7 +373,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
     msgF["requestedFiles"] = fileName;
     QString buf = f.readAll();
     msgF["fileContent"] = buf;
-    sendJson(sender, msgF);
+    sendJson(sender, msgF);        
 //    QTextStream in(&f);
 //    while(!in.atEnd()) {
 //        //QTextStream: convers 8.bit data in 16-bit unicode
@@ -380,8 +381,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
 //        msgF["content"] = line;
 //        sendJson(sender, msgF);
 //    }
-    // PARSE FILE DA AGGIUNGERE NEL CRDT DEL SENDER
-
+    // PARSE FILE DA AGGIUNGERE NEL CRDT DEL SENDER    
     //if(!sender.getCrdt().parseCteFile(msgF))
     // ALTRO DUBBIO: E SE APRISSI PIù DI UN FILE? => NON FACCIAMO APRIRE PIù DI UN FILE
 
@@ -556,65 +556,17 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
 }
 
 void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
+
     EditType edit = static_cast<EditType>(doc["editType"].toInt());
+
     switch(edit) {
 
         case EditType::insertion:
-//            QFile file(doc["fileName"].toString());
-//            file.open(QIODevice::ReadWrite);
-//            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-//            QJsonObject cteData = cteFile.object();
-//            QJsonArray content = cteData["content"].toArray();
-//            QJsonObject newChar = doc["content"].toObject();
-//            content.append(newChar);
-//            cteData["content"] = content;
-//            QJsonDocument updatedFile(cteData);
-//            //file.flush();
-//            file.write(updatedFile.toJson());
-//            file.close();
+            sender.insertionHandler(doc);
+            break;
 
-            //Open file from database - cteFile
-            QFile file(doc["fileName"].toString());
-            file.open(QIODevice::ReadWrite);
-            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-            file.close();
-
-            //Estrazione campi del json
-            QJsonObject cteData = cteFile.object();
-            QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
-
-            // Nuovo char viene presa da "doc", il messaggio di update "edit"
-             QJsonObject newChar = doc["content"].toObject();
-
-            // Estrazione di Char da newChar JSonObject
-            QChar val = newChar["value"].toInt();
-            QUuid siteID = newChar["siteID"].toString();
-            int counter = newChar["counter"].toInt();
-            QJsonArray identifiers = newChar["position"].toArray();
-            QList<Identifier> positions;
-
-            foreach (const QJsonValue &tmpID, identifiers) {
-                QJsonObject ID = tmpID.toObject();
-                int digit = ID["digit"].toInt();
-                QUuid oldSiteID = ID["siteID"].toString();
-                Identifier identifier(digit,oldSiteID);
-                positions.append(identifier);
-            }
-
-            Char c(val,counter,siteID,positions);
-
-            // Find correct index in file and insert in File and in file Json on db
-            int index = sender.getCrdt().findInsertIndex(c);
-            cteContent.insert(index, newChar);
-            sender.getCrdt().updateFileAtIndex(index, c);
-
-            cteData["content"] = cteContent;
-            cteFile.setObject(cteData);
-            //QJsonDocument updatedFile(cteData);
-            //file.flush();
-            file.open(QIODevice::WriteOnly);
-            file.write(cteFile.toJson());
-            file.close();
+       case EditType::deletion:
+            sender.deletionHandler(doc);
         break;
 
     }
