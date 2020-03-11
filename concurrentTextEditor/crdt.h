@@ -30,6 +30,7 @@ public:
     void insertText(QChar val, int index);
     Char _lastChar;
     EditType _lastOperation;
+    int retrieveStrategy(int level);
 
 private:
     QString parseFile(QJsonDocument unparsedFile);
@@ -44,6 +45,7 @@ private:
     QString _textBuffer;
     QList<Char> _file;
     QList<Char> _CharBuffer;
+    int _strategy;
 
 };
 

@@ -4,7 +4,7 @@
 #include <exception>
 
 Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
-    QMainWindow(parent),    
+    QMainWindow(parent),
     ui(new Ui::Editor),
     _workerClient(worker)
 {
@@ -23,6 +23,10 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
 
 Editor::~Editor()
 {
+    disconnect(_workerClient, &WorkerClient::handleFile, this, &Editor::handleFile);
+    disconnect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
+    disconnect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
+    disconnect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     delete ui;
 }
 
@@ -53,6 +57,7 @@ void Editor::closeEvent(QCloseEvent *event) {
     QString user;
     user = _workerClient->getUser();
     _workerClient->userLeft(ui->editorController->getFileName(), user);
+    this->deleteLater();
 }
 
 

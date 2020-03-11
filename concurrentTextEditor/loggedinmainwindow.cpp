@@ -50,18 +50,21 @@ void loggedinmainwindow::errorDisplay(QString str){
 
 void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 {
-    QString fileName = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal);
+    bool ok;
+    QString fileName = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal, QString("FileName"), &ok);
 
     QJsonObject filename_req;
 
-    if(!fileName.isEmpty()) {
+    if(!fileName.isEmpty() && ok) {
         filename_req["type"] = "newFile";
         filename_req["filename"] = fileName.append(".cte");
+        _workerClient->newFileRequest(filename_req);
+        _e = new Editor(this, _workerClient, fileName);
+        _e->show();
     }
-
-    _workerClient->newFileRequest(filename_req);
-    _e = new Editor(this, _workerClient, fileName);
-    _e->show();
+    else if(ok){
+        errorDisplay("Insert a name for the file");
+    }
 }
 
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()
@@ -76,7 +79,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     //Cambiare anche come viene preso il nome del file: click su data deve selezionare tutta la riga
     //E prendere il primo campo (filename)
     if(ui->fileListTable->selectedItems().isEmpty()) {
-        QMessageBox::information(this, tr("Error"), "Please select a file by clicking on it.");
+        errorDisplay("Please select a file by clicking on it.");
         return;
     }
     QString fileName = ui->fileListTable->selectedItems().first()->text();

@@ -374,6 +374,10 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
 //        msgF["content"] = line;
 //        sendJson(sender, msgF);
 //    }
+    // PARSE FILE DA AGGIUNGERE NEL CRDT DEL SENDER
+    //if(!sender.getCrdt().parseCteFile(msgF))
+    // ALTRO DUBBIO: E SE APRISSI PIù DI UN FILE? => NON FACCIAMO APRIRE PIù DI UN FILE
+
     sender.addOpenFile(fileName);
     f.close();
 }
@@ -568,8 +572,25 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
             file.close();
             QJsonObject cteData = cteFile.object();
             QJsonArray content = cteData["content"].toArray();
+
             QJsonObject newChar = doc["content"].toObject();
-            content.append(newChar);
+
+            QChar val = newChar["value"].toInt();
+            QUuid siteID = newChar["siteID"].toString();
+            int counter = newChar["counter"].toInt();
+            QJsonArray identifiers = newChar["position"].toArray();
+            QList<Identifier> positions;
+            foreach (const QJsonValue &tmpID, identifiers) {
+                QJsonObject ID = tmpID.toObject();
+                int digit = ID["digit"].toInt();
+                QUuid oldSiteID = ID["siteID"].toString();
+                Identifier identifier(digit,oldSiteID);
+                positions.append(identifier);
+            }
+
+            Char c(val,counter,siteID,positions);
+            int index = sender.getCrdt().findInsertIndex(c);
+            //content.append(newChar);
             cteData["content"] = content;
             cteFile.setObject(cteData);
             //QJsonDocument updatedFile(cteData);

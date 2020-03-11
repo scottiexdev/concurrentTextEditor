@@ -31,6 +31,7 @@ bool Crdt::parseCteFile(QJsonDocument unparsedFile){
 QString Crdt::parseFile(QJsonDocument unparsedFile){
 
     //costruzione della lista di Char
+    _file.clear();
     QString buf;
     QJsonObject obj = unparsedFile.object();
 
@@ -120,10 +121,36 @@ Char Crdt::generateChar(QChar val, int index) {
     return Char(val, 0/*to implement*/, _siteID, newPos);
 }
 
+int Crdt::retrieveStrategy(int level) {
+  int strategy;
+
+  switch (this->_strategy) {
+    case 'plus':
+      strategy = '+';
+      break;
+    case 'minus':
+      strategy = '-';
+      break;
+    case 'random':
+      //strategy = Math.round(Math.random()) === 0 ? '+' : '-';
+      break;
+    case 'every2nd':
+      strategy = ((level+1) % 2) == 0 ? '-' : '+';
+      break;
+    case 'every3rd':
+      strategy = ((level+1) % 3) == 0 ? '-' : '+';
+      break;
+    default:
+      strategy = ((level+1) % 2) == 0 ? '-' : '+';
+      break;
+  }
+  return strategy;
+}
+
 QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level) {
 
     int base = (int)qPow(_mult, level) * _base;
-    int boundaryStrategy = qFloor(QRandomGenerator().bounded(0xffffffff)) == 0 ? '+' : '-';
+    int boundaryStrategy = retrieveStrategy(level);
     Identifier id1;
     Identifier id2;
     QList<Identifier> emptyAfter;
