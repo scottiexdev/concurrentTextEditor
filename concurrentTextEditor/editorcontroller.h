@@ -25,7 +25,7 @@ private:
     Crdt _crdt;
 
 signals:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
 
 };
 

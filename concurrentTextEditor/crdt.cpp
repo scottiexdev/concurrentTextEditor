@@ -97,6 +97,14 @@ void Crdt::handleLocalInsert(QChar val, int index) {
     _lastOperation = EditType::insertion;
 }
 
+void Crdt::handleLocalDelete(int index) {
+    Char c = _file.takeAt(index);
+    _textBuffer.remove(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
+
+    _lastChar = c;
+    _lastOperation = EditType::deletion;
+}
+
 void Crdt::insertChar(Char c, int index) {
 
     _file.insert(index, c);    

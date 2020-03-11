@@ -104,8 +104,9 @@ void WorkerServer::insertionHandler(const QJsonObject &doc){
     QJsonObject cteData = cteFile.object();
     QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
-    // Nuovo char viene preso da "doc" (JsonObject ricevuto)
-     QJsonObject newChar = doc["content"].toObject();
+    // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
+    QJsonObject newChar = doc["content"].toObject();
+    int index = newChar["index"].toInt();
 
     /*
     // Estrazione di Char da newChar JSonObject
@@ -127,8 +128,8 @@ void WorkerServer::insertionHandler(const QJsonObject &doc){
 
     */
 
-    // DOESN'T MATTER WHERE WE APPEND
-    cteContent.append(newChar);
+    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
+    cteContent.insert(index, newChar);
 
     /*
     // Find correct index in file
@@ -149,5 +150,25 @@ void WorkerServer::insertionHandler(const QJsonObject &doc){
 }
 
 void WorkerServer::deletionHandler(const QJsonObject &doc){
+    //Open file from database - cteFile
+    QFile file(doc["fileName"].toString());
+    file.open(QIODevice::ReadWrite);
+    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+    file.close();
 
+    //Estrazione campi del json
+    QJsonObject cteData = cteFile.object();
+    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+
+    // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
+    QJsonObject delChar = doc["content"].toObject();
+    int index = delChar["index"].toInt();
+    cteContent.removeAt(index);
+    cteData["content"] = cteContent;
+    cteFile.setObject(cteData);
+
+    // Write Json file to disk
+    file.open(QIODevice::WriteOnly);
+    file.write(cteFile.toJson());
+    file.close();
 }

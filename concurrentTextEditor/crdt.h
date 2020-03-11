@@ -24,6 +24,7 @@ public:
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndex(Char c);
     void handleLocalInsert(QChar val, int index);
+    void handleLocalDelete(int index);
     Char generateChar(QChar val, int index);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);

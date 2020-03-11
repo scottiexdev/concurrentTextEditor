@@ -334,7 +334,7 @@ void WorkerClient::userLeft(QString fileName, QString user) {
     sendJson(userLeft);
 }
 
-void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType){
+void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType, int index){
     QJsonObject edit;
     QJsonObject content;
 
@@ -349,6 +349,7 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
         position.append(pos);
     }
     content["position"] = position;
+    content["index"] = index;
 
     edit["fileName"] = fileName;
     edit["type"] = "edit";
