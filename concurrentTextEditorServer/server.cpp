@@ -340,6 +340,11 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
         case messageType::edit:
             editHandler(sender, doc);
+            break;
+
+        default:
+            emit logMessage("Message type not handled");
+
     }
 }
 
@@ -350,6 +355,8 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
     if(requestedFile == "all")
         sendListFile(sender);
     else {
+        // sender.setCrdt(doc["siteID"].toString(), doc["siteID"].toString());
+        sender.setCrdt(doc["siteID"].toString());
         sendFile(sender, requestedFile);
     }
 }
@@ -366,15 +373,16 @@ void Server::sendFile(WorkerServer& sender, QString fileName){
     msgF["requestedFiles"] = fileName;
     QString buf = f.readAll();
     msgF["fileContent"] = buf;
-    sendJson(sender, msgF);
-//    QTextStream in(&f);
-//    while(!in.atEnd()) {
-//        //QTextStream: convers 8.bit data in 16-bit unicode
-//        QString line = in.readLine().toLatin1();
-//        msgF["content"] = line;
-//        sendJson(sender, msgF);
-//    }
-    sender.addOpenFile(fileName);
+
+    // Carica e parsa file se non gia' aperto
+    if(!_openedFiles.contains(fileName)){
+        Crdt file;
+        file.parseCteFile(QJsonDocument(msgF));
+        _openedFiles.insert(fileName, file);
+    }
+
+    sender.addOpenFile(fileName); // Aggiunge file alla lista dei file aperti
+    sendJson(sender, msgF);       // Manda file in formato Json, unparsed
     f.close();
 }
 
@@ -545,39 +553,118 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
 }
 
 void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
+
     EditType edit = static_cast<EditType>(doc["editType"].toInt());
+
     switch(edit) {
 
         case EditType::insertion:
-//            QFile file(doc["fileName"].toString());
-//            file.open(QIODevice::ReadWrite);
-//            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-//            QJsonObject cteData = cteFile.object();
-//            QJsonArray content = cteData["content"].toArray();
-//            QJsonObject newChar = doc["content"].toObject();
-//            content.append(newChar);
-//            cteData["content"] = content;
-//            QJsonDocument updatedFile(cteData);
-//            //file.flush();
-//            file.write(updatedFile.toJson());
-//            file.close();
+            insertionHandler(doc, sender);
+            break;
 
-            QFile file(doc["fileName"].toString());
-            file.open(QIODevice::ReadWrite);
-            QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-            file.close();
-            QJsonObject cteData = cteFile.object();
-            QJsonArray content = cteData["content"].toArray();
-            QJsonObject newChar = doc["content"].toObject();
-            content.append(newChar);
-            cteData["content"] = content;
-            cteFile.setObject(cteData);
-            //QJsonDocument updatedFile(cteData);
-            //file.flush();
-            file.open(QIODevice::WriteOnly);
-            file.write(cteFile.toJson());
-            file.close();
+       case EditType::deletion:
+            deletionHandler(doc, sender);
         break;
 
     }
+}
+void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
+
+    //Open file from database - cteFile
+    QString filename = doc["fileName"].toString();
+
+    //Open Json file
+    QFile file(filename);
+    file.open(QIODevice::ReadWrite);
+    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    Crdt crdtFile = _openedFiles.value(filename);
+
+    //Estrazione campi del json
+    QJsonObject cteData = cteFile.object();
+    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+
+    // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
+    QJsonObject newChar = doc["content"].toObject();
+    // NewChar viene parsato e trasformato in Char obj
+    Char c = getChar(newChar);
+
+    // Find correct index with crdt structure
+    int index = crdtFile.findInsertIndex(c);
+    // Keep crdt updated
+    crdtFile.insertChar(c, index);
+
+    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
+    cteContent.insert(index, newChar);
+
+    // Update data structures
+    cteData["content"] = cteContent;
+    cteFile.setObject(cteData);
+    _openedFiles.insert(filename, crdtFile);
+
+    // Write Json file to disk
+    file.open(QIODevice::WriteOnly);
+    file.write(cteFile.toJson());
+    file.close();
+
+    broadcast(doc, sender);
+}
+
+void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
+
+    //Open file from database - cteFile
+    QString filename = doc["fileName"].toString();
+
+    //Open Json file
+    QFile file(filename);
+    file.open(QIODevice::ReadWrite);
+    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    Crdt crdtFile = _openedFiles.value(filename);
+
+    //Estrazione campi del json
+    QJsonObject cteData = cteFile.object();
+    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+
+    // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
+    QJsonObject delChar = doc["content"].toObject();
+
+    Char c = getChar(delChar);
+    int index = crdtFile.findIndexByPosition(c);
+
+    // Update data structures (remote delete)
+    cteContent.removeAt(index);
+    crdtFile.deleteChar(c, index);
+    cteData["content"] = cteContent;
+    cteFile.setObject(cteData);
+    _openedFiles.insert(filename, crdtFile);
+
+    // Write Json file to disk
+    file.open(QIODevice::WriteOnly);
+    file.write(cteFile.toJson());
+    file.close();
+
+    broadcast(doc, sender);
+}
+
+Char Server::getChar(QJsonObject jsonChar ){
+
+    // Estrazione di Char da newChar JSonObject
+    QChar val = jsonChar ["value"].toInt();
+    QUuid siteID = jsonChar ["siteID"].toString();
+    int counter = jsonChar ["counter"].toInt();
+    QJsonArray identifiers = jsonChar["position"].toArray();
+    QList<Identifier> positions;
+
+    foreach (const QJsonValue &tmpID, identifiers) {
+        QJsonObject ID = tmpID.toObject();
+        int digit = ID["digit"].toInt();
+        QUuid oldSiteID = ID["siteID"].toString();
+        Identifier identifier(digit,oldSiteID);
+        positions.append(identifier);
+    }
+
+    return Char(val,counter,siteID,positions);
 }

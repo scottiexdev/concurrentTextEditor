@@ -18,13 +18,14 @@ public:
     void keyPressEvent(QKeyEvent *key);
     bool parseCteFile(QJsonDocument unparsedFile);
     QString getFileName();
+    QUuid getSiteID();
     void write();
 
 private:
     Crdt _crdt;
 
 signals:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
 
 };
 

@@ -19,9 +19,17 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         int line = this->textCursor().positionInBlock();
         int lines = this->textCursor().blockNumber();
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
     }
 
+    if(pressed_key == Qt::Key_Backspace) {
+        int cursorPosition = this->textCursor().position()-1;
+        if((cursorPosition)!=-1) {
+            _crdt.handleLocalDelete(cursorPosition);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+        }
+
+    }
     //Return "\n"
 //    if(key->key() == Qt::Key_Return){
 //        int cursorPosition = this->textCursor().position(); // THIS IS WRONG
@@ -59,6 +67,10 @@ void EditorController::write(){
 QString EditorController::getFileName(){
 
     return _crdt.getFileName();
+}
+
+QUuid EditorController::getSiteID() {
+    return _crdt.getSiteID();
 }
 
 bool EditorController::parseCteFile(QJsonDocument unparsedFile){

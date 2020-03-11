@@ -18,18 +18,30 @@ class Crdt
 
 public:
     Crdt();    
+    Crdt(QString siteID);
     QString getFileName();
     QString getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndex(Char c);
     void handleLocalInsert(QChar val, int index);
+    void handleLocalDelete(int index);
     Char generateChar(QChar val, int index);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
+
+    // Insertion
     void insertChar(Char val, int index);
     void insertText(QChar val, int index);
+
+    //  Deletion
+    void deleteChar(Char val, int index);
+
     Char _lastChar;
     EditType _lastOperation;
+    int retrieveStrategy(int level);
+    QUuid getSiteID();
+    void updateFileAtIndex(int index, Char c);
+    int findIndexByPosition(Char c);
 
 private:
     QString parseFile(QJsonDocument unparsedFile);
@@ -42,8 +54,9 @@ private:
     QString _fileName;
     QUuid _siteID;
     QString _textBuffer;
-    QList<Char> _file;
-    QList<Char> _CharBuffer;
+    // File representation
+    QList<Char> _file;     
+    int _strategy;
 
 };
 

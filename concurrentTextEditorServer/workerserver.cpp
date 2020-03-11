@@ -76,10 +76,16 @@ void WorkerServer::addOpenFile(const QString &fileName) {
 }
 
 void WorkerServer::delOpenFile(const QString &fileName) {
-    _openedFileList.removeOne(fileName);
+    _openedFileList.removeOne(fileName);    
 }
 QList<QString> WorkerServer::openedFileList() const {
     return _openedFileList;
 }
 
+Crdt WorkerServer::getCrdt() {
+    return _crdt;
+}
 
+void WorkerServer::setCrdt(QString siteID) {
+    _crdt = Crdt(siteID);
+}

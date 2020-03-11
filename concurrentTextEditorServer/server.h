@@ -18,7 +18,8 @@
 #include <QDialog>
 #include <QTcpSocket>
 #include "workerserver.h"
-#include "enums.h"
+#include "../concurrentTextEditor/Enums.h"
+
 
 class Server : public QTcpServer
 {
@@ -64,8 +65,8 @@ private:
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
 //    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 //    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-//    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
-//    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     QVector<WorkerServer *> m_clients;
     QString _defaultDocument = "Welcome.txt";
 
@@ -90,6 +91,14 @@ private:
     void editHandler(WorkerServer& sender, const QJsonObject &doc);
 
     void write(QJsonObject &qjo, QString filename) const;
+
+    //Edit handlers
+    void insertionHandler(const QJsonObject &doc, WorkerServer &sender);
+    void deletionHandler(const QJsonObject &doc, WorkerServer &sender);
+    Char getChar(QJsonObject jsonChar );
+
+    // Files
+    QMap<QString, Crdt> _openedFiles;
 };
 
 #endif // SERVER_H

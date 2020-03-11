@@ -21,7 +21,8 @@ SOURCES += \
         server.cpp \
         serverconsole.cpp \
         serverwindow.cpp \
-        workerserver.cpp
+        workerserver.cpp \
+        ../concurrentTextEditor/crdt.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -29,14 +30,15 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    char.h \
-    enums.h \
-    identifier.h \
     server.h \
     serverconsole.h \
     serverhelpers.h \
     serverwindow.h \
     workerserver.h \
+    ../concurrentTextEditor/crdt.h \
+    ../concurrentTextEditor/char.h \
+    ../concurrentTextEditor/Identifier.h \
+    ../concurrentTextEditor/Enums.h
 
 DISTFILES += \
     concurrentDb.db \
@@ -44,3 +46,4 @@ DISTFILES += \
 
 FORMS += \
     serverwindow.ui
+

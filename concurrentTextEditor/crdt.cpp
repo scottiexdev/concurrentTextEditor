@@ -7,6 +7,10 @@ Crdt::Crdt()
      _siteID = createQuuid();
 }
 
+Crdt::Crdt(QString siteID) {
+    _siteID = QUuid(siteID);
+}
+
 QUuid Crdt::createQuuid(){
 
     auto generator = QRandomGenerator();
@@ -31,6 +35,7 @@ bool Crdt::parseCteFile(QJsonDocument unparsedFile){
 QString Crdt::parseFile(QJsonDocument unparsedFile){
 
     //costruzione della lista di Char
+    _file.clear();
     QString buf;
     QJsonObject obj = unparsedFile.object();
 
@@ -48,6 +53,10 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
 
     if(arrayBuf.empty())
         return "";
+
+    // Clear buffers
+    _textBuffer.clear();
+    _file.clear();
 
     foreach (const QJsonValue & tmpChar, arrayBuf) {
         QJsonObject charObject = tmpChar.toObject();
@@ -69,17 +78,11 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
         }
 
         Char c(val,counter,siteID,positions);
-        _file.append(c);
-    }
 
-    //lettura dei caratteri della QList<Char> e scrittura nel buffer
-    _textBuffer.clear();
-    _CharBuffer.clear();
-
-    foreach(const Char &tmpC, _file) {
-        int index = findInsertIndex(tmpC);
-        _CharBuffer.insert(index,tmpC);
-        _textBuffer.insert(index,tmpC._value);
+        //Find index for new char and insert it into _file Struct and _textBuffer
+        int index = findInsertIndex(c);
+        _file.insert(index, c);
+        _textBuffer.insert(index, c._value);
     }
 
     return _textBuffer;
@@ -94,10 +97,17 @@ void Crdt::handleLocalInsert(QChar val, int index) {
     _lastOperation = EditType::insertion;
 }
 
+void Crdt::handleLocalDelete(int index) {
+    Char c = _file.takeAt(index);
+    _textBuffer.remove(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
+
+    _lastChar = c;
+    _lastOperation = EditType::deletion;
+}
+
 void Crdt::insertChar(Char c, int index) {
 
-    _file.insert(index, c);
-    _CharBuffer.insert(index, c);
+    _file.insert(index, c);    
 }
 
 void Crdt::insertText(QChar val, int index) {
@@ -106,6 +116,7 @@ void Crdt::insertText(QChar val, int index) {
 }
 
 Char Crdt::generateChar(QChar val, int index) {
+
     QList<Identifier> posBefore;
     QList<Identifier> posAfter;
     QList<Identifier> newPos;
@@ -120,10 +131,36 @@ Char Crdt::generateChar(QChar val, int index) {
     return Char(val, 0/*to implement*/, _siteID, newPos);
 }
 
+int Crdt::retrieveStrategy(int level) {
+  int strategy;
+
+  switch (this->_strategy) {
+    case 'plus':
+      strategy = '+';
+      break;
+    case 'minus':
+      strategy = '-';
+      break;
+    case 'random':
+      //strategy = Math.round(Math.random()) === 0 ? '+' : '-';
+      break;
+    case 'every2nd':
+      strategy = ((level+1) % 2) == 0 ? '-' : '+';
+      break;
+    case 'every3rd':
+      strategy = ((level+1) % 3) == 0 ? '-' : '+';
+      break;
+    default:
+      strategy = ((level+1) % 2) == 0 ? '-' : '+';
+      break;
+  }
+  return strategy;
+}
+
 QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level) {
 
     int base = (int)qPow(_mult, level) * _base;
-    int boundaryStrategy = qFloor(QRandomGenerator().bounded(0xffffffff)) == 0 ? '+' : '-';
+    int boundaryStrategy = retrieveStrategy(level);
     Identifier id1;
     Identifier id2;
     QList<Identifier> emptyAfter;
@@ -160,6 +197,9 @@ QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Id
         //throw new Error("Fix Position Sorting");
       }
     }
+
+    QList<Identifier> empty;
+    return empty;
 }
 
 int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
@@ -179,21 +219,21 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
     return qFloor(QRandomGenerator().bounded((double)1) * (max - min)) + min;
 }
 
-int Crdt::findInsertIndex(Char c) { //changed _file with _CharBuffer
+int Crdt::findInsertIndex(Char c) {
 
     int left = 0;
-    int right = _CharBuffer.length() - 1;
+    int right = _file.length() - 1;
     int mid, compareNum;
 
-    if (_CharBuffer.length() == 0 || c.compareTo(_CharBuffer.at(left)) < 0) {
+    if (_file.length() == 0 || c.compareTo(_file.at(left)) < 0) {
       return left;
-    } else if (c.compareTo(_CharBuffer.at(right)) > 0) {
-      return _CharBuffer.length();
+    } else if (c.compareTo(_file.at(right)) > 0) {
+      return _file.length();
     }
 
     while (left + 1 < right) {
       mid = qFloor(left + (right - left) / 2);
-      compareNum = c.compareTo(_CharBuffer.at(mid));
+      compareNum = c.compareTo(_file.at(mid));
 
       if (compareNum == 0) {
         return mid;
@@ -204,10 +244,13 @@ int Crdt::findInsertIndex(Char c) { //changed _file with _CharBuffer
       }
     }
 
-    return c.compareTo(_CharBuffer.at(left)) == 0 ? left : right;
+    return c.compareTo(_file.at(left)) == 0 ? left : right;
 
 }
 
+void Crdt::updateFileAtIndex(int index, Char c){
+    _file.insert(index, c);
+}
 
 
 QString Crdt::getFileName(){
@@ -225,4 +268,50 @@ QString Crdt::getTextBuffer(){
         //throw exception
     }
     return _textBuffer;
+}
+
+QUuid Crdt::getSiteID() {
+    return _siteID;
+}
+
+
+int Crdt::findIndexByPosition(Char c){
+    int left = 0;
+    int right = _file.length()- 1;
+    int mid, compareNum;
+
+    if (_file.length() == 0) {
+          // throw exception
+            return -1;
+    }
+
+    while (left + 1 < right) {
+      mid = qFloor(left + (right - left) / 2);
+      compareNum = c.compareTo(_file[mid]);
+
+      if (compareNum == 0) {
+        return mid;
+      }
+      else if (compareNum > 0) {
+        left = mid;
+      }
+      else {
+        right = mid;
+      }
+    }
+
+    if (c.compareTo(_file[left]) == 0) {
+      return left;
+    }
+    else if (c.compareTo(_file[right]) == 0) {
+      return right;
+    }
+    else {
+      // throw exception
+        return -1;
+    }
+}
+
+void Crdt::deleteChar(Char val, int index){
+    _file.removeAt(index);
 }

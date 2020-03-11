@@ -268,11 +268,12 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     }
 }
 
-void WorkerClient::requestFile(QString fileName){
+void WorkerClient::requestFile(QString fileName, QUuid siteID){
     QJsonObject fileRequest;
 
     fileRequest["type"] = "filesRequest";
     fileRequest["requestedFiles"] = fileName;
+    fileRequest["siteID"] = siteID.toString();
     sendJson(fileRequest);
 }
 
@@ -333,7 +334,7 @@ void WorkerClient::userLeft(QString fileName, QString user) {
     sendJson(userLeft);
 }
 
-void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType){
+void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType, int index){
     QJsonObject edit;
     QJsonObject content;
 
@@ -348,6 +349,7 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
         position.append(pos);
     }
     content["position"] = position;
+    content["index"] = index;
 
     edit["fileName"] = fileName;
     edit["type"] = "edit";
