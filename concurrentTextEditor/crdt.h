@@ -33,6 +33,7 @@ public:
     EditType _lastOperation;
     int retrieveStrategy(int level);
     QUuid getSiteID();
+    void updateFileAtIndex(int index, Char c);
 
 private:
     QString parseFile(QJsonDocument unparsedFile);
@@ -45,8 +46,8 @@ private:
     QString _fileName;
     QUuid _siteID;
     QString _textBuffer;
-    QList<Char> _file;
-    QList<Char> _CharBuffer;
+    // File representation
+    QList<Char> _file;     
     int _strategy;
 
 };

@@ -573,20 +573,26 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
 //            file.write(updatedFile.toJson());
 //            file.close();
 
+            //Open file from database - cteFile
             QFile file(doc["fileName"].toString());
             file.open(QIODevice::ReadWrite);
             QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
             file.close();
+
+            //Estrazione campi del json
             QJsonObject cteData = cteFile.object();
-            QJsonArray content = cteData["content"].toArray();
+            QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
-            QJsonObject newChar = doc["content"].toObject();
+            // Nuovo char viene presa da "doc", il messaggio di update "edit"
+             QJsonObject newChar = doc["content"].toObject();
 
+            // Estrazione di Char da newChar JSonObject
             QChar val = newChar["value"].toInt();
             QUuid siteID = newChar["siteID"].toString();
             int counter = newChar["counter"].toInt();
             QJsonArray identifiers = newChar["position"].toArray();
             QList<Identifier> positions;
+
             foreach (const QJsonValue &tmpID, identifiers) {
                 QJsonObject ID = tmpID.toObject();
                 int digit = ID["digit"].toInt();
@@ -596,9 +602,13 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
             }
 
             Char c(val,counter,siteID,positions);
+
+            // Find correct index in file and insert in File and in file Json on db
             int index = sender.getCrdt().findInsertIndex(c);
-            //content.append(newChar);
-            cteData["content"] = content;
+            cteContent.insert(index, newChar);
+            sender.getCrdt().updateFileAtIndex(index, c);
+
+            cteData["content"] = cteContent;
             cteFile.setObject(cteData);
             //QJsonDocument updatedFile(cteData);
             //file.flush();
