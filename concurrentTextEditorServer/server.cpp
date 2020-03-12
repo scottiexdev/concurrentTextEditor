@@ -601,10 +601,12 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 }
 
 void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, WorkerServer& sender) {
+
     for(WorkerServer* worker : m_clients) {
 
         if(worker == &sender)
             continue;
+
         QList<QString> openedFile = worker->openedFileList();
         if(openedFile.contains(fileName))
             sendJson(*worker, qjo);

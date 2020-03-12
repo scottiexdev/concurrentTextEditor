@@ -258,6 +258,7 @@ QUuid Crdt::getSiteID() {
 
 
 int Crdt::findIndexByPosition(Char c){
+
     int left = 0;
     int right = _file.length()- 1;
     int mid, compareNum;
@@ -299,22 +300,25 @@ void Crdt::deleteChar(Char val, int index){
 }
 
 int Crdt::handleRemoteDelete(const QJsonObject &qjo) {
+
     Char c = getChar(qjo["content"].toObject());
     int index = findIndexByPosition(c);
     _file.removeAt(index);
     _textBuffer.remove(index);
+
     return index;
 //    this.controller.deleteFromEditor(char.value, index, siteId);
 //    this.deleteText(index);
 }
 
 int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
+
     Char c = getChar(qjo["content"].toObject());
-    int index = findIndexByPosition(c);
-    _file.insert(index, c);
+    int index = findInsertIndex(c);
+    this->insertChar(c, index);
     _textBuffer.insert(index, c._value);
+
     return index;
-//  this.insertChar(index, char);
 //  this.insertText(char.value, index);
 
 //  this.controller.insertIntoEditor(char.value, index, char.siteId);

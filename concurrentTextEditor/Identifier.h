@@ -17,6 +17,7 @@ public:
     QUuid _siteID;
 
     int compareTo(Identifier otherId) {
+
       if (this->_digit < otherId._digit) {
         return -1;
       }

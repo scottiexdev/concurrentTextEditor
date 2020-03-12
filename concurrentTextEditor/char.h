@@ -27,6 +27,7 @@ public:
     QList<Identifier> _position;
 
     int compareTo(Char otherChar) {
+
         Identifier id1, id2;
         int comp;
         QList<Identifier> pos1 = _position;

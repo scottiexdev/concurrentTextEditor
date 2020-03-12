@@ -81,21 +81,30 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
     int index;
     QTextCursor pos;
+    QTextCursor posInit;
+    QTextEdit otherCursor;
     switch(edit) {
+
+
         case EditType::insertion:
             index = _crdt.handleRemoteInsert(qjo);
             pos = this->textCursor();
+            posInit = this->textCursor();
+            pos.setPosition(index);
             this->textCursor().setPosition(index);
-            this->textCursor().insertText(_crdt.getChar(qjo)._value);
-            this->textCursor().swap(pos);
+            this->setTextCursor(pos);            
+            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value.toLatin1()), this->currentCharFormat());
+            this->setTextCursor(posInit);
             break;
+
         case EditType::deletion:
             index = _crdt.handleRemoteDelete(qjo);
             pos = this->textCursor();
-            this->textCursor().setPosition(index);
+            this->textCursor().setPosition(index);            
             this->textCursor().deletePreviousChar();
             this->textCursor().swap(pos);
             break;
+
         default:
             //handle exception
             break;
