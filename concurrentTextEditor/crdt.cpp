@@ -59,25 +59,7 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
     _file.clear();
 
     foreach (const QJsonValue & tmpChar, arrayBuf) {
-        QJsonObject charObject = tmpChar.toObject();
-        QChar val = charObject["value"].toString()[0];
-        QUuid siteID = charObject["siteID"].toString();
-        int counter = charObject["counter"].toInt();
-
-        //Now parse positions: conversion to array is needed, but to object first
-
-        QJsonArray identifiers = charObject["position"].toArray();
-
-        QList<Identifier> positions;
-        foreach (const QJsonValue &tmpID, identifiers) {
-            QJsonObject ID = tmpID.toObject();
-            int digit = ID["digit"].toInt();
-            QUuid oldSiteID = ID["siteID"].toString();
-            Identifier identifier(digit,oldSiteID);
-            positions.append(identifier);
-        }
-
-        Char c(val,counter,siteID,positions);
+        Char c = getChar(tmpChar.toObject());
 
         //Find index for new char and insert it into _file Struct and _textBuffer
         int index = findInsertIndex(c);
@@ -314,4 +296,47 @@ int Crdt::findIndexByPosition(Char c){
 
 void Crdt::deleteChar(Char val, int index){
     _file.removeAt(index);
+}
+
+int Crdt::handleRemoteDelete(const QJsonObject &qjo) {
+    Char c = getChar(qjo["content"].toObject());
+    int index = findIndexByPosition(c);
+    _file.removeAt(index);
+    _textBuffer.remove(index);
+    return index;
+//    this.controller.deleteFromEditor(char.value, index, siteId);
+//    this.deleteText(index);
+}
+
+int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
+    Char c = getChar(qjo["content"].toObject());
+    int index = findIndexByPosition(c);
+    _file.insert(index, c);
+    _textBuffer.insert(index, c._value);
+    return index;
+//  this.insertChar(index, char);
+//  this.insertText(char.value, index);
+
+//  this.controller.insertIntoEditor(char.value, index, char.siteId);
+
+}
+
+Char Crdt::getChar(QJsonObject jsonChar ){
+
+    // Estrazione di Char da newChar JSonObject
+    QChar val = jsonChar["value"].toString()[0];
+    QUuid siteID = jsonChar["siteID"].toString();
+    int counter = jsonChar["counter"].toInt();
+    QJsonArray identifiers = jsonChar["position"].toArray();
+    QList<Identifier> positions;
+
+    foreach (const QJsonValue &tmpID, identifiers) {
+        QJsonObject ID = tmpID.toObject();
+        int digit = ID["digit"].toInt();
+        QUuid oldSiteID = ID["siteID"].toString();
+        Identifier identifier(digit,oldSiteID);
+        positions.append(identifier);
+    }
+
+    return Char(val,counter,siteID,positions);
 }

@@ -577,7 +577,7 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
     QJsonObject newChar = doc["content"].toObject();
     // NewChar viene parsato e trasformato in Char obj
-    Char c = getChar(newChar);
+    Char c = crdtFile.getChar(newChar);
 
     // Find correct index with crdt structure
     int index = crdtFile.findInsertIndex(c);
@@ -631,7 +631,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
     QJsonObject delChar = doc["content"].toObject();
 
-    Char c = getChar(delChar);
+    Char c = crdtFile.getChar(delChar);
     int index = crdtFile.findIndexByPosition(c);
 
     // Update data structures (remote delete)
@@ -647,24 +647,4 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
-}
-
-Char Server::getChar(QJsonObject jsonChar ){
-
-    // Estrazione di Char da newChar JSonObject
-    QChar val = jsonChar ["value"].toInt();
-    QUuid siteID = jsonChar ["siteID"].toString();
-    int counter = jsonChar ["counter"].toInt();
-    QJsonArray identifiers = jsonChar["position"].toArray();
-    QList<Identifier> positions;
-
-    foreach (const QJsonValue &tmpID, identifiers) {
-        QJsonObject ID = tmpID.toObject();
-        int digit = ID["digit"].toInt();
-        QUuid oldSiteID = ID["siteID"].toString();
-        Identifier identifier(digit,oldSiteID);
-        positions.append(identifier);
-    }
-
-    return Char(val,counter,siteID,positions);
 }

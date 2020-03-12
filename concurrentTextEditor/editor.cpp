@@ -14,6 +14,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
     connect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
     connect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     connect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
+    connect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
     _workerClient->requestFile(fileName, ui->editorController->getSiteID());
     //Prende lista degli utenti attivi su quel file
     _workerClient->requestUserList(fileName);

@@ -76,3 +76,28 @@ QUuid EditorController::getSiteID() {
 bool EditorController::parseCteFile(QJsonDocument unparsedFile){
     return _crdt.parseCteFile(unparsedFile);
 }
+
+void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
+    EditType edit = static_cast<EditType>(qjo["editType"].toInt());
+    int index;
+    QTextCursor pos;
+    switch(edit) {
+        case EditType::insertion:
+            index = _crdt.handleRemoteInsert(qjo);
+            pos = this->textCursor();
+            this->textCursor().setPosition(index);
+            this->textCursor().insertText(_crdt.getChar(qjo)._value);
+            this->textCursor().swap(pos);
+            break;
+        case EditType::deletion:
+            index = _crdt.handleRemoteDelete(qjo);
+            pos = this->textCursor();
+            this->textCursor().setPosition(index);
+            this->textCursor().deletePreviousChar();
+            this->textCursor().swap(pos);
+            break;
+        default:
+            //handle exception
+            break;
+    }
+}

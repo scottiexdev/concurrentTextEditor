@@ -110,6 +110,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::userList:
             showUserListHandler(docObj); //qua ci metto anche la rimozione di un utente da mandare in broadcast
             break;
+        case messageType::edit:
+            emit handleRemoteEdit(docObj);
+            break;
         default:
             return;
     }

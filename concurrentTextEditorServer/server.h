@@ -95,7 +95,6 @@ private:
     //Edit handlers
     void insertionHandler(const QJsonObject &doc, WorkerServer &sender);
     void deletionHandler(const QJsonObject &doc, WorkerServer &sender);
-    Char getChar(QJsonObject jsonChar );
 
     // Files
     QMap<QString, Crdt> _openedFiles;

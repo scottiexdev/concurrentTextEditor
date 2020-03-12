@@ -27,6 +27,9 @@ private:
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
 
+public slots:
+    void handleRemoteEdit(const QJsonObject &qjo);
+
 };
 
 #endif // EDITORCONTROLLER_H

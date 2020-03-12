@@ -51,6 +51,7 @@ signals:
     void handleFile(QJsonDocument buf);
     void showUser(QString user);
     void deleteUser(QString user);
+    void handleRemoteEdit(const QJsonObject& qjo);
 
 
 private:

@@ -29,12 +29,17 @@ public:
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
 
+    Char getChar(QJsonObject jsonChar);
+
     // Insertion
     void insertChar(Char val, int index);
     void insertText(QChar val, int index);
 
     //  Deletion
     void deleteChar(Char val, int index);
+
+    int handleRemoteInsert(const QJsonObject& qjo);
+    int handleRemoteDelete(const QJsonObject& qjo);
 
     Char _lastChar;
     EditType _lastOperation;
@@ -57,7 +62,6 @@ private:
     // File representation
     QList<Char> _file;     
     int _strategy;
-
 };
 
 
