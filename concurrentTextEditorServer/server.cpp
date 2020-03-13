@@ -356,11 +356,10 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 
     if(requestedFile == "all")
         sendListFile(sender);
-    else {
-        // sender.setCrdt(doc["siteID"].toString(), doc["siteID"].toString());
-        sender.setCrdt(doc["siteID"].toString());
+    else
         sendFile(sender, requestedFile);
-    }
+
+    return;
 }
 
 void Server::sendFile(WorkerServer& sender, QString fileName){

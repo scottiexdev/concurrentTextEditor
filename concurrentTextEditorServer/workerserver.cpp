@@ -81,11 +81,3 @@ void WorkerServer::delOpenFile(const QString &fileName) {
 QList<QString> WorkerServer::openedFileList() const {
     return _openedFileList;
 }
-
-Crdt WorkerServer::getCrdt() {
-    return _crdt;
-}
-
-void WorkerServer::setCrdt(QString siteID) {
-    _crdt = Crdt(siteID);
-}
