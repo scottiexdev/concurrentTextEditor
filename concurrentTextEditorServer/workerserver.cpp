@@ -31,6 +31,7 @@ void WorkerServer::sendJson(const QJsonObject &json) {
 }
 
 void WorkerServer::receiveJson() {
+
     QByteArray jsonData; //prepare container
     QDataStream socketStream(m_serverSocket); //datastream on the socket
     socketStream.setVersion(QDataStream::Qt_5_10);

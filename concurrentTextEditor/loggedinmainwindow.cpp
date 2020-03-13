@@ -22,6 +22,10 @@ void loggedinmainwindow::requestFileList(){
 
 void loggedinmainwindow::showFiles(QStringList filesList, QStringList createdList, QStringList ownerList){
 
+    // Empty list
+    ui->fileListTable->clear();
+
+    // Repopulate list
     ui->fileListTable->setRowCount(filesList.count());
     ui->fileListTable->setColumnCount(2);
 
@@ -69,7 +73,13 @@ void loggedinmainwindow::on_pushButtonNewFile_2_clicked()
 
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
-    QApplication::quit();
+    // TO FIX THIS: disconnect socket
+    //this->_workerClient->disconnectHost();
+
+    this->close();
+    this->parentWidget()->show();
+    this->deleteLater();
+    //QApplication::quit();
 }
 
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
@@ -87,4 +97,9 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     _e = new Editor(this, _workerClient, fileName);
     //hide();
     _e->show();
+}
+
+void loggedinmainwindow::on_pushButtonUpdate_2_clicked()
+{
+    _workerClient->getFileList();
 }

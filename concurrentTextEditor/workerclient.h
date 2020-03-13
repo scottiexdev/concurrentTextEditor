@@ -36,7 +36,6 @@ public:
     void userJoined(QString fileName, QString user);
     void userLeft(QString fileName, QString user);
 
-
 private slots:
     void onReadyRead();
 

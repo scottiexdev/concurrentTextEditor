@@ -475,6 +475,7 @@ void Server::write(QJsonObject &qjo, QString filename) const {
 }
 
 void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
+
     //QString action = doc.value("action").toString();
     action act = static_cast<action>(doc["action"].toInt());
     QString fileName = doc.value("fileName").toString();

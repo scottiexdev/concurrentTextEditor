@@ -32,6 +32,7 @@ private slots:
 
     void on_pushButtonOpenFile_2_clicked();
 
+    void on_pushButtonUpdate_2_clicked();
 
 public:
 

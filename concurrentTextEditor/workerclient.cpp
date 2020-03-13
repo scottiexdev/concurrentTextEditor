@@ -338,3 +338,4 @@ void WorkerClient::sendJson(const QJsonObject &doc) {
     QDataStream stream(_clientSocket);
     stream << QJsonDocument(doc).toJson();
 }
+
