@@ -6,6 +6,7 @@
 #include <QTextEdit>
 #include <QKeyEvent>
 #include <QJsonDocument>
+#include <QtMath>
 
 #include "Enums.h"
 #include "crdt.h"

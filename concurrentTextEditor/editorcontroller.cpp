@@ -14,36 +14,38 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int pressed_key = key->key();
 
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || (key->key() == Qt::Key_Return)){
-        //Init
+        // Get cursor position
         int cursorPosition = this->textCursor().position(); // THIS IS WRONG
-        int line = this->textCursor().positionInBlock();
-        int lines = this->textCursor().blockNumber();
+        //int line = this->textCursor().positionInBlock();
+        //int lines = this->textCursor().blockNumber();
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
     }
 
     if(pressed_key == Qt::Key_Backspace) {
-        int cursorPosition = this->textCursor().position()-1;
-        if((cursorPosition)!=-1) {
-            _crdt.handleLocalDelete(cursorPosition);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+
+        int cursorPosition = this->textCursor().position();
+        int anchor = this->textCursor().anchor();
+
+        int deltaPositions = abs(cursorPosition - anchor);
+
+        if((cursorPosition -1) != -1 && deltaPositions == 0) {
+
+            _crdt.handleLocalDelete(cursorPosition -1);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1);
         }
+        else if(deltaPositions != 0) {
 
+            int start = anchor > cursorPosition ? cursorPosition : anchor;
+            int end = start == anchor ? cursorPosition : anchor;
+
+            //Iterate over characters to be removed
+            for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+                _crdt.handleLocalDelete(floatingCursor - 1);
+                emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
+            }
+        }
     }
-    //Return "\n"
-//    if(key->key() == Qt::Key_Return){
-//        int cursorPosition = this->textCursor().position(); // THIS IS WRONG
-//        QChar first = key->text().data()[0];
-//        QChar second = key->text().data()[1];
-//        QChar* data = key->text().data();
-//        QString keyText = key->text();
-//        _crdt.handleLocalInsert(first, cursorPosition);
-//        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
-        //_crdt.handleLocalInsert(second, cursorPosition);
-        //emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation);
-//    }
-
-    //Qt::Key_Return (0x1000004)
 
     QTextEdit::keyPressEvent(key);
 }
