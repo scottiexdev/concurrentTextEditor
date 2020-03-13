@@ -42,6 +42,11 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         return;
     }
 
+    if(key->matches(QKeySequence::Copy)){
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
+
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
 
