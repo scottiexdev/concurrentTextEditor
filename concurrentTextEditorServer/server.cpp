@@ -483,6 +483,7 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
     QJsonObject userAdd;
     QJsonObject userDel;
     QString buf;
+    int i=0;
 
     switch(act) {
         case action::request:
@@ -490,7 +491,6 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
             userList["type"] = messageType::userList;
             userList["action"] = action::show;
             for(WorkerServer* c : m_clients) {
-                int i=0;
                 QList<QString> openedFile = c->openedFileList();
                 if(openedFile.contains(fileName)) {
                     if(i==0) {

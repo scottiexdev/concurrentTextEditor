@@ -97,7 +97,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             editingCursor.setPosition(index);
             this->setTextCursor(editingCursor);
             // Write
-            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value.toLatin1()), this->currentCharFormat());
+            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value));
             // Set cursor back to original position (before editing)
             this->setTextCursor(cursorBeforeEdit);
 
