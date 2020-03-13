@@ -50,7 +50,6 @@ public:
 
 private:
     QString parseFile(QJsonDocument unparsedFile);
-    QUuid createQuuid();
 
     int _base = 32;
     int _boundary = 10;
