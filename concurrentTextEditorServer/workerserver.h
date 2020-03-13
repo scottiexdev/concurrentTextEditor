@@ -11,19 +11,7 @@ class QJsonObject;
 class WorkerServer : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(WorkerServer)
-
-public:
-    explicit WorkerServer(QObject *parent = nullptr);
-    virtual bool setSocketDescriptor(qintptr socketDescriptor);
-    QString userName() const;
-    void setUserName(const QString &userName);
-    void sendJson(const QJsonObject &jsonData);
-    QTcpSocket* getSocket() {return m_serverSocket;}
-
-    void delOpenFile(const QString &fileName);
-    void addOpenFile(const QString &fileName);
-    QList<QString> openedFileList() const;       
+    Q_DISABLE_COPY(WorkerServer)     
 
 signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
@@ -33,9 +21,19 @@ signals:
 public slots:
     void disconnectFromClient();
 
-
 private slots:
     void receiveJson();
+
+public:
+    explicit WorkerServer(QObject *parent = nullptr);
+    virtual bool setSocketDescriptor(qintptr socketDescriptor);
+    QString userName() const;
+    void setUserName(const QString &userName);
+    void sendJson(const QJsonObject &jsonData);
+    QTcpSocket* getSocket() {return m_serverSocket;}
+    void delOpenFile(const QString &fileName);
+    void addOpenFile(const QString &fileName);
+    QList<QString> openedFileList() const;
 
 private:
     QTcpSocket *m_serverSocket;

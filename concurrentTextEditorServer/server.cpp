@@ -456,7 +456,7 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
         QFile file(filename);
         QJsonObject qjo;
         file.open(QIODevice::WriteOnly);
-        write(qjo, filename);
+        writeEmptyFile(qjo, filename);
         QByteArray data = QJsonDocument(qjo).toJson();
         file.write(data);
         file.close();
@@ -469,7 +469,7 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
      }
 }
 
-void Server::write(QJsonObject &qjo, QString filename) const {
+void Server::writeEmptyFile(QJsonObject &qjo, QString filename) const {
     qjo["filename"] = filename;
     qjo["content"] = QJsonValue::Null;
 }
@@ -600,19 +600,6 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     broadcastOnlyOpenedFile(filename, doc, sender);
 }
 
-void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, WorkerServer& sender) {
-
-    for(WorkerServer* worker : m_clients) {
-
-        if(worker == &sender)
-            continue;
-
-        QList<QString> openedFile = worker->openedFileList();
-        if(openedFile.contains(fileName))
-            sendJson(*worker, qjo);
-    }
-}
-
 void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     //Open file from database - cteFile
@@ -649,4 +636,17 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
+}
+
+void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, WorkerServer& sender) {
+
+    for(WorkerServer* worker : m_clients) {
+
+        if(worker == &sender)
+            continue;
+
+        QList<QString> openedFile = worker->openedFileList();
+        if(openedFile.contains(fileName))
+            sendJson(*worker, qjo);
+    }
 }

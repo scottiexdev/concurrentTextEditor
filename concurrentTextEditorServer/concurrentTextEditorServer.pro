@@ -31,8 +31,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     server.h \
-    serverconsole.h \
-    serverhelpers.h \
+    serverconsole.h \    
     serverwindow.h \
     workerserver.h \
     ../concurrentTextEditor/crdt.h \

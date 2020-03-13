@@ -5,7 +5,6 @@
 
 //My includes
 #include "server.h"
-#include "serverhelpers.h"
 #include "serverwindow.h"
 #include <QApplication>
 

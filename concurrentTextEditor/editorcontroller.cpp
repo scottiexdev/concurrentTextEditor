@@ -1,6 +1,8 @@
 #include "editorcontroller.h"
 #include <QKeyEvent>
 #include <QRandomGenerator>
+#include <QClipboard>
+#include <QApplication>
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 {    
@@ -12,41 +14,71 @@ EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 void EditorController::keyPressEvent(QKeyEvent *key)
 {
     int pressed_key = key->key();
+    int cursorPosition = this->textCursor().position();
+    int anchor = this->textCursor().anchor();
+    int deltaPositions = abs(cursorPosition - anchor);
+    int start, end;
 
-    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || (key->key() == Qt::Key_Return)){
-        // Get cursor position
-        int cursorPosition = this->textCursor().position(); // THIS IS WRONG
-        //int line = this->textCursor().positionInBlock();
-        //int lines = this->textCursor().blockNumber();
+    if(deltaPositions != 0){
+        start = anchor > cursorPosition ? cursorPosition : anchor;
+        end = start == anchor ? cursorPosition : anchor;
+    }
+
+    if(key->matches(QKeySequence::Paste)){
+
+        QClipboard* clipboard = QApplication::clipboard();
+        QString clipText = clipboard->text();
+
+        // Write clipboard text into crdt and broadcast edit
+        for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
+            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+            cursorPosition++;
+        }
+
+        //this->textCursor().insertText(clipText);
+
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
+
+    // Handle Char insert or return
+    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
+
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
     }
 
-    if(pressed_key == Qt::Key_Backspace) {
 
-        int cursorPosition = this->textCursor().position();
-        int anchor = this->textCursor().anchor();
+    // Handle selection deletion with backspace or delete key
+    if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && deltaPositions != 0) {
 
-        int deltaPositions = abs(cursorPosition - anchor);
-
-        if((cursorPosition -1) != -1 && deltaPositions == 0) {
-
-            _crdt.handleLocalDelete(cursorPosition -1);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1);
-        }
-        else if(deltaPositions != 0) {
-
-            int start = anchor > cursorPosition ? cursorPosition : anchor;
-            int end = start == anchor ? cursorPosition : anchor;
-
-            //Iterate over characters to be removed
-            for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-                _crdt.handleLocalDelete(floatingCursor - 1);
-                emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
-            }
+        //Iterate over characters to be removed
+        for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+            _crdt.handleLocalDelete(floatingCursor - 1);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
         }
     }
 
+    // Handle backspace deletion
+    if(pressed_key == Qt::Key_Backspace && (cursorPosition -1) != -1 && deltaPositions == 0) {
+
+        _crdt.handleLocalDelete(cursorPosition -1);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1);
+    }
+
+
+    QTextCursor lastIndex = this->textCursor();
+    lastIndex.movePosition(QTextCursor::End);
+
+    // Handle "delete" deletion + TODO: capire se sono alla fine di un testo, nel caso non posso fare canc
+    if(pressed_key == Qt::Key_Delete && this->textCursor() != lastIndex && deltaPositions == 0) {
+
+        _crdt.handleLocalDelete(cursorPosition);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+    }
+
+    // Let the editor do its thing on current text if no handler is found
     QTextEdit::keyPressEvent(key);
 }
 
@@ -104,7 +136,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             break;
 
         case EditType::deletion:
-            \
+
             index = _crdt.handleRemoteDelete(qjo);
             editingCursor = this->textCursor();
             cursorBeforeEdit = this->textCursor();

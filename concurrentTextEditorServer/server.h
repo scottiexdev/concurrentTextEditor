@@ -57,47 +57,57 @@ protected:
     int countReturnedRows(QSqlQuery& executedQuery);
 
 private:    
+
+    // PRIVATE MEMBERS
     QTcpServer *tcpServer = nullptr;
     QString  _serverName;
     QSqlDatabase _db;
+    QVector<WorkerServer *> m_clients;
+    QString _defaultDocument = "Welcome.txt";
     const QString _database = "QSQLITE";
+
+    // Map <filename, Crdt (in-memory file structure)>
+    // Keeps only one file structure open per client on server side
+    QMap<QString, Crdt> _openedFiles;
+
+    // PATHS
     const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
-//    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-//    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
+    //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    QVector<WorkerServer *> m_clients;
-    QString _defaultDocument = "Welcome.txt";
 
-    void sendJson(WorkerServer& dest, const QJsonObject& msg);
 
-    void jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc);
-    void jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc);
+    // PRIVATE FUNCTIONS
 
+    // DATABASE INTERACTIONS
     void login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender);
     void signup(QSqlQuery& qUser, QSqlQuery& qSignup, const QJsonObject &doc, WorkerServer& sender);
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
 
-    void sendFile(WorkerServer& sender, QString fileName);
-    void sendListFile(WorkerServer& sender);
-    bool checkFilenameAvailability(QString fn);
+    // UTILITIES
     QJsonObject createFileData(QFileInfoList file_data);
+    bool checkFilenameAvailability(QString fn);
+    void writeEmptyFile(QJsonObject &qjo, QString filename) const;
 
+    // WORKER SERVER INTERACTIONS
+    void sendJson(WorkerServer& dest, const QJsonObject& msg);
+    void jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc);
+    void jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc);
+    void sendListFile(WorkerServer& sender);
+    void sendFile(WorkerServer& sender, QString fileName);
     void newFileHandler(WorkerServer &sender, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void userListHandler(WorkerServer& sender, const QJsonObject &doc);
     void editHandler(WorkerServer& sender, const QJsonObject &doc);
 
-    void write(QJsonObject &qjo, QString filename) const;
-
     //Edit handlers
     void insertionHandler(const QJsonObject &doc, WorkerServer &sender);
     void deletionHandler(const QJsonObject &doc, WorkerServer &sender);
 
-    // Files
-    QMap<QString, Crdt> _openedFiles;
+
 };
 
 #endif // SERVER_H
