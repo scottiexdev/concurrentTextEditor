@@ -78,31 +78,39 @@ bool EditorController::parseCteFile(QJsonDocument unparsedFile){
 }
 
 void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
-    EditType edit = static_cast<EditType>(qjo["editType"].toInt());
+
     int index;
-    QTextCursor pos;
-    QTextCursor posInit;
-    QTextEdit otherCursor;
+    QTextCursor editingCursor;
+    QTextCursor cursorBeforeEdit;
+
+    EditType edit = static_cast<EditType>(qjo["editType"].toInt());
+
     switch(edit) {
 
-
         case EditType::insertion:
+
             index = _crdt.handleRemoteInsert(qjo);
-            pos = this->textCursor();
-            posInit = this->textCursor();
-            pos.setPosition(index);
-            this->textCursor().setPosition(index);
-            this->setTextCursor(pos);            
+            editingCursor = this->textCursor();
+            cursorBeforeEdit= this->textCursor();
+            editingCursor.setPosition(index);
+            this->setTextCursor(editingCursor);
+            // Write
             this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value.toLatin1()), this->currentCharFormat());
-            this->setTextCursor(posInit);
+            // Set cursor back to original position (before editing)
+            this->setTextCursor(cursorBeforeEdit);
+
             break;
 
         case EditType::deletion:
+            \
             index = _crdt.handleRemoteDelete(qjo);
-            pos = this->textCursor();
-            this->textCursor().setPosition(index);            
+            editingCursor = this->textCursor();
+            cursorBeforeEdit = this->textCursor();
+            editingCursor.setPosition(index + 1);
+            this->setTextCursor(editingCursor);
             this->textCursor().deletePreviousChar();
-            this->textCursor().swap(pos);
+            this->setTextCursor(cursorBeforeEdit);
+
             break;
 
         default:
