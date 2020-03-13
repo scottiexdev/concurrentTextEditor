@@ -78,35 +78,38 @@ bool Server::queryDatabase(QSqlQuery& query){
 }
 
 
-void Server::sendListFile(WorkerServer &sender) {
+void Server::sendListFile(WorkerServer &sender, bool isPublic) {
 
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
-    QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
+    QDir dir;
+
+    if(isPublic)
+        dir = QDir(_defaultAbsolutePublicFilesLocation);
+    else
+        dir = QDir(_defaultAbsoluteFilesLocation + sender.userName());
+
     QJsonArray listFile;
 
     //set directory
-    dir->setFilter(QDir::Files);
-    dir->setSorting(QDir::Size | QDir::Reversed);
+    dir.setFilter(QDir::Files);
+    dir.setSorting(QDir::Size | QDir::Reversed);
 
     //create filelist
-    QFileInfoList list = dir->entryInfoList();
+    QFileInfoList list = dir.entryInfoList();
 
-    //TODO: if directory is empty - why not just display 0 files?
-    // or better this app comes with a Welcome.txt file explaining briefly how it works
-
-    QJsonObject file_data = createFileData(list);
+    QJsonObject file_data = createFileData(list, isPublic);
     sendJson(sender, file_data);
 }
 
 
-QJsonObject Server::createFileData(QFileInfoList list){
+QJsonObject Server::createFileData(QFileInfoList list, bool isPublic){
 
     QJsonObject file_data;
     file_data["type"] = messageType::filesRequest;
     file_data["num"] = list.size();
     file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
-
+    file_data["access"] = isPublic ? "true" : "false";
     QString buf;
 
     //TO CHECK and think through when CRDT is set up
@@ -281,6 +284,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
     bindValues(q,doc);
 
     if(queryDatabase(q)) {
+
         if(this->countReturnedRows(q) == 1) {
             QJsonObject msg;
             msg["type"] = QString("login");
@@ -353,19 +357,35 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 
     QString requestedFile = doc.value(QLatin1String("requestedFiles")).toString();
+    QString access = doc["access"].toString();
 
-    if(requestedFile == "all")
-        sendListFile(sender);
+    if(requestedFile == "all"){
+        // Send list of files for both private and public directories
+        if(access == "all"){
+            sendListFile(sender, true);
+            sendListFile(sender, false);
+        }
+        else
+            // Send only public if public requested, send private otherwise
+            sendListFile(sender, access == "public");
+    }
     else
-        sendFile(sender, requestedFile);
+        sendFile(sender, requestedFile, access == "public");
 
     return;
 }
 
-void Server::sendFile(WorkerServer& sender, QString fileName){
+void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
 
     //Get file and send it through the WorkerServer sender
-    QDir::setCurrent(_defaultAbsoluteFilesLocation);
+    // Is the new file private or public? Set directory according to it
+    if(!isPublic){
+        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+    }
+    else{
+        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+    }
+
     QFile f(fileName);
     if(!f.open(QIODevice::ReadWrite))
         return; //handle error, if it is deleted or else
@@ -426,41 +446,74 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 }
 
 
-bool Server::checkFilenameAvailability(QString fn){
-    QDir* dir = new QDir(_defaultAbsoluteFilesLocation);
-    QJsonArray listFile;
-    bool ok=true;
+bool Server::checkFilenameAvailability(QString filename, QString username, bool isPublic){
 
-    //set directory
-    dir->setFilter(QDir::Files);
-    dir->setSorting(QDir::Size | QDir::Reversed);
+    if(isPublic){
+        QDir publicDir = QDir(_defaultAbsolutePublicFilesLocation);
+        assert(publicDir.exists() == true);
+        return checkFilenameInDirectory(filename, QDir(_defaultAbsolutePublicFilesLocation), isPublic);
+    }
+    else{
+        // Create private directory path
+        QString privateDirectoryPath = _defaultAbsoluteFilesLocation + username;
+        return checkFilenameInDirectory(filename, QDir(privateDirectoryPath), isPublic);
+    }
+}
 
-    //create filelist
-    QFileInfoList list = dir->entryInfoList();
+bool Server::checkFilenameInDirectory(QString filename, QDir directory, bool isPublic){
 
-    for(int i=0; i< list.size(); i++) {
-        if (list.at(i) == fn)
-            ok=false;
+    QJsonArray listPublicFile, listPrivateFile;
+
+    // Check for private directory existence and create it if it doesn't exist
+    if(!directory.exists() && !isPublic){
+        // does this work?
+        QDir().mkdir(directory.path());
     }
 
-    return ok;
+    //get files in directory and sort them
+    directory.setFilter(QDir::Files);
+    directory.setSorting(QDir::Size | QDir::Reversed);
+
+    //create filelist
+    QFileInfoList filesList = directory.entryInfoList();
+
+    // Check presence of file
+    for(int i=0; i< filesList.size(); i++) {
+        if (filesList.at(i) == filename)
+            return false;
+    }
+
+    return true;
 }
 
 void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
+
      //TODO: implement this with exceptions
-
-     QDir::setCurrent(_defaultAbsoluteFilesLocation);
      QString filename = doc.value("filename").toString();
+     bool publicAccess = doc.value("access").toString() == "public" ? true : false;
 
-     if (checkFilenameAvailability(filename)){
-        QFile file(filename);
+     if (checkFilenameAvailability(filename, sender.userName(), publicAccess)){
+
+        // Is the new file private or public? Set directory according to it
+        if(!publicAccess){
+            QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+        }
+        else{
+            QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+        }
+
+        // Create file
         QJsonObject qjo;
+
+        QFile file(filename);
         file.open(QIODevice::WriteOnly);
         writeEmptyFile(qjo, filename);
         QByteArray data = QJsonDocument(qjo).toJson();
         file.write(data);
         file.close();
-        sendListFile(sender);
+
+        sendListFile(sender, publicAccess);
+
      } else {
          QJsonObject err;
          err["type"] = "newFile";
@@ -470,13 +523,13 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 }
 
 void Server::writeEmptyFile(QJsonObject &qjo, QString filename) const {
+
     qjo["filename"] = filename;
     qjo["content"] = QJsonValue::Null;
 }
 
 void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
 
-    //QString action = doc.value("action").toString();
     action act = static_cast<action>(doc["action"].toInt());
     QString fileName = doc.value("fileName").toString();
     QJsonObject userList;

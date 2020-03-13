@@ -28,8 +28,8 @@ public:
     void setUser(QString loggedUser);
     QString getUser();
 
-    void getFileList();
-    void requestFile(QString fileName, QUuid siteID);
+    void getFileList(QString access);
+    void requestFile(QString fileName, QUuid siteID, bool isPublic);
     void newFileRequest(const QJsonObject& qjo);
 
     void requestUserList(QString fileName);
@@ -46,7 +46,7 @@ signals:
     void myLoggedIn();
     void mySignupOk();
     void genericError(QString str="Error");
-    void showFiles(QStringList list, QStringList list2, QStringList list3);
+    void showFiles(QStringList list, QStringList list2, QStringList list3, bool isPublic);
     void handleFile(QJsonDocument buf);
     void showUser(QString user);
     void deleteUser(QString user);

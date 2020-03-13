@@ -3,7 +3,7 @@
 
 #include <exception>
 
-Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
+Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic) :
     QMainWindow(parent),
     ui(new Ui::Editor),
     _workerClient(worker)
@@ -15,7 +15,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName) :
     connect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     connect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     connect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
-    _workerClient->requestFile(fileName, ui->editorController->getSiteID());
+    _workerClient->requestFile(fileName, ui->editorController->getSiteID(), isPublic);
     //Prende lista degli utenti attivi su quel file
     _workerClient->requestUserList(fileName);
     //Notifica il server che l'utente si e' connesso a quel file

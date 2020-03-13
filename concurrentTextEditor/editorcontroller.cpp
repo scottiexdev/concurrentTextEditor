@@ -9,8 +9,6 @@ EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
     _crdt = Crdt();    
 }
 
-
-
 void EditorController::keyPressEvent(QKeyEvent *key)
 {
     int pressed_key = key->key();
@@ -76,7 +74,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     QTextCursor lastIndex = this->textCursor();
     lastIndex.movePosition(QTextCursor::End);
 
-    // Handle "delete" deletion + TODO: capire se sono alla fine di un testo, nel caso non posso fare canc
+    // Handle "delete" deletion
     if(pressed_key == Qt::Key_Delete && this->textCursor() != lastIndex && deltaPositions == 0) {
 
         _crdt.handleLocalDelete(cursorPosition);

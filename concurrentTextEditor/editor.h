@@ -18,7 +18,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 public:
-    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName);
+    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic);
     ~Editor();
 
 public slots:
