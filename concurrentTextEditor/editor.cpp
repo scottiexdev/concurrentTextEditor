@@ -43,13 +43,18 @@ void Editor::handleFile(QJsonDocument unparsedFile) {
 }
 
 void Editor::showUser(QString user) {
-    ui->listWidget->addItem(user);
+    QListWidgetItem *newUser = new QListWidgetItem(user);
+    newUser->setBackground(_colors.at(_colorNumber)); //creare una palette
+    _colorNumber++;
+    ui->listWidget->addItem(newUser);
 }
 
 QString Editor::deleteUser(QString user) {
     for(int i=0; i < ui->listWidget->count(); i++) {
-        if(ui->listWidget->item(i)->text()==user)
+        if(ui->listWidget->item(i)->text()==user) {
+            _colorNumber--;
             return ui->listWidget->takeItem(i)->text();
+        }
     }
     //TODO: see how to manage exceptions, how to distinguish them
     throw ("Users isn't active on file, user not found");

@@ -24,6 +24,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     highlight.setBackground(Qt::white);
     this->textCursor().setCharFormat(highlight);
 
+    //take selection if there is one
     if(deltaPositions != 0){
         start = anchor > cursorPosition ? cursorPosition : anchor;
         end = start == anchor ? cursorPosition : anchor;
@@ -35,6 +36,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         return;
     }
 
+    //ctrl-x handle to avoid "UpArrowBug"
     if(key->matches(QKeySequence::Cut)) {
          //cancel the selection (if there is one)
         if(deltaPositions!=0) {
@@ -43,7 +45,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         }
         QTextEdit::keyPressEvent(key);
         return;
-}
+    }
 
     //ctrl-v handler
     if(key->matches(QKeySequence::Paste)){
@@ -68,7 +70,8 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
     // Handle Char insert or return
-    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
+    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return) {
+
         //cancel the selection (if there is one)
         if(deltaPositions!=0) {
             deleteSelection(start, end);
@@ -82,10 +85,9 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
 
+    //maybe the next two are refactorable
     // Handle selection deletion with backspace or delete key
     if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && deltaPositions != 0) {
-
-        //Iterate over characters to be removed
         deleteSelection(start, end);
     }
 
