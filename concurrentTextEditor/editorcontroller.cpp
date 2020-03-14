@@ -121,7 +121,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 void EditorController::deleteSelection(int start, int end) {
     for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
         _crdt.handleLocalDelete(floatingCursor - 1);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
     }
 }
 
