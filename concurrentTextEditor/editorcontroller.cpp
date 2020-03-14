@@ -49,7 +49,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
 
-
+        _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         this->textCursor().insertText(key->text().data()[0],highlight);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
         return;
