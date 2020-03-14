@@ -2,6 +2,8 @@
 #define EDITOR_H
 
 #include <QMainWindow>
+#include <QtPrintSupport/QPrinter>
+#include <QFileDialog>
 #include "workerclient.h"
 #include "char.h"
 #include "Enums.h"
@@ -25,6 +27,9 @@ public slots:
     void handleFile(QJsonDocument buf);
     void showUser(QString user);
     QString deleteUser(QString user);    
+
+private slots:
+    void on_actionExport_PDF_triggered();
 
 private:
     Ui::Editor *ui;

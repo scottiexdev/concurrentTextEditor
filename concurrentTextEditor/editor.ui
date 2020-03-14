@@ -41,33 +41,21 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave"/>
-    <addaction name="actionClose"/>
+    <addaction name="actionExport_PDF"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSave">
+  <action name="actionExport_PDF">
    <property name="text">
-    <string>Save</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="actionClose">
-   <property name="text">
-    <string>Close</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string>Export PDF</string>
    </property>
   </action>
  </widget>

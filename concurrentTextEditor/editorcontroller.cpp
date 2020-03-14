@@ -156,14 +156,19 @@ bool EditorController::parseCteFile(QJsonDocument unparsedFile){
     return _crdt.parseCteFile(unparsedFile);
 }
 
+void EditorController::setUserColor(QString user, QColor color) {
+    _usersColor.insert(user, color);
+}
+
 void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
 
     int index;
+    QString user = qjo["username"].toString();
     QTextCursor editingCursor;
     QTextCursor cursorBeforeEdit;
 
     QTextCharFormat highlight = QTextCharFormat();
-    highlight.setBackground(Qt::red);
+    highlight.setBackground(_usersColor[user]);
 
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
 
@@ -204,4 +209,8 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
 void EditorController::setAccess(bool isPublic){
 
     _isPublic = isPublic;
+}
+
+Crdt EditorController::getCrdt() {
+    return _crdt;
 }

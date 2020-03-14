@@ -48,15 +48,16 @@ void Editor::handleFile(QJsonDocument unparsedFile) {
 
 void Editor::showUser(QString user) {
     QListWidgetItem *newUser = new QListWidgetItem(user);
-    newUser->setBackground(_colors.at(_colorNumber)); //creare una palette
+    QColor color = _colors.at(_colorNumber%_colors.size());
+    newUser->setBackground(_colors.at(_colorNumber%_colors.size())); //creare una palette
     _colorNumber++;
+    ui->editorController->setUserColor(user, color);
     ui->listWidget->addItem(newUser);
 }
 
 QString Editor::deleteUser(QString user) {
     for(int i=0; i < ui->listWidget->count(); i++) {
         if(ui->listWidget->item(i)->text()==user) {
-            _colorNumber--;
             return ui->listWidget->takeItem(i)->text();
         }
     }
@@ -72,3 +73,25 @@ void Editor::closeEvent(QCloseEvent *event) {
 }
 
 
+
+void Editor::on_actionExport_PDF_triggered()
+{
+    QString fileName = ui->editorController->getFileName().remove(".cte");
+
+    QFileDialog *savePDF = new QFileDialog(parentWidget(),tr("Export PDF"), QDir::current().path(), tr("PDF files (*.pdf)"));
+    savePDF->setFileMode(QFileDialog::AnyFile);
+    savePDF->setAcceptMode(QFileDialog::AcceptSave);
+    if(savePDF->exec() != QDialog::Accepted)
+        return;
+    QStringList pathList = savePDF->selectedFiles();
+    QString path(pathList.join("\\"));
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOutputFileName(path);
+
+    QTextDocument doc;
+    doc.setHtml(ui->editorController->getCrdt().getTextBuffer());
+    doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    doc.print(&printer);
+}
