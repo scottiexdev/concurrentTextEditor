@@ -18,8 +18,8 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 public:
-    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName);
-    ~Editor();
+    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic);
+    ~Editor();    
 
 public slots:
     void handleFile(QJsonDocument buf);

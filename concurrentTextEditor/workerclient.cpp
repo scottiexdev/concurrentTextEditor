@@ -154,13 +154,16 @@ QString WorkerClient::getUser(){
 }
 
 //Setup and send Json asking for file list
-void WorkerClient::getFileList(){
+void WorkerClient::getFileList(QString access){
 
     //Request message
     QJsonObject filesRequest;
 
     filesRequest["type"] = messageType::filesRequest;
     filesRequest["requestedFiles"] = "all";
+
+    // Request update of "private" "public" or "all" files
+    filesRequest["access"] = access.isNull() || access.isEmpty() ? "all" : access;
 
     //Send request message
     sendJson(filesRequest);
@@ -225,16 +228,19 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
 }
 
 void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
+
     //emit verso la gui per update della gui
     if(qjo["requestedFiles"] == "all") {
-        //int n = qjo["num"].toInt();
+
+        bool isPublic = qjo["access"].toBool();
         QString buf = qjo["Filename"].toString();
         QStringList list = buf.split(",", QString::SkipEmptyParts);
         QString buf2 = qjo["Created"].toString();
         QStringList list2 = buf2.split(",", QString::SkipEmptyParts);
         QString buf3 = qjo["Owner"].toString();
         QStringList list3 = buf3.split(",", QString::SkipEmptyParts);
-        emit showFiles(list,list2,list3);
+
+        emit showFiles(list,list2,list3, isPublic);
     } else {
 
         QJsonDocument doc(qjo);
@@ -242,12 +248,14 @@ void WorkerClient::showallFilesHandler(const QJsonObject &qjo) {
     }
 }
 
-void WorkerClient::requestFile(QString fileName, QUuid siteID){
+void WorkerClient::requestFile(QString fileName, QUuid siteID, bool isPublic){
     QJsonObject fileRequest;
 
     fileRequest["type"] = messageType::filesRequest;
     fileRequest["requestedFiles"] = fileName;
-    fileRequest["siteID"] = siteID.toString();
+    fileRequest["siteID"] = siteID.toString();    
+    fileRequest["access"] = isPublic == true ? "public" : "private";
+
     sendJson(fileRequest);
 }
 
@@ -262,6 +270,7 @@ void WorkerClient::newFileError() {
 }
 
 void WorkerClient::requestUserList(QString fileName) {
+
     QJsonObject userListRequest;
 
     userListRequest["type"] = messageType::userList;
@@ -275,12 +284,15 @@ void WorkerClient::showUserListHandler(const QJsonObject &qjo) {
     action act = static_cast<action>(qjo["action"].toInt());
 
     switch(act) {
+
         case action::add:
             emit showUser(qjo["username"].toString());
             break;
+
         case action::del:
             emit deleteUser(qjo["username"].toString());
             break;
+
         case action::show:
             QString buf = qjo["username"].toString();
             QStringList list = buf.split(",", QString::SkipEmptyParts);
@@ -297,6 +309,7 @@ void WorkerClient::userJoined(QString fileName, QString user) {
     userJoined["action"] = action::add;
     userJoined["fileName"] = QString(fileName);
     userJoined["user"] = QString(user);
+
     sendJson(userJoined);
 }
 
@@ -306,10 +319,12 @@ void WorkerClient::userLeft(QString fileName, QString user) {
     userLeft["action"] = action::del;
     userLeft["fileName"] = QString(fileName);
     userLeft["user"] = QString(user);
+
     sendJson(userLeft);
 }
 
-void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType, int index){
+void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic){
+
     QJsonObject edit;
     QJsonObject content;
 
@@ -330,6 +345,9 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
     edit["type"] = messageType::edit;
     edit["editType"] = editType;
     edit["content"] = content;
+
+    // Set access
+    edit["access"] = isPublic;
 
     sendJson(edit);
 }

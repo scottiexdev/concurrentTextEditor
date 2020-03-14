@@ -36,7 +36,6 @@ public:
     bool queryDatabase(QSqlQuery& query);
     void logQueryResults(QSqlQuery query);
 
-
 signals:
     void logMessage(const QString &msg);
 
@@ -72,11 +71,12 @@ private:
 
     // PATHS
     const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files";
+    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/";
+    const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-    //const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+    //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
+    //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
     //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 
 
@@ -88,16 +88,17 @@ private:
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
 
     // UTILITIES
-    QJsonObject createFileData(QFileInfoList file_data);
-    bool checkFilenameAvailability(QString fn);
+    QJsonObject createFileData(QFileInfoList file_data, bool isPublic);
+    bool checkFilenameAvailability(QString filename, QString username, bool isPublic);
+    bool checkFilenameInDirectory(QString filename, QDir directory, bool isPublic);
     void writeEmptyFile(QJsonObject &qjo, QString filename) const;
 
     // WORKER SERVER INTERACTIONS
     void sendJson(WorkerServer& dest, const QJsonObject& msg);
     void jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc);
     void jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc);
-    void sendListFile(WorkerServer& sender);
-    void sendFile(WorkerServer& sender, QString fileName);
+    void sendListFile(WorkerServer& sender, bool isPublic);
+    void sendFile(WorkerServer& sender, QString fileName, bool isPublic);
     void newFileHandler(WorkerServer &sender, const QJsonObject &doc);
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void userListHandler(WorkerServer& sender, const QJsonObject &doc);
