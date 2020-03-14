@@ -20,13 +20,16 @@ public:
     bool parseCteFile(QJsonDocument unparsedFile);
     QString getFileName();
     QUuid getSiteID();
+    Crdt getCrdt();
     void write();
     void setAccess(bool isPublic);
+    void setUserColor(QString user, QColor color);
 
 private:
     Crdt _crdt;
     void deleteSelection(int start, int end);
     bool _isPublic;
+    QMap<QString, QColor> _usersColor;
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
