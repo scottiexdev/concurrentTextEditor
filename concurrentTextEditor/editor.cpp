@@ -32,6 +32,7 @@ Editor::~Editor()
     disconnect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
     disconnect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     disconnect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
+    disconnect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
     delete ui;
 }
 

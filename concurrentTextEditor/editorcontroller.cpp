@@ -18,6 +18,16 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int deltaPositions = abs(cursorPosition - anchor);
     int start, end;
 
+    if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Control){
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
+
+    //clean highlight from remoteEdit
+    QTextCharFormat highlight = QTextCharFormat();
+    highlight.setBackground(Qt::white);
+    this->textCursor().setCharFormat(highlight);
+
     if(deltaPositions != 0){
         start = anchor > cursorPosition ? cursorPosition : anchor;
         end = start == anchor ? cursorPosition : anchor;
@@ -34,24 +44,19 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
-
-        //this->textCursor().insertText(clipText);
-
-        QTextEdit::keyPressEvent(key);
-        return;
-    }
-
-    if(key->matches(QKeySequence::Copy)){
-        QTextEdit::keyPressEvent(key);
+        //maybe we can use this->paste();
+        //this->insertPlainText(clipText);
+        //QTextEdit::keyPressEvent(key);
+        this->textCursor().insertText(clipText,highlight);
         return;
     }
 
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
-
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         this->textCursor().insertText(key->text().data()[0],highlight);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+
         return;
     }
 
@@ -123,6 +128,9 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
     QTextCursor editingCursor;
     QTextCursor cursorBeforeEdit;
 
+    QTextCharFormat highlight = QTextCharFormat();
+    highlight.setBackground(Qt::red);
+
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
 
     switch(edit) {
@@ -135,7 +143,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             editingCursor.setPosition(index);
             this->setTextCursor(editingCursor);
             // Write
-            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value));
+            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value), highlight);
             // Set cursor back to original position (before editing)
             this->setTextCursor(cursorBeforeEdit);
 
