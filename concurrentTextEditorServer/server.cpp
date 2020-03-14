@@ -109,7 +109,7 @@ QJsonObject Server::createFileData(QFileInfoList list, bool isPublic){
     file_data["type"] = messageType::filesRequest;
     file_data["num"] = list.size();
     file_data["requestedFiles"] = QString("all"); //for switch in showAllFileHandler
-    file_data["access"] = isPublic ? "true" : "false";
+    file_data["access"] = isPublic;
     QString buf;
 
     //TO CHECK and think through when CRDT is set up
@@ -212,7 +212,7 @@ void Server::broadcast(const QJsonObject& message, WorkerServer& exclude) {
 
         //TO CHECK - comparing addresses here?
         if(worker == &exclude)
-        continue;
+            continue;
 
         sendJson(*worker, message);
     }
@@ -325,7 +325,6 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
     messageType type = static_cast<messageType>(doc["type"].toInt());
 
-
     switch(type) {
 
         case messageType::filesRequest:
@@ -358,6 +357,7 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
 
     QString requestedFile = doc.value(QLatin1String("requestedFiles")).toString();
     QString access = doc["access"].toString();
+    bool isPublic = access == "public";
 
     if(requestedFile == "all"){
         // Send list of files for both private and public directories
@@ -367,10 +367,10 @@ void Server::filesRequestHandler(WorkerServer& sender, const QJsonObject &doc) {
         }
         else
             // Send only public if public requested, send private otherwise
-            sendListFile(sender, access == "public");
+            sendListFile(sender, isPublic);
     }
     else
-        sendFile(sender, requestedFile, access == "public");
+        sendFile(sender, requestedFile, isPublic);
 
     return;
 }
@@ -490,7 +490,7 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 
      //TODO: implement this with exceptions
      QString filename = doc.value("filename").toString();
-     bool publicAccess = doc.value("access").toString() == "public" ? true : false;
+     bool publicAccess = doc["access"].toBool();
 
      if (checkFilenameAvailability(filename, sender.userName(), publicAccess)){
 
@@ -614,6 +614,27 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     //Open file from database - cteFile
     QString filename = doc["fileName"].toString();
+    bool isPublic= doc["access"].toBool();
+
+
+
+    QString workingDir = QDir::currentPath();
+
+
+
+    // Change application working directory based on public or private file write on disk
+    if(!isPublic){
+        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+    }
+    else{
+        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+    }
+
+
+
+    workingDir = QDir::currentPath();
+
+
 
     //Open Json file
     QFile file(filename);
@@ -645,6 +666,9 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
 
+    workingDir = QDir::currentPath();
+
+
     // Write Json file to disk
     file.open(QIODevice::WriteOnly);
     file.write(cteFile.toJson());
@@ -657,6 +681,15 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     //Open file from database - cteFile
     QString filename = doc["fileName"].toString();
+    bool isPublic= doc["access"].toBool();
+
+    // Change application working directory based on public or private file write on disk
+    if(!isPublic){
+        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+    }
+    else{
+        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+    }
 
     //Open Json file
     QFile file(filename);

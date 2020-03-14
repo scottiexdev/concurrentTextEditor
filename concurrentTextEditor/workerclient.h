@@ -40,7 +40,7 @@ private slots:
     void onReadyRead();
 
 public slots:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
 
 signals:
     void myLoggedIn();

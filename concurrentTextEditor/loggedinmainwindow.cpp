@@ -130,3 +130,27 @@ void loggedinmainwindow::newFile(bool isPublic){
     }
 }
 
+
+void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int column)
+{
+    QString fileName = ui->PublicFileListTable->item(row, column)->text();
+    //_workerClient->requestFile(fileName);
+
+    // Detect if private or public
+    _e = new Editor(this, _workerClient, fileName, true);
+    //hide();
+    _e->show();
+}
+
+
+
+void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int column)
+{
+    QString fileName = ui->PrivatefileListTable->item(row, column)->text();
+    //_workerClient->requestFile(fileName);
+
+    // Detect if private or public
+    _e = new Editor(this, _workerClient, fileName, false);
+    //hide();
+    _e->show();
+}

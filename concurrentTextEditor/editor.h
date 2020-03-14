@@ -19,7 +19,7 @@ protected:
 
 public:
     explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic);
-    ~Editor();
+    ~Editor();    
 
 public slots:
     void handleFile(QJsonDocument buf);

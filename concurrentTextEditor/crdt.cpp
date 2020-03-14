@@ -71,6 +71,7 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
 }
 
 void Crdt::handleLocalInsert(QChar val, int index) {
+
     Char c = generateChar(val, index);
     insertChar(c, index);
     insertText(c._value, index);
@@ -80,6 +81,7 @@ void Crdt::handleLocalInsert(QChar val, int index) {
 }
 
 void Crdt::handleLocalDelete(int index) {
+
     Char c = _file.takeAt(index);
     _textBuffer.remove(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
 
@@ -107,6 +109,7 @@ Char Crdt::generateChar(QChar val, int index) {
     if(index < _file.length())
         posAfter = _file.at(index)._position;
     newPos = generatePosBetween(posBefore, posAfter, newPos);
+
     //TODO: version counter per globality
     //const localCounter = this.vector.localVersion.counter;
 

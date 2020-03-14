@@ -38,6 +38,10 @@ private slots:
 
     void on_pushButtonNewPrivateFile_clicked();
 
+    void on_PublicFileListTable_cellDoubleClicked(int row, int column);
+
+    void on_PrivatefileListTable_cellDoubleClicked(int row, int column);
+
 public:
 
 

@@ -6,7 +6,8 @@
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 {    
-    _crdt = Crdt();    
+    _crdt = Crdt();
+
 }
 
 void EditorController::keyPressEvent(QKeyEvent *key)
@@ -30,7 +31,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         // Write clipboard text into crdt and broadcast edit
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
             _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
 
@@ -49,7 +50,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
 
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
     }
 
 
@@ -59,7 +60,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         //Iterate over characters to be removed
         for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
             _crdt.handleLocalDelete(floatingCursor - 1);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
+            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
         }
     }
 
@@ -67,7 +68,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if(pressed_key == Qt::Key_Backspace && (cursorPosition -1) != -1 && deltaPositions == 0) {
 
         _crdt.handleLocalDelete(cursorPosition -1);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1, _isPublic);
     }
 
 
@@ -78,7 +79,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if(pressed_key == Qt::Key_Delete && this->textCursor() != lastIndex && deltaPositions == 0) {
 
         _crdt.handleLocalDelete(cursorPosition);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
     }
 
     // Let the editor do its thing on current text if no handler is found
@@ -154,4 +155,9 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             //handle exception
             break;
     }
+}
+
+void EditorController::setAccess(bool isPublic){
+
+    _isPublic = isPublic;
 }
