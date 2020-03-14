@@ -342,6 +342,7 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
     content["index"] = index;
 
     edit["fileName"] = fileName;
+    edit["username"] = _loggedUser;
     edit["type"] = messageType::edit;
     edit["editType"] = editType;
     edit["content"] = content;

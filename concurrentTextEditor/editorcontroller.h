@@ -24,7 +24,8 @@ public:
     void setAccess(bool isPublic);
 
 private:
-    Crdt _crdt;    
+    Crdt _crdt;
+    void deleteSelection(int start, int end);
     bool _isPublic;
 
 signals:

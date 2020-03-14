@@ -29,6 +29,16 @@ public slots:
 private:
     Ui::Editor *ui;
     WorkerClient *_workerClient;
+    QList<QColor> _colors = {
+        QColor(255, 221, 89),
+        QColor(75, 207, 250),
+        QColor(239, 87, 119),
+        QColor(186, 220, 88),
+        QColor(126, 214, 223),
+        QColor(199, 236, 238),
+        QColor(149, 175, 192)
+    };
+    int _colorNumber=0;
 };
 
 #endif // EDITOR_H
