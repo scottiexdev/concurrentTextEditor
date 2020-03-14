@@ -19,9 +19,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int start, end;
 
     //clean highlight from remoteEdit
-    QTextCharFormat highlight = QTextCharFormat();
-    highlight.setBackground(Qt::white);
-    this->textCursor().setCharFormat(highlight);
+
 
     //take selection if there is one
     if(deltaPositions != 0){
@@ -34,6 +32,15 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         QTextEdit::keyPressEvent(key);
         return;
     }
+
+    if(key->matches(QKeySequence::SelectAll)) {
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
+
+    QTextCharFormat highlight = QTextCharFormat();
+    highlight.setBackground(Qt::white);
+    this->textCursor().setCharFormat(highlight);
 
     //ctrl-x handle to avoid "UpArrowBug"
     if(key->matches(QKeySequence::Cut)) {
@@ -89,11 +96,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     // Handle selection deletion with backspace or delete key
     if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && deltaPositions != 0) {
         deleteSelection(start, end);
-        //Iterate over characters to be removed
-        for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-            _crdt.handleLocalDelete(floatingCursor - 1);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
-        }
     }
 
     // Handle backspace deletion
