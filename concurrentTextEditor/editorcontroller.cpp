@@ -19,11 +19,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int deltaPositions = abs(cursorPosition - anchor);
     int start, end;
 
-    if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Control){
-        QTextEdit::keyPressEvent(key);
-        return;
-    }
-
     //clean highlight from remoteEdit
     QTextCharFormat highlight = QTextCharFormat();
     highlight.setBackground(Qt::white);
@@ -34,26 +29,52 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         end = start == anchor ? cursorPosition : anchor;
     }
 
+    //ctrl-c handler to avoid "HeartBug"
+    if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Control){
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
+
+    if(key->matches(QKeySequence::Cut)) {
+         //cancel the selection (if there is one)
+        if(deltaPositions!=0) {
+            //Iterate over characters to be removed
+            deleteSelection(start, end);
+        }
+        QTextEdit::keyPressEvent(key);
+        return;
+}
+
+    //ctrl-v handler
     if(key->matches(QKeySequence::Paste)){
 
         QClipboard* clipboard = QApplication::clipboard();
         QString clipText = clipboard->text();
 
-        // Write clipboard text into crdt and broadcast edit
+        if(deltaPositions!=0) {
+            deleteSelection(start, end);
+            //for insert we need to set the position to start, either it's out of range
+            cursorPosition=start;
+        }
+
+        // Write clipboard text into crdt and broadcast edit        
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
             _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition);
             emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
             cursorPosition++;
         }
-        //maybe we can use this->paste();
-        //this->insertPlainText(clipText);
-        //QTextEdit::keyPressEvent(key);
         this->textCursor().insertText(clipText,highlight);
         return;
     }
 
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return){
+        //cancel the selection (if there is one)
+        if(deltaPositions!=0) {
+            deleteSelection(start, end);
+            cursorPosition=start;
+        }
+
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         this->textCursor().insertText(key->text().data()[0],highlight);
         emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition);
@@ -65,10 +86,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && deltaPositions != 0) {
 
         //Iterate over characters to be removed
-        for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-            _crdt.handleLocalDelete(floatingCursor - 1);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
-        }
+        deleteSelection(start, end);
     }
 
     // Handle backspace deletion
@@ -91,6 +109,13 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     // Let the editor do its thing on current text if no handler is found
     QTextEdit::keyPressEvent(key);
+}
+
+void EditorController::deleteSelection(int start, int end) {
+    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+        _crdt.handleLocalDelete(floatingCursor - 1);
+        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1);
+    }
 }
 
 //Scrive sull'editor il testo parsato

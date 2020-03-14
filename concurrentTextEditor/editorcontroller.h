@@ -24,6 +24,7 @@ public:
 
 private:
     Crdt _crdt;
+    void deleteSelection(int start, int end);
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
