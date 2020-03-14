@@ -21,7 +21,7 @@ public:
     void requestFileList();
 
 public slots:
-    void showFiles(QStringList list, QStringList list2, QStringList list3);
+    void showFiles(QStringList list, QStringList list2, QStringList list3, bool isPublic);
     void errorDisplay(QString str="Error");
 
 private slots:
@@ -34,6 +34,14 @@ private slots:
 
     void on_pushButtonUpdate_2_clicked();
 
+    void on_pushButtonNewFile_3_clicked();
+
+    void on_pushButtonNewPrivateFile_clicked();
+
+    void on_PublicFileListTable_cellDoubleClicked(int row, int column);
+
+    void on_PrivatefileListTable_cellDoubleClicked(int row, int column);
+
 public:
 
 
@@ -41,6 +49,7 @@ private:
     Ui::loggedinmainwindow *ui;
     Editor *_e;
     WorkerClient* _workerClient;
+    void newFile(bool isPublic);
 };
 
 #endif // LOGGEDINMAINWINDOW_H

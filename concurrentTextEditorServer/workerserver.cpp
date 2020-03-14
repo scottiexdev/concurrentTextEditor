@@ -61,24 +61,30 @@ void WorkerServer::receiveJson() {
 }
 
 void WorkerServer::disconnectFromClient(){
+
     m_serverSocket->disconnectFromHost();
 }
 
 QString WorkerServer::userName() const {
+
     return m_userName;
 }
 
 void WorkerServer::setUserName(const QString &userName) {
+
     m_userName = userName;
 }
 
 void WorkerServer::addOpenFile(const QString &fileName) {
+
     _openedFileList.append(fileName);
 }
 
 void WorkerServer::delOpenFile(const QString &fileName) {
-    _openedFileList.removeOne(fileName);    
+
+    _openedFileList.removeOne(fileName);
 }
 QList<QString> WorkerServer::openedFileList() const {
+
     return _openedFileList;
 }

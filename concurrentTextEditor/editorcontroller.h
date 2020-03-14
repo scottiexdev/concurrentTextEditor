@@ -21,13 +21,15 @@ public:
     QString getFileName();
     QUuid getSiteID();
     void write();
+    void setAccess(bool isPublic);
 
 private:
     Crdt _crdt;
     void deleteSelection(int start, int end);
+    bool _isPublic;
 
 signals:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
 
 public slots:
     void handleRemoteEdit(const QJsonObject &qjo);
