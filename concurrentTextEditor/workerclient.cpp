@@ -253,7 +253,7 @@ void WorkerClient::requestFile(QString fileName, QUuid siteID, bool isPublic){
 
     fileRequest["type"] = messageType::filesRequest;
     fileRequest["requestedFiles"] = fileName;
-    fileRequest["siteID"] = siteID.toString();    
+    fileRequest["siteID"] = siteID.toString();
     fileRequest["access"] = isPublic == true ? "public" : "private";
 
     sendJson(fileRequest);
@@ -358,3 +358,7 @@ void WorkerClient::sendJson(const QJsonObject &doc) {
     stream << QJsonDocument(doc).toJson();
 }
 
+void WorkerClient::saveLinkToServer(const QJsonObject& qjo){
+
+    sendJson(qjo);
+}

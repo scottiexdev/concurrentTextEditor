@@ -36,16 +36,18 @@ private slots:
 
     void on_pushButtonNewFile_3_clicked();
 
-    void on_pushButtonNewPrivateFile_clicked();
-
     void on_PublicFileListTable_cellDoubleClicked(int row, int column);
 
     void on_PrivatefileListTable_cellDoubleClicked(int row, int column);
+
+
+    void on_pushButtonInvite_2_clicked();
 
 public:
 
 
 private:
+    QString generateInviteLink(QString fileName, QString username);
     Ui::loggedinmainwindow *ui;
     Editor *_e;
     WorkerClient* _workerClient;

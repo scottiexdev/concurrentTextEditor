@@ -347,6 +347,10 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
             editHandler(sender, doc);
             break;
 
+        case messageType::invite:
+            inviteHandler(sender, doc);
+            break;
+
         default:
             emit logMessage("Message type not handled");
 
@@ -630,12 +634,6 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
         QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
     }
 
-
-
-    workingDir = QDir::currentPath();
-
-
-
     //Open Json file
     QFile file(filename);
     file.open(QIODevice::ReadWrite);
@@ -665,9 +663,6 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     cteData["content"] = cteContent;
     cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
-
-    workingDir = QDir::currentPath();
-
 
     // Write Json file to disk
     file.open(QIODevice::WriteOnly);
@@ -735,4 +730,49 @@ void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, W
         if(openedFile.contains(fileName))
             sendJson(*worker, qjo);
     }
+}
+
+void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
+
+    QString linksPath = _defaultAbsoluteFilesLocation + "Links";
+    QDir linksDir = QDir(linksPath);
+
+    // Check directory existence and create it if it doesn't exist
+    if(!linksDir.exists()){
+        // does this work?
+        QDir().mkdir(linksDir.path());
+    }
+
+    QDir::setCurrent(linksPath);
+
+    QFile file("invite_links");
+    file.open(QIODevice::ReadWrite);
+    QJsonDocument invitesDoc = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    QJsonObject invitesObj = invitesDoc.object();
+    QJsonArray invites = invitesObj["invites"].toArray();
+
+    // Extracted fields
+    QString linkStr = doc["link"].toString();
+    EditType operation = static_cast<EditType>(doc["type"].toInt());
+
+    if(operation == EditType::insertion){
+
+        //Append invite to list of valid invites
+        invites.append(linkStr);
+        invitesObj["invites"] = invites;
+        invitesDoc.setObject(invitesObj);
+
+        // Write Json file to disk
+        file.open(QIODevice::WriteOnly);
+        file.write(invitesDoc.toJson());
+        file.close();
+    }
+
+    if(operation == EditType::check){
+        // find in invite list
+    }
+
+
 }

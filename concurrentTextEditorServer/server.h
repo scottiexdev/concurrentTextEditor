@@ -55,7 +55,7 @@ protected:
     void incomingConnection(qintptr socketDescriptor) override;
     int countReturnedRows(QSqlQuery& executedQuery);
 
-private:    
+private:
 
     // PRIVATE MEMBERS
     QTcpServer *tcpServer = nullptr;
@@ -70,15 +70,15 @@ private:
     QMap<QString, Crdt> _openedFiles;
 
     // PATHS
-    //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/";
-    //const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
+    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/";
+    const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-    const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
-    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
-    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
+    //const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files";
+    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 
 
     // PRIVATE FUNCTIONS
@@ -104,6 +104,7 @@ private:
     void filesRequestHandler(WorkerServer& sender, const QJsonObject &doc);
     void userListHandler(WorkerServer& sender, const QJsonObject &doc);
     void editHandler(WorkerServer& sender, const QJsonObject &doc);
+    void inviteHandler(WorkerServer &sender, const QJsonObject &doc);
 
     //Edit handlers
     void insertionHandler(const QJsonObject &doc, WorkerServer &sender);

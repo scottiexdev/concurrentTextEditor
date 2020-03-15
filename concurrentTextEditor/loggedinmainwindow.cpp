@@ -53,11 +53,6 @@ void loggedinmainwindow::errorDisplay(QString str){
     QMessageBox::information(this, tr("Error"), str);
 }
 
-void loggedinmainwindow::on_pushButtonNewPrivateFile_clicked()
-{
-    return;
-}
-
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
     // TO FIX THIS: disconnect socket
@@ -79,6 +74,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
         errorDisplay("Please select a file by clicking on it.");
         return;
     }
+
     QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
     //_workerClient->requestFile(fileName);
 
@@ -153,4 +149,34 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
     _e = new Editor(this, _workerClient, fileName, false);
     //hide();
     _e->show();
+}
+
+
+
+
+void loggedinmainwindow::on_pushButtonInvite_2_clicked()
+{
+    // Invite makes sense only if a selected file in PrivateFilesListTable is selected
+    if(ui->PrivatefileListTable->selectedItems().isEmpty()) {
+        errorDisplay("Can't generate invite link. Please select a file by clicking on it.");
+        return;
+    }
+
+    QString fileName = ui->PrivatefileListTable->selectedItems().first()->text();
+
+    QString link = generateInviteLink(fileName, _workerClient->getUser());
+}
+
+QString loggedinmainwindow::generateInviteLink(QString fileName, QString username){
+
+    QJsonObject inviteLink;
+
+    QString link = QUuid::createUuid().toString() + "/" + fileName + "/" + username;
+    inviteLink["type"] = messageType::invite;
+    inviteLink["user"] = username;
+    inviteLink["link"] = link;
+
+    _workerClient->saveLinkToServer(inviteLink);
+
+    return link;
 }

@@ -31,6 +31,7 @@ public:
     void getFileList(QString access);
     void requestFile(QString fileName, QUuid siteID, bool isPublic);
     void newFileRequest(const QJsonObject& qjo);
+    void saveLinkToServer(const QJsonObject& qjo);
 
     void requestUserList(QString fileName);
     void userJoined(QString fileName, QString user);
