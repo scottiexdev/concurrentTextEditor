@@ -452,12 +452,15 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 
 bool Server::checkFilenameAvailability(QString filename, QString username, bool isPublic){
 
+    // Check for public files directory existence and create it if it doesn't exist
+    QDir publicDir = QDir(_defaultAbsolutePublicFilesLocation);
+    if(!publicDir.exists())
+        QDir().mkdir(publicDir.path());
+
     if(isPublic){
-        QDir publicDir = QDir(_defaultAbsolutePublicFilesLocation);
-        assert(publicDir.exists() == true);
         return checkFilenameInDirectory(filename, QDir(_defaultAbsolutePublicFilesLocation), isPublic);
     }
-    else{
+    else{        
         // Create private directory path
         QString privateDirectoryPath = _defaultAbsoluteFilesLocation + username;
         return checkFilenameInDirectory(filename, QDir(privateDirectoryPath), isPublic);
@@ -620,12 +623,6 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     QString filename = doc["fileName"].toString();
     bool isPublic= doc["access"].toBool();
 
-
-
-    QString workingDir = QDir::currentPath();
-
-
-
     // Change application working directory based on public or private file write on disk
     if(!isPublic){
         QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
@@ -755,8 +752,9 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
 
     // Extracted fields
     QString linkStr = doc["link"].toString();
-    EditType operation = static_cast<EditType>(doc["type"].toInt());
+    EditType operation = static_cast<EditType>(doc["operation"].toInt());
 
+    // Insert new invite link in invite links json file
     if(operation == EditType::insertion){
 
         //Append invite to list of valid invites
@@ -770,9 +768,28 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
         file.close();
     }
 
-    if(operation == EditType::check){
-        // find in invite list
+    bool found = false;
+
+    // Check if link is present means that the link is valid
+    if(operation == EditType::check){        
+
+        // Find in links
+        for (QJsonValue jsonLink : invites){
+            if(jsonLink.toString() == linkStr){
+                found = true;
+                break;
+            }
+        }
+
+        // Send response: link valid or not
+        QJsonObject linkValidation;
+        linkValidation["type"] = messageType::invite;
+        linkValidation["response"] = found;
+        linkValidation["link"] = linkStr;
+
+        // Send response to client
+        sender.sendJson(linkValidation);
     }
 
-
+    return;
 }

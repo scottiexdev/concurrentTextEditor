@@ -2,9 +2,10 @@
 #define LOGGEDINMAINWINDOW_H
 
 #include <QMainWindow>
-#include "workerclient.h"
-
 #include <QInputDialog>
+#include <QClipboard>
+
+#include "workerclient.h"
 #include "editor.h"
 
 namespace Ui {

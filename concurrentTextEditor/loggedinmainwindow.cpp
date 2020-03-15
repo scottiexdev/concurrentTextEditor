@@ -151,9 +151,6 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
     _e->show();
 }
 
-
-
-
 void loggedinmainwindow::on_pushButtonInvite_2_clicked()
 {
     // Invite makes sense only if a selected file in PrivateFilesListTable is selected
@@ -162,9 +159,17 @@ void loggedinmainwindow::on_pushButtonInvite_2_clicked()
         return;
     }
 
+    // Generate link for selected file - TODO: change this
     QString fileName = ui->PrivatefileListTable->selectedItems().first()->text();
 
     QString link = generateInviteLink(fileName, _workerClient->getUser());
+
+    // Change this into a window that displays the link and has a button "copy link to clipboard"
+    // that copies the link to clipboard for the user and notifies it that the operation was successful
+    QClipboard* clip = QGuiApplication::clipboard();
+    clip->setText(link);
+
+    QInputDialog::getText(this, "Sharing link", "Generated link for file: " + fileName + " and copied to clipboard.", QLineEdit::Normal, link);
 }
 
 QString loggedinmainwindow::generateInviteLink(QString fileName, QString username){
@@ -175,6 +180,7 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
     inviteLink["type"] = messageType::invite;
     inviteLink["user"] = username;
     inviteLink["link"] = link;
+    inviteLink["operation"] = EditType::insertion;
 
     _workerClient->saveLinkToServer(inviteLink);
 
