@@ -82,11 +82,12 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::openFile: //fa da invite
             emit ifFileOpenOk(docObj);
             break;
-        case messageType::invite:
-            //TODO forse???
-            break;
         case messageType::deleteFile:
             emit fileDeleted(); //emit agli editor che hanno il file aperto ("il file esiste?" forse è da implementare)
+            break;
+        case messageType::invalid:
+            emit genericError(docObj["reason"].toString());
+            break;
         default:
             return;
     }
@@ -315,6 +316,13 @@ void WorkerClient::sendJson(const QJsonObject &doc) {
 }
 
 void WorkerClient::saveLinkToServer(const QJsonObject& qjo){
+    sendJson(qjo);
+}
 
+void WorkerClient::getSharedFile(QString link) {
+    QJsonObject qjo;
+    qjo["link"] = link;
+    qjo["type"] = messageType::invite;
+    qjo["operation"] = EditType::check;
     sendJson(qjo);
 }

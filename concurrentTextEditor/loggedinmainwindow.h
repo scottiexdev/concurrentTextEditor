@@ -47,6 +47,8 @@ private slots:
 
     void on_pushButtonDeleteFile_3_clicked();
 
+    void on_pushButtonOpenSharedFile_3_clicked();
+
 public:
 
 

@@ -388,7 +388,12 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
     //Get file and send it through the WorkerServer sender
     // Is the new file private or public? Set directory according to it
     if(!isPublic){
-        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+        if(fileName.split("/").size() == 2) {
+            QDir::setCurrent(_defaultAbsoluteFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
+            fileName = fileName.split("/")[1]; //needed because the file
+        } else {
+            QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
+        }
     }
     else{
         QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
@@ -788,12 +793,21 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
 
         // Send response: link valid or not
         QJsonObject linkValidation;
-        linkValidation["type"] = messageType::invite; //da cambiare in openFile, ma lascio questo ommento per i posteri
-        linkValidation["response"] = found;
-        linkValidation["link"] = linkStr;
+        if(found) {
+            QStringList parts = linkStr.split("/");
+            QString fileName = parts[1];
+            QString userName = parts[2];
+            linkValidation["type"] = messageType::openFile;
+            linkValidation["fileName"] = userName+"/"+fileName;
+            sendJson(sender, linkValidation);
+        } else {
+            linkValidation["type"] = messageType::invalid; //da cambiare in openFile, ma lascio questo ommento per i posteri
+            linkValidation["reason"] = "Invalid link";
+            // Send response to client
+            sender.sendJson(linkValidation);
+        }
 
-        // Send response to client
-        sender.sendJson(linkValidation);
+
     }
 
     return;

@@ -158,7 +158,7 @@ void loggedinmainwindow::on_pushButtonInvite_2_clicked()
 {
     // Invite makes sense only if a selected file in PrivateFilesListTable is selected
     if(ui->PrivatefileListTable->selectedItems().isEmpty()) {
-        errorDisplay("Can't generate invite link. Please select a file by clicking on it.");
+        errorDisplay("Can't generate invite link. Please select a private file by clicking on it.");
         return;
     }
 
@@ -191,7 +191,10 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
 }
 
 void loggedinmainwindow::isFileOpenOkay(const QJsonObject& qjo){
-
+    QString fileName = qjo["fileName"].toString();
+    _e = new Editor(this, _workerClient, fileName, false); //perchè è privato
+    //hide();
+    _e->show();
 
 }
 
@@ -223,4 +226,14 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
         _workerClient->deleteFile(fileName, isPublic);
         this->on_pushButtonUpdate_2_clicked();
     }
+}
+
+void loggedinmainwindow::on_pushButtonOpenSharedFile_3_clicked()
+{
+    bool ok;
+    QString link = QInputDialog::getText(this, "Open Shared File", "Insert link for shared file", QLineEdit::Normal, "id/filename/username", &ok);
+    if(ok && !link.isEmpty()) {
+        _workerClient->getSharedFile(link);
+    }
+
 }
