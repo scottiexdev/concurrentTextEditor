@@ -189,7 +189,7 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
     return link;
 }
 
-void ifFileOpenOk(const QJsonObject& qjo){
+void loggedinmainwindow::isFileOpenOkay(const QJsonObject& qjo){
 
 
 }

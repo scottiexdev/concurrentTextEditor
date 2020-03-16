@@ -24,6 +24,7 @@ public:
 public slots:
     void showFiles(QStringList list, QStringList list2, QStringList list3, bool isPublic);
     void errorDisplay(QString str="Error");
+    void isFileOpenOkay(const QJsonObject& qjo);
 
 private slots:
 
@@ -42,9 +43,7 @@ private slots:
     void on_PrivatefileListTable_cellDoubleClicked(int row, int column);
 
 
-    void on_pushButtonInvite_2_clicked();
-
-    void ifFileOpenOk(const QJsonObject& qjo);
+    void on_pushButtonInvite_2_clicked();    
 
 public:
 
