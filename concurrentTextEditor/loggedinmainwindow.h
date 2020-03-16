@@ -44,6 +44,8 @@ private slots:
 
     void on_pushButtonInvite_2_clicked();
 
+    void ifFileOpenOk(const QJsonObject& qjo);
+
 public:
 
 

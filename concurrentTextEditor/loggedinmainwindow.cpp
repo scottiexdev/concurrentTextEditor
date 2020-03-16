@@ -9,6 +9,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     ui->setupUi(this);
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
+    connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
 }
 
 loggedinmainwindow::~loggedinmainwindow()
@@ -143,7 +144,8 @@ void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int c
 void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int column)
 {
     QString fileName = ui->PrivatefileListTable->item(row, column)->text();
-    //_workerClient->requestFile(fileName);
+
+    // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
 
     // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, false);
@@ -186,3 +188,10 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
 
     return link;
 }
+
+void ifFileOpenOk(const QJsonObject& qjo){
+
+
+}
+
+
