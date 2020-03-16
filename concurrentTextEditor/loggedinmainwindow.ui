@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>761</width>
-      <height>351</height>
+      <width>791</width>
+      <height>381</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -128,7 +128,7 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>300</y>
+          <y>330</y>
           <width>171</width>
           <height>31</height>
          </rect>
@@ -214,6 +214,28 @@
          <string>New Private File</string>
         </property>
        </widget>
+       <widget class="QPushButton" name="pushButtonDeleteFile_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>290</y>
+          <width>171</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>171</width>
+          <height>31</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Delete File</string>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -238,7 +260,7 @@
      <x>0</x>
      <y>0</y>
      <width>862</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

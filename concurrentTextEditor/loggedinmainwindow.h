@@ -45,6 +45,8 @@ private slots:
 
     void on_pushButtonInvite_2_clicked();    
 
+    void on_pushButtonDeleteFile_3_clicked();
+
 public:
 
 

@@ -30,6 +30,7 @@ public:
 
     void getFileList(QString access);
     void requestFile(QString fileName, QUuid siteID, bool isPublic);
+    void deleteFile(QString fileName, bool isPublic);
     void newFileRequest(const QJsonObject& qjo);
     void saveLinkToServer(const QJsonObject& qjo);
 
@@ -53,7 +54,7 @@ signals:
     void deleteUser(QString user);
     void handleRemoteEdit(const QJsonObject& qjo);
     void ifFileOpenOk(const QJsonObject& qjo);
-
+    void fileDeleted();
 
 private:
     QTcpSocket* _clientSocket;

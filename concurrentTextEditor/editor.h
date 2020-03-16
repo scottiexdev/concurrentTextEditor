@@ -26,7 +26,8 @@ public:
 public slots:
     void handleFile(QJsonDocument buf);
     void showUser(QString user);
-    QString deleteUser(QString user);    
+    QString deleteUser(QString user);
+    void fileDeleted();
 
 private slots:
     void on_actionExport_PDF_triggered();
