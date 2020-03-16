@@ -87,6 +87,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 
 void loggedinmainwindow::on_pushButtonUpdate_2_clicked()
 {
+    this->
     _workerClient->getFileList("all");
 }
 
@@ -195,3 +196,31 @@ void loggedinmainwindow::isFileOpenOkay(const QJsonObject& qjo){
 }
 
 
+
+void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
+{
+
+    bool isPublic = false;
+    QString fileName;
+
+    if(ui->PublicFileListTable->selectedItems().isEmpty() && ui->PrivatefileListTable->selectedItems().isEmpty()) {
+        errorDisplay("Please select a file by clicking on it.");
+        return;
+    }
+    int ret = QMessageBox::warning(this, tr("Delete File"),
+                                   tr("The file will be permanentely deleted, do you want to proceed?"),
+                                   QMessageBox::Yes | QMessageBox::No);
+    if (ret==QMessageBox::Yes)
+    {
+        if(!ui->PublicFileListTable->selectedItems().isEmpty()) {
+            fileName = ui->PublicFileListTable->selectedItems().first()->text();
+            isPublic = true;
+        }
+        else if (!ui->PrivatefileListTable->selectedItems().isEmpty()){
+            fileName = ui->PrivatefileListTable->selectedItems().first()->text();
+            isPublic = false;
+        }
+        _workerClient->deleteFile(fileName, isPublic);
+        this->on_pushButtonUpdate_2_clicked();
+    }
+}

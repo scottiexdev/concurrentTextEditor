@@ -79,9 +79,14 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::edit:
             emit handleRemoteEdit(docObj);
             break;
-    case messageType::openFile:
+        case messageType::openFile: //fa da invite
             emit ifFileOpenOk(docObj);
             break;
+        case messageType::invite:
+            //TODO forse???
+            break;
+        case messageType::deleteFile:
+            emit fileDeleted(); //emit agli editor che hanno il file aperto ("il file esiste?" forse è da implementare)
         default:
             return;
     }
@@ -294,6 +299,14 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
     edit["access"] = isPublic;
 
     sendJson(edit);
+}
+
+void WorkerClient::deleteFile(QString fileName, bool isPublic) {
+    QJsonObject delFile;
+    delFile["fileName"] = fileName;
+    delFile["type"] = messageType::deleteFile;
+    delFile["isPublic"] = isPublic;
+    sendJson(delFile);
 }
 
 void WorkerClient::sendJson(const QJsonObject &doc) {

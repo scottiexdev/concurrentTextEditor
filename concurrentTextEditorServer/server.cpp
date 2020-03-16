@@ -351,6 +351,10 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
             inviteHandler(sender, doc);
             break;
 
+        case messageType::deleteFile:
+            deleteFileHandler(sender, doc);
+            break;
+
         default:
             emit logMessage("Message type not handled");
 
@@ -407,6 +411,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
     }
 
     sender.addOpenFile(fileName); // Aggiunge file alla lista dei file aperti
+
     sendJson(sender, msgF);       // Manda file in formato Json, unparsed
     f.close();
 }
@@ -783,7 +788,7 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
 
         // Send response: link valid or not
         QJsonObject linkValidation;
-        linkValidation["type"] = messageType::invite;
+        linkValidation["type"] = messageType::invite; //da cambiare in openFile, ma lascio questo ommento per i posteri
         linkValidation["response"] = found;
         linkValidation["link"] = linkStr;
 
@@ -792,4 +797,24 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
     }
 
     return;
+}
+
+void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
+
+    bool isPublic = doc["isPublic"].toBool();
+    QString fileName = doc["fileName"].toString();
+
+    if(isPublic) {
+        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+    } else {
+        QDir::setCurrent(_defaultAbsoluteFilesLocation+sender.userName());
+    }
+
+    bool notPresent = checkFilenameInDirectory(fileName, QDir::current(), isPublic);
+    if(!notPresent) {
+        QFile::remove(fileName);
+        _openedFiles.remove(fileName); //anche se non serve perchè fa solo cache però è meglio perchè libero memoria per il server (idea del recupero)
+        broadcastOnlyOpenedFile(fileName, doc, sender);
+    }
+
 }

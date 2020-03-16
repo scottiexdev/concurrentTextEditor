@@ -15,6 +15,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     connect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     connect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     connect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
+    connect(_workerClient, &WorkerClient::fileDeleted, this, &Editor::fileDeleted);
 
     _workerClient->requestFile(fileName, ui->editorController->getSiteID(), isPublic);
 
@@ -33,6 +34,7 @@ Editor::~Editor()
     disconnect(_workerClient, &WorkerClient::deleteUser, this, &Editor::deleteUser);
     disconnect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     disconnect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
+    disconnect(_workerClient, &WorkerClient::fileDeleted, this, &Editor::fileDeleted);
     delete ui;
 }
 
@@ -72,6 +74,10 @@ void Editor::closeEvent(QCloseEvent *event) {
     this->deleteLater();
 }
 
+void Editor::fileDeleted() {
+    QMessageBox::warning(this, tr("Warning"), tr("The file has been deleted"));
+    this->close();
+}
 
 
 void Editor::on_actionExport_PDF_triggered()
