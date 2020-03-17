@@ -24,12 +24,16 @@ public:
     void write();
     void setAccess(bool isPublic);
     void setUserColor(QString user, QColor color);
+    void setShared(bool shared) {_shared = shared; }
+    void setOwner(QString owner) { _owner = owner; }
 
 private:
     Crdt _crdt;
     void deleteSelection(int start, int end);
     bool _isPublic;
     QMap<QString, QColor> _usersColor;
+    bool _shared;
+    QString _owner;
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);

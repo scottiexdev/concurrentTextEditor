@@ -20,7 +20,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 public:
-    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic);
+    explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic, bool shared = false);
     ~Editor();    
 
 public slots:

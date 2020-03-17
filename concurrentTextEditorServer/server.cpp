@@ -631,8 +631,6 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     // Change application working directory based on public or private file write on disk
     checkPublic(filename, sender.userName(), isPublic);
 
-
-
     //Open Json file
     QFile file(filename);
     file.open(QIODevice::ReadWrite);
@@ -720,7 +718,7 @@ void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, W
         if(worker == &sender)
             continue;
 
-        QList<QString> openedFile = worker->openedFileList();
+        QList<QString> openedFile = worker->openedFileList();        
         if(openedFile.contains(fileName))
             sendJson(*worker, qjo);
     }
@@ -786,6 +784,7 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
             QString userName = parts[2];
             linkValidation["type"] = messageType::openFile;
             linkValidation["fileName"] = userName+"/"+fileName;
+            linkValidation["sharing"] = true;
             sendJson(sender, linkValidation);
         } else {
             linkValidation["type"] = messageType::invalid; //da cambiare in openFile, ma lascio questo ommento per i posteri
@@ -820,7 +819,7 @@ void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
     if(!isPublic){
         if(fileName.split("/").size() == 2) {
             QDir::setCurrent(_defaultAbsoluteFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
-            fileName = fileName.split("/")[1]; //needed because the file
+            fileName.split("/")[0] + "/";
         } else {
             QDir::setCurrent(_defaultAbsoluteFilesLocation + userName);
         }

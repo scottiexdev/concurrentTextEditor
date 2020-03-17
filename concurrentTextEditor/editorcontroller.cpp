@@ -18,6 +18,11 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int deltaPositions = abs(cursorPosition - anchor);
     int start, end;
 
+    QString completeFilename = _crdt.getFileName();
+
+    if(_shared)
+        completeFilename = _owner + "/" +  _crdt.getFileName();
+
     //clean highlight from remoteEdit
 
 
@@ -68,7 +73,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         // Write clipboard text into crdt and broadcast edit        
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
             _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition);
-            emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+            emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
         this->textCursor().insertText(clipText,highlight);
@@ -86,7 +91,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
         this->textCursor().insertText(key->text().data()[0],highlight);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
 
         return;
     }
@@ -102,7 +107,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if(pressed_key == Qt::Key_Backspace && (cursorPosition -1) != -1 && deltaPositions == 0) {
 
         _crdt.handleLocalDelete(cursorPosition -1);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition -1, _isPublic);
+        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition -1, _isPublic);
     }
 
 
@@ -113,7 +118,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if(pressed_key == Qt::Key_Delete && this->textCursor() != lastIndex && deltaPositions == 0) {
 
         _crdt.handleLocalDelete(cursorPosition);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
     }
 
     // Let the editor do its thing on current text if no handler is found
@@ -121,9 +126,15 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 }
 
 void EditorController::deleteSelection(int start, int end) {
+
+    QString completeFilename = _crdt.getFileName();
+
+    if(_shared)
+        completeFilename = _owner + _crdt.getFileName();
+
     for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
         _crdt.handleLocalDelete(floatingCursor - 1);
-        emit broadcastEditWorker(_crdt.getFileName(), _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
+        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
     }
 }
 

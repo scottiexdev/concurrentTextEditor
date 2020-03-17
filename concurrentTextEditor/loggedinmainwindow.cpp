@@ -191,14 +191,12 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
 }
 
 void loggedinmainwindow::isFileOpenOkay(const QJsonObject& qjo){
-    QString fileName = qjo["fileName"].toString();
-    _e = new Editor(this, _workerClient, fileName, false); //perchè è privato
+    QString fileName = qjo["fileName"].toString();       
+    _e = new Editor(this, _workerClient, fileName, false, qjo["sharing"].toBool()); //perchè è privato
     //hide();
     _e->show();
 
 }
-
-
 
 void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
 {
