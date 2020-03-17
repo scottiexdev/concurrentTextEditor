@@ -93,6 +93,7 @@ private:
     bool checkFilenameAvailability(QString filename, QString username, bool isPublic);
     bool checkFilenameInDirectory(QString filename, QDir directory, bool isPublic);
     void writeEmptyFile(QJsonObject &qjo, QString filename) const;
+    void checkPublic(QString fileName, QString userName, bool isPublic);
 
     // WORKER SERVER INTERACTIONS
     void sendJson(WorkerServer& dest, const QJsonObject& msg);

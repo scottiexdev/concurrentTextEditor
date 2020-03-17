@@ -387,17 +387,8 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
 
     //Get file and send it through the WorkerServer sender
     // Is the new file private or public? Set directory according to it
-    if(!isPublic){
-        if(fileName.split("/").size() == 2) {
-            QDir::setCurrent(_defaultAbsoluteFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
-            fileName = fileName.split("/")[1]; //needed because the file
-        } else {
-            QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
-        }
-    }
-    else{
-        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
-    }
+
+    checkPublic(fileName, sender.userName(), isPublic);
 
     QFile f(fileName);
     if(!f.open(QIODevice::ReadWrite))
@@ -407,7 +398,9 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
     msgF["requestedFiles"] = fileName;
     QString buf = f.readAll();
     msgF["fileContent"] = buf;
-
+    if(fileName.split("/").size() == 2) { //without this server sees two copies of the same file opened
+        fileName = fileName.split("/")[1];
+    }
     // Carica e parsa file se non gia' aperto
     if(!_openedFiles.contains(fileName)){
         Crdt file;
@@ -511,13 +504,8 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 
      if (checkFilenameAvailability(filename, sender.userName(), publicAccess)){
 
+        checkPublic(filename, sender.userName(), publicAccess);
         // Is the new file private or public? Set directory according to it
-        if(!publicAccess){
-            QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
-        }
-        else{
-            QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
-        }
 
         // Create file
         QJsonObject qjo;
@@ -549,6 +537,13 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
 
     action act = static_cast<action>(doc["action"].toInt());
     QString fileName = doc.value("fileName").toString();
+    QString effectiveFileName = fileName;
+    //openedFileList may contain either {fileName} or {user}/{fileName}
+    if(fileName.split("/").size() == 2) {
+        effectiveFileName = fileName.split("/")[1];
+    } else {
+        effectiveFileName = sender.userName()+"/"+fileName;
+    }
     QJsonObject userList;
     QJsonObject userAdd;
     QJsonObject userDel;
@@ -562,7 +557,7 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
             userList["action"] = action::show;
             for(WorkerServer* c : m_clients) {
                 QList<QString> openedFile = c->openedFileList();
-                if(openedFile.contains(fileName)) {
+                if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName)) {
                     if(i==0) {
                         buf += c->userName();
                         i++;
@@ -587,7 +582,7 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
                 if(worker == &sender)
                     continue;
                 QList<QString> openedFile = worker->openedFileList();
-                if(openedFile.contains(fileName))
+                if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName))
                     sendJson(*worker, userAdd);
             }
             break;
@@ -600,7 +595,7 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
             //broadcast specifico, invio solo a quelli che hanno il file aperto
             for(WorkerServer* worker : m_clients) {
                 QList<QString> openedFile = worker->openedFileList();
-                if(openedFile.contains(fileName)) {
+                if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName)) {
                     sender.delOpenFile(fileName);
                     sendJson(*worker, userDel);
                 }
@@ -634,12 +629,9 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     bool isPublic= doc["access"].toBool();
 
     // Change application working directory based on public or private file write on disk
-    if(!isPublic){
-        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
-    }
-    else{
-        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
-    }
+    checkPublic(filename, sender.userName(), isPublic);
+
+
 
     //Open Json file
     QFile file(filename);
@@ -685,13 +677,8 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QString filename = doc["fileName"].toString();
     bool isPublic= doc["access"].toBool();
 
-    // Change application working directory based on public or private file write on disk
-    if(!isPublic){
-        QDir::setCurrent(_defaultAbsoluteFilesLocation + sender.userName());
-    }
-    else{
-        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
-    }
+    checkPublic(filename, sender.userName(), isPublic);
+
 
     //Open Json file
     QFile file(filename);
@@ -818,11 +805,7 @@ void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
     bool isPublic = doc["isPublic"].toBool();
     QString fileName = doc["fileName"].toString();
 
-    if(isPublic) {
-        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
-    } else {
-        QDir::setCurrent(_defaultAbsoluteFilesLocation+sender.userName());
-    }
+    checkPublic(fileName, sender.userName(), isPublic);
 
     bool notPresent = checkFilenameInDirectory(fileName, QDir::current(), isPublic);
     if(!notPresent) {
@@ -831,4 +814,18 @@ void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
         broadcastOnlyOpenedFile(fileName, doc, sender);
     }
 
+}
+
+void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
+    if(!isPublic){
+        if(fileName.split("/").size() == 2) {
+            QDir::setCurrent(_defaultAbsoluteFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
+            fileName = fileName.split("/")[1]; //needed because the file
+        } else {
+            QDir::setCurrent(_defaultAbsoluteFilesLocation + userName);
+        }
+    }
+    else{
+        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+    }
 }

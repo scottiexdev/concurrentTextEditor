@@ -24,8 +24,12 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
     _file.clear();
     QString buf;
     QJsonObject obj = unparsedFile.object();
-
-    _fileName = obj["requestedFiles"].toString();
+    QString fileName = obj["requestedFiles"].toString();
+    if(fileName.split("/").size() == 2) {
+        _fileName = fileName[1];
+    } else {
+        _fileName = fileName[0];
+    }
 
     QString fileContentString = unparsedFile["fileContent"].toString(); //string con tutto il content - QJsonValue
 
