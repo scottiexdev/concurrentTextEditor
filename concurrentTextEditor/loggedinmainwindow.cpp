@@ -79,8 +79,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
     //_workerClient->requestFile(fileName);
 
-    // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, true);
+    _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
     _e->show();
 }
@@ -118,7 +117,7 @@ void loggedinmainwindow::newFile(bool isPublic){
         _workerClient->newFileRequest(filename_req);
 
         // Spawn editor -WRONG spawn editor on new file received
-        _e = new Editor(this, _workerClient, fileName, isPublic);
+        _e = new Editor(this, _workerClient, fileName, isPublic, false);
         _e->show();
     }
     else if(ok){
@@ -135,7 +134,7 @@ void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int c
     //_workerClient->requestFile(fileName);
 
     // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, true);
+    _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
     _e->show();
 }
@@ -149,7 +148,7 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
     // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
 
     // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, false);
+    _e = new Editor(this, _workerClient, fileName, false, false);
     //hide();
     _e->show();
 }

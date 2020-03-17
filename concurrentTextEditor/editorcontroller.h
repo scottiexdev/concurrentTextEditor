@@ -32,8 +32,8 @@ private:
     void deleteSelection(int start, int end);
     bool _isPublic;
     QMap<QString, QColor> _usersColor;
-    bool _shared;
-    QString _owner;
+    bool _shared = false;
+    QString _owner = "";
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);

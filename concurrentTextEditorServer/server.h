@@ -70,15 +70,15 @@ private:
     QMap<QString, Crdt> _openedFiles;
 
     // PATHS
-    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
-    const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/";
+    //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
+    //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditor/concurrentTextEditorServer/Files";
-    //const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
-    //const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/";
-    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
+    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/";
+    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 
 
     // PRIVATE FUNCTIONS

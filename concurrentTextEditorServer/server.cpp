@@ -408,7 +408,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
         _openedFiles.insert(fileName, file);
     }
 
-    sender.addOpenFile(fileName); // Aggiunge file alla lista dei file aperti
+    sender.addOpenFile(fileName); // FORSE IL SENDER DEVE COMUNQUE TENERE USER/FILE Aggiunge file alla lista dei file aperti
 
     sendJson(sender, msgF);       // Manda file in formato Json, unparsed
     f.close();
@@ -636,7 +636,9 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.open(QIODevice::ReadWrite);
     QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
     file.close();
-
+    if(filename.split("/").count() == 2) {
+        filename = filename.split("/")[1];
+    }
     Crdt crdtFile = _openedFiles.value(filename);
 
     //Estrazione campi del json
@@ -683,6 +685,10 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     file.open(QIODevice::ReadWrite);
     QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
     file.close();
+
+    if(filename.split("/").count() == 2) {
+        filename = filename.split("/")[1];
+    }
 
     Crdt crdtFile = _openedFiles.value(filename);
 

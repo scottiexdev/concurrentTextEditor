@@ -20,7 +20,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     QString completeFilename = _crdt.getFileName();
 
-    if(_shared)
+    if(_shared == 1)
         completeFilename = _owner + "/" +  _crdt.getFileName();
 
     //clean highlight from remoteEdit
@@ -130,7 +130,7 @@ void EditorController::deleteSelection(int start, int end) {
     QString completeFilename = _crdt.getFileName();
 
     if(_shared)
-        completeFilename = _owner + _crdt.getFileName();
+        completeFilename = _owner + "/" + _crdt.getFileName();
 
     for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
         _crdt.handleLocalDelete(floatingCursor - 1);
