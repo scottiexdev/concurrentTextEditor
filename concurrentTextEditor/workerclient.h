@@ -33,10 +33,12 @@ public:
     void deleteFile(QString fileName, bool isPublic);
     void newFileRequest(const QJsonObject& qjo);
     void saveLinkToServer(const QJsonObject& qjo);
+    void getSharedFile(QString link);
 
     void requestUserList(QString fileName);
     void userJoined(QString fileName, QString user);
     void userLeft(QString fileName, QString user);
+
 
 private slots:
     void onReadyRead();

@@ -3,7 +3,7 @@
 
 #include <exception>
 
-Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic) :
+Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic, bool shared) :
     QMainWindow(parent),
     ui(new Ui::Editor),
     _workerClient(worker)
@@ -21,7 +21,10 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
 
     //Prende lista degli utenti attivi su quel file
     _workerClient->requestUserList(fileName); // DEVE SAPERE SE PRIVATO O PUBBLICO?
-
+    if(shared){
+        ui->editorController->setOwner(fileName.split("/")[0]);
+        ui->editorController->setShared(shared);
+    }
     //Notifica il server che l'utente si e' connesso a quel file
     _workerClient->userJoined(fileName, _workerClient->getUser());    
     ui->editorController->setAccess(isPublic);

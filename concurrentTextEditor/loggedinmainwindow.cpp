@@ -79,8 +79,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
     //_workerClient->requestFile(fileName);
 
-    // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, true);
+    _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
     _e->show();
 }
@@ -118,7 +117,7 @@ void loggedinmainwindow::newFile(bool isPublic){
         _workerClient->newFileRequest(filename_req);
 
         // Spawn editor -WRONG spawn editor on new file received
-        _e = new Editor(this, _workerClient, fileName, isPublic);
+        _e = new Editor(this, _workerClient, fileName, isPublic, false);
         _e->show();
     }
     else if(ok){
@@ -135,7 +134,7 @@ void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int c
     //_workerClient->requestFile(fileName);
 
     // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, true);
+    _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
     _e->show();
 }
@@ -149,7 +148,7 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
     // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
 
     // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, false);
+    _e = new Editor(this, _workerClient, fileName, false, false);
     //hide();
     _e->show();
 }
@@ -158,7 +157,7 @@ void loggedinmainwindow::on_pushButtonInvite_2_clicked()
 {
     // Invite makes sense only if a selected file in PrivateFilesListTable is selected
     if(ui->PrivatefileListTable->selectedItems().isEmpty()) {
-        errorDisplay("Can't generate invite link. Please select a file by clicking on it.");
+        errorDisplay("Can't generate invite link. Please select a private file by clicking on it.");
         return;
     }
 
@@ -191,11 +190,12 @@ QString loggedinmainwindow::generateInviteLink(QString fileName, QString usernam
 }
 
 void loggedinmainwindow::isFileOpenOkay(const QJsonObject& qjo){
-
+    QString fileName = qjo["fileName"].toString();       
+    _e = new Editor(this, _workerClient, fileName, false, qjo["sharing"].toBool()); //perchè è privato
+    //hide();
+    _e->show();
 
 }
-
-
 
 void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
 {
@@ -223,4 +223,14 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
         _workerClient->deleteFile(fileName, isPublic);
         this->on_pushButtonUpdate_2_clicked();
     }
+}
+
+void loggedinmainwindow::on_pushButtonOpenSharedFile_3_clicked()
+{
+    bool ok;
+    QString link = QInputDialog::getText(this, "Open Shared File", "Insert link for shared file", QLineEdit::Normal, "id/filename/username", &ok);
+    if(ok && !link.isEmpty()) {
+        _workerClient->getSharedFile(link);
+    }
+
 }
