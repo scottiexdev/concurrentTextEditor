@@ -71,8 +71,8 @@ private:
 
     // PATHS
     //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/";
     //const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
+    //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/";
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
     const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     const QString _defaultAbsolutePublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
@@ -94,6 +94,7 @@ private:
     bool checkFilenameAvailability(QString filename, QString username, bool isPublic);
     bool checkFilenameInDirectory(QString filename, QDir directory, bool isPublic);
     void writeEmptyFile(QJsonObject &qjo, QString filename) const;
+    void checkPublic(QString fileName, QString userName, bool isPublic);
 
     // WORKER SERVER INTERACTIONS
     void sendJson(WorkerServer& dest, const QJsonObject& msg);

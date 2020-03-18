@@ -50,6 +50,9 @@ private slots:
 
     void on_pushButtonSettings_2_clicked();
 
+    void on_pushButtonOpenSharedFile_3_clicked();
+
+
 public:
 
 
