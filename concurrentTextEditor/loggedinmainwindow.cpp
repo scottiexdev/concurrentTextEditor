@@ -224,3 +224,10 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
         this->on_pushButtonUpdate_2_clicked();
     }
 }
+
+
+void loggedinmainwindow::on_pushButtonSettings_2_clicked()
+{
+    _ac = new accountSettings(this);
+    _ac->show();
+}

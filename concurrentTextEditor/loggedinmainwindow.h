@@ -7,6 +7,8 @@
 
 #include "workerclient.h"
 #include "editor.h"
+#include "accountsettings.h"
+
 
 namespace Ui {
 class loggedinmainwindow;
@@ -42,10 +44,11 @@ private slots:
 
     void on_PrivatefileListTable_cellDoubleClicked(int row, int column);
 
-
     void on_pushButtonInvite_2_clicked();    
 
     void on_pushButtonDeleteFile_3_clicked();
+
+    void on_pushButtonSettings_2_clicked();
 
 public:
 
@@ -55,6 +58,7 @@ private:
     Ui::loggedinmainwindow *ui;
     Editor *_e;
     WorkerClient* _workerClient;
+    accountSettings *_ac;
     void newFile(bool isPublic);
 };
 
