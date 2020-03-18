@@ -11,6 +11,7 @@
 #include "workerclient.h"
 #include "loggedinmainwindow.h"
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class clientmainwindow; }
 QT_END_NAMESPACE
@@ -33,6 +34,6 @@ private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;
     loggedinmainwindow *hli;
-    WorkerClient *_workerClient;    
+    WorkerClient *_workerClient;
 };
 #endif // CLIENTMAINWINDOW_H

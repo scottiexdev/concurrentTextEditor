@@ -18,6 +18,7 @@ dialogsignup::~dialogsignup()
 
 void dialogsignup::on_pushButton_clicked()
 {
+    bool ok=false; //variable needed to handle different pwd
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
     QString usr = ui->lineEdit_Usr->text();
@@ -28,7 +29,7 @@ void dialogsignup::on_pushButton_clicked()
         QMessageBox pwd_not_eq;
         pwd_not_eq.setText("Passwords do not match.");
         pwd_not_eq.exec();
-    }
+    } else ok = true;
 
     QJsonObject signup;
 
@@ -36,7 +37,8 @@ void dialogsignup::on_pushButton_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
 
-    _workerClient->sendLoginCred(signup);
+    if(ok)
+        _workerClient->sendLoginCred(signup);
 }
 
 
