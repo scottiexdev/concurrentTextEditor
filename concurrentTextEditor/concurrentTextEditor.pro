@@ -24,7 +24,8 @@ SOURCES += \
     loggedinmainwindow.cpp \
     main.cpp \
     clientmainwindow.cpp \
-    workerclient.cpp
+    workerclient.cpp \
+    accountsettings.cpp
 
 HEADERS += \
     Enums.h \
@@ -36,13 +37,15 @@ HEADERS += \
     editor.h \
     editorcontroller.h \
     loggedinmainwindow.h \
-    workerclient.h
+    workerclient.h \
+    accountsettings.h
 
 FORMS += \
     clientmainwindow.ui \
     dialogsignup.ui \
     editor.ui \
-    loggedinmainwindow.ui
+    loggedinmainwindow.ui \
+    accountsettings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -31,6 +31,7 @@ public slots:
 
 private slots:
     void on_actionExport_PDF_triggered();
+    void on_actionPaste_triggered();
 
 private:
     Ui::Editor *ui;

@@ -104,3 +104,7 @@ void Editor::on_actionExport_PDF_triggered()
     doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     doc.print(&printer);
 }
+
+void Editor::on_actionPaste_triggered(){
+
+}
