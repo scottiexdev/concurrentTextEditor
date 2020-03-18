@@ -225,6 +225,12 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
     }
 }
 
+void loggedinmainwindow::on_pushButtonSettings_2_clicked()
+{
+    _ac = new accountSettings(this);
+    _ac->show();
+}
+
 void loggedinmainwindow::on_pushButtonOpenSharedFile_3_clicked()
 {
     bool ok;
