@@ -66,67 +66,24 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 }
 
 // PREVIOUS VERSION
-//void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
-//{
-//    //Da rivedere: interfaccia per aprire va cambiata con FILE CONDIVISI e FILE PRIVATI
-//    //Controllo che un file sia selezionato
-//    //Cambiare anche come viene preso il nome del file: click su data deve selezionare tutta la riga
-//    //E prendere il primo campo (filename)
-//    if(ui->PublicFileListTable->selectedItems().isEmpty()) {
-//        errorDisplay("Please select a file by clicking on it.");
-//        return;
-//    }
+void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
+{
 
-//    QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
-//    //_workerClient->requestFile(fileName);
-
-//    _e = new Editor(this, _workerClient, fileName, true, false);
-//    //hide();
-//    _e->show();
-//}
-
-// GEORGE VERSION
-void loggedinmainwindow::on_pushButtonOpenFile_2_clicked(){
-
-    // variables
-    bool puf = false, prf= false;
-    QString filename;
-
-    // see which file has been clicked
-    if (ui->PublicFileListTable->selectedItems().isEmpty())
-        puf=false;
-    else {
-        puf=true;
-        if (prf) prf = false;
-    }
-
-    if(ui->PrivatefileListTable->selectedItems().isEmpty())
-        prf=false;
-    else {
-        prf=true;
-        if (puf) puf = false;
-    }
-
-    // Various cases
-    if (!puf && !prf){
+    if(ui->PublicFileListTable->selectedItems().isEmpty() && ui->PrivatefileListTable->selectedItems().isEmpty()) {
         errorDisplay("Please select a file by clicking on it.");
         return;
     }
-    if (puf){
-        filename = ui->PublicFileListTable->selectedItems().first()->text();
-        _e = new Editor(this, _workerClient, filename, true, false);
-    } else {
-        filename = ui->PrivatefileListTable->selectedItems().first()->text();
-        _e = new Editor(this, _workerClient, filename, false, true);
-    }
 
-    // clear selection per evitare casini dopo
-    ui->PublicFileListTable->clearSelection();
-    ui->PrivatefileListTable->clearSelection();
+    QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
+
+    _e = new Editor(this, _workerClient, fileName, true, false);
     _e->show();
 
-
+    // Clear selection
+    ui->PublicFileListTable->clearSelection();
+    ui->PrivatefileListTable->clearSelection();
 }
+
 
 void loggedinmainwindow::on_pushButtonUpdate_2_clicked()
 {
