@@ -36,14 +36,20 @@ void loggedinmainwindow::showFiles(QStringList filesList, QStringList createdLis
     headers.push_back("Filename");
     headers.push_back("Created");
     //headers.push_back("Owner"); #da risolvere la questione dell'owner
-    table->setHorizontalHeaderLabels(headers);
+    table->setHorizontalHeaderLabels(headers);    
 
     int cnt = 0;
 
     foreach(auto file, filesList){
-        table->setItem(cnt, 0, new QTableWidgetItem(filesList.at(cnt)));
-        // ^ changed filesList.first() into filesList.at(cnt) to get right item and not always the first one repeated
-        table->setItem(cnt, 1, new QTableWidgetItem(createdList.at(cnt)));
+        auto fileItem = new QTableWidgetItem(filesList.at(cnt));
+        auto creationItem = new QTableWidgetItem(createdList.at(cnt));
+
+        // Disable selection for creation item
+        creationItem->setFlags(Qt::ItemFlag::NoItemFlags);
+
+        table->setItem(cnt, 0, fileItem);
+        table->setItem(cnt, 1, creationItem);
+
         //ui->fileListTable->setItem(cnt, 2, new QTableWidgetItem(ownerList.at(cnt)));
         cnt++;
     }
@@ -76,16 +82,19 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     if( publicEmpty && privateEmpty) {
         errorDisplay("Please select a file by clicking on it.");
         return;
-    }
+    }    
 
 
-    if(publicEmpty)
+    if(publicEmpty){
         fileName = ui->PrivatefileListTable->selectedItems().first()->text();
-    else if(privateEmpty)
+        _e = new Editor(this, _workerClient, fileName, false, false);
+        _e->show();
+    }
+    else if(privateEmpty){
         fileName = ui->PublicFileListTable->selectedItems().first()->text();
-
-    _e = new Editor(this, _workerClient, fileName, true, false);
-    _e->show();
+        _e = new Editor(this, _workerClient, fileName, true, false);
+        _e->show();
+    }
 
     // Clear selection
     ui->PublicFileListTable->clearSelection();
@@ -131,17 +140,16 @@ void loggedinmainwindow::newFile(bool isPublic){
     }
     else if(ok){
         errorDisplay("Insert a name for the file");
-
-
     }
+
+    return;
 }
 
 
 void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int column)
 {
-    QString fileName = ui->PublicFileListTable->item(row, column)->text();
+    QString fileName = ui->PublicFileListTable->item(row, 0)->text();
     //_workerClient->requestFile(fileName);
-
     // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
@@ -152,7 +160,7 @@ void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int c
 
 void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int column)
 {
-    QString fileName = ui->PrivatefileListTable->item(row, column)->text();
+    QString fileName = ui->PrivatefileListTable->item(row, 0)->text();
 
     // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
 
@@ -248,4 +256,16 @@ void loggedinmainwindow::on_pushButtonOpenSharedFile_3_clicked()
         _workerClient->getSharedFile(link);
     }
 
+}
+
+void loggedinmainwindow::on_PublicFileListTable_cellClicked(int row, int column)
+{
+    ui->PrivatefileListTable->clearSelection();
+    return;
+}
+
+void loggedinmainwindow::on_PrivatefileListTable_cellClicked(int row, int column)
+{
+    ui->PublicFileListTable->clearSelection();
+    return;
 }
