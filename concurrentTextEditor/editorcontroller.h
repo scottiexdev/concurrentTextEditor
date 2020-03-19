@@ -33,6 +33,7 @@ public:
     void bold(int position, int anchor);
     void italics(int position, int anchor);
     void underline(int position, int anchor);
+    void setFormat(QTextCharFormat& charFormat, Format format);
 
 private:
     Crdt _crdt;

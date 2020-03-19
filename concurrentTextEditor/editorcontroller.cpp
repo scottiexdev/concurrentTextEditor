@@ -51,9 +51,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         return;
     }
 
-    QTextCharFormat highlight = QTextCharFormat();
-    highlight.setBackground(Qt::white);
-    this->textCursor().setCharFormat(highlight);
+    QTextCharFormat charFormat = QTextCharFormat();
+    charFormat.setBackground(Qt::white);
+    setFormat(charFormat, currentFormat);
+    this->textCursor().setCharFormat(charFormat);
 
     //ctrl-x handle to avoid "UpArrowBug"
     if(key->matches(QKeySequence::Cut)) {
@@ -84,7 +85,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
-        this->textCursor().insertText(clipText,highlight);
+        this->textCursor().insertText(clipText, charFormat);
         return;
     }
 
@@ -98,7 +99,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         }
 
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition, currentFormat);
-        this->textCursor().insertText(key->text().data()[0],highlight);
+        this->textCursor().insertText(key->text().data()[0], charFormat);
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
 
         return;
@@ -149,6 +150,7 @@ void EditorController::deleteSelection(int start, int end) {
 //Scrive sull'editor il testo parsato
 void EditorController::write(){
 
+    //non sarà più una qstring, ma una list di qpairs
     QString _textBuffer = _crdt.getTextBuffer();
     if(_textBuffer.isNull()){
         //throw exception
@@ -186,10 +188,11 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
     QTextCursor editingCursor;
     QTextCursor cursorBeforeEdit;
 
-    QTextCharFormat highlight = QTextCharFormat();
-    highlight.setBackground(_usersColor[user]);
+    QTextCharFormat charFormat;
+    charFormat.setBackground(_usersColor[user]);
 
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
+    Format format = static_cast<Format>(_crdt.getChar(qjo["content"].toObject())._format);
 
     switch(edit) {
 
@@ -200,8 +203,10 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             cursorBeforeEdit= this->textCursor();
             editingCursor.setPosition(index);
             this->setTextCursor(editingCursor);
+            //set format
+            setFormat(charFormat, format);
             // Write
-            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value), highlight);
+            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value), charFormat);
             // Set cursor back to original position (before editing)
             this->setTextCursor(cursorBeforeEdit);
 
@@ -222,6 +227,25 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
         default:
             //handle exception
             break;
+    }
+}
+
+void EditorController::setFormat(QTextCharFormat &charFormat, Format format) {
+    switch(format) {
+        case Format::bold:
+            charFormat.setFontWeight(QFont::Bold);
+            break;
+        case Format::italics:
+            charFormat.setFontItalic(true);
+            break;
+        case Format::underline:
+            charFormat.setFontUnderline(true);
+            break;
+        case Format::plain:
+            //non setto nulla
+            break;
+        default:
+            break;//se entro qua è finita
     }
 }
 
