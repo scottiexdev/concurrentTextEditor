@@ -7,7 +7,7 @@ accountSettings::accountSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QPixmap pm ("C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/male_icon.png");
+    QPixmap pm (_defaultIcon);
     ui->img_label->setPixmap(pm);
     ui->img_label->setScaledContents(true);
 }

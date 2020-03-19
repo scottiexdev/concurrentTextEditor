@@ -17,6 +17,14 @@ public:
 
 private:
     Ui::accountSettings *ui;
+
+    // Icons path
+    QString _defaultIconPath = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+    //QString _defaultIcon = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+    //QString _defaultIcon = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+
+    QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
+
 };
 
 #endif // ACCOUNTSETTINGS_H

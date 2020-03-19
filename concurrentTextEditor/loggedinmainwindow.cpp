@@ -69,12 +69,20 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 {
 
-    if(ui->PublicFileListTable->selectedItems().isEmpty() && ui->PrivatefileListTable->selectedItems().isEmpty()) {
+    QString fileName;
+    bool publicEmpty = ui->PublicFileListTable->selectedItems().isEmpty();
+    bool privateEmpty = ui->PrivatefileListTable->selectedItems().isEmpty();
+
+    if( publicEmpty && privateEmpty) {
         errorDisplay("Please select a file by clicking on it.");
         return;
     }
 
-    QString fileName = ui->PublicFileListTable->selectedItems().first()->text();
+
+    if(publicEmpty)
+        fileName = ui->PrivatefileListTable->selectedItems().first()->text();
+    else if(privateEmpty)
+        fileName = ui->PublicFileListTable->selectedItems().first()->text();
 
     _e = new Editor(this, _workerClient, fileName, true, false);
     _e->show();
