@@ -519,6 +519,12 @@ void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 
         sendListFile(sender, publicAccess);
 
+        //Refresh file list for everyone
+        for(WorkerServer * s : m_clients) {
+            sendListFile(*s, true);
+            sendListFile(*s, false);
+        }
+
      } else {
          QJsonObject err;
          err["type"] = "newFile";
@@ -818,7 +824,11 @@ void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
         _openedFiles.remove(fileName); //anche se non serve perchè fa solo cache però è meglio perchè libero memoria per il server (idea del recupero)
         broadcastOnlyOpenedFile(fileName, doc, sender);
     }
-
+    //Refresh file list for everyone
+    for(WorkerServer * s : m_clients) {
+        sendListFile(*s, true);
+        sendListFile(*s, false);
+    }
 }
 
 void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
