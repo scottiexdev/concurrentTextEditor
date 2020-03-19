@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>862</width>
-    <height>466</height>
+    <width>874</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,23 +32,10 @@
        <widget class="QTableWidget" name="PublicFileListTable">
         <property name="geometry">
          <rect>
-          <x>280</x>
+          <x>220</x>
           <y>80</y>
-          <width>171</width>
-          <height>231</height>
-         </rect>
-        </property>
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>true</bool>
-        </attribute>
-       </widget>
-       <widget class="QTableWidget" name="PrivatefileListTable">
-        <property name="geometry">
-         <rect>
-          <x>520</x>
-          <y>80</y>
-          <width>171</width>
-          <height>231</height>
+          <width>261</width>
+          <height>241</height>
          </rect>
         </property>
         <attribute name="horizontalHeaderCascadingSectionResizes">
@@ -58,7 +45,7 @@
        <widget class="QLabel" name="PublicFilesLabel">
         <property name="geometry">
          <rect>
-          <x>290</x>
+          <x>230</x>
           <y>50</y>
           <width>201</width>
           <height>16</height>
@@ -71,7 +58,7 @@
        <widget class="QLabel" name="PrivateFilesLabel">
         <property name="geometry">
          <rect>
-          <x>530</x>
+          <x>520</x>
           <y>50</y>
           <width>201</width>
           <height>16</height>
@@ -81,7 +68,7 @@
          <string>Private Files</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>30</x>
@@ -213,6 +200,19 @@
          </item>
         </layout>
        </widget>
+       <widget class="QTableWidget" name="PrivatefileListTable">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>80</y>
+          <width>271</width>
+          <height>241</height>
+         </rect>
+        </property>
+        <attribute name="horizontalHeaderCascadingSectionResizes">
+         <bool>true</bool>
+        </attribute>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -236,8 +236,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>862</width>
-     <height>26</height>
+     <width>874</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

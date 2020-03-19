@@ -136,29 +136,19 @@ void loggedinmainwindow::newFile(bool isPublic){
     }
 }
 
-
 void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int column)
 {
-    QString fileName = ui->PublicFileListTable->item(row, column)->text();
-    //_workerClient->requestFile(fileName);
 
-    // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, true, false);
-    //hide();
+    QString fileName = ui->PublicFileListTable->itemAt(row, 0)->text();
+    _e = new Editor(this, _workerClient, fileName, true, false);    
     _e->show();
 }
 
-
-
 void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int column)
 {
-    QString fileName = ui->PrivatefileListTable->item(row, column)->text();
 
-    // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
-
-    // Detect if private or public
-    _e = new Editor(this, _workerClient, fileName, false, false);
-    //hide();
+    QString fileName = ui->PrivatefileListTable->itemAt(row, 0)->text();
+    _e = new Editor(this, _workerClient, fileName, false, false);    
     _e->show();
 }
 
