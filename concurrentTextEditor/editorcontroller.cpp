@@ -150,13 +150,16 @@ void EditorController::deleteSelection(int start, int end) {
 //Scrive sull'editor il testo parsato
 void EditorController::write(){
 
+    QTextCharFormat format;
     //non sarà più una qstring, ma una list di qpairs
-    QString _textBuffer = _crdt.getTextBuffer();
-    if(_textBuffer.isNull()){
+    QList<QPair<QString, Format>> textBuffer = _crdt.getTextBuffer();
+    //if(_textBuffer.isNull()){
         //throw exception
+    //}
+    for (auto pair : textBuffer) {
+        setFormat(format, pair.second);
+        this->textCursor().insertText(pair.first, format);
     }
-
-    this->append(_textBuffer);
 }
 
 

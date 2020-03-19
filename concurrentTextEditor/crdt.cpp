@@ -12,13 +12,13 @@ Crdt::Crdt(QString siteID) {
 
 bool Crdt::parseCteFile(QJsonDocument unparsedFile){
     _textBuffer = parseFile(unparsedFile);
-    if(_textBuffer.isNull())
+    if(_textBuffer.isEmpty())
         return false;
     return true;
 }
 
 
-QString Crdt::parseFile(QJsonDocument unparsedFile){
+QList<QPair<QString, Format>> Crdt::parseFile(QJsonDocument unparsedFile){
 
     //costruzione della lista di Char
     _file.clear();
@@ -43,7 +43,7 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
     QJsonArray arrayBuf = fileContentObj["content"].toArray();
 
     if(arrayBuf.empty())
-        return "";
+        return QList<QPair<QString, Format>>();
 
     // Clear buffers
     _textBuffer.clear();
@@ -55,7 +55,8 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
         //Find index for new char and insert it into _file Struct and _textBuffer
         int index = findInsertIndex(c);
         _file.insert(index, c);
-        _textBuffer.insert(index, c._value);
+        _textBuffer.insert(index, QPair<QString, Format>(c._value, c._format));
+        //_textBuffer.insert(index, c._value);
     }
 
     return _textBuffer;
@@ -65,7 +66,7 @@ void Crdt::handleLocalInsert(QChar val, int index, Format format) {
 
     Char c = generateChar(val, index, format);
     insertChar(c, index);
-    insertText(c._value, index);
+    insertText(c._value, c._format, index);
 
     _lastChar = c;
     _lastOperation = EditType::insertion;
@@ -74,7 +75,7 @@ void Crdt::handleLocalInsert(QChar val, int index, Format format) {
 void Crdt::handleLocalDelete(int index) {
 
     Char c = _file.takeAt(index);
-    _textBuffer.remove(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
+    _textBuffer.removeAt(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
 
     _lastChar = c;
     _lastOperation = EditType::deletion;
@@ -85,9 +86,9 @@ void Crdt::insertChar(Char c, int index) {
     _file.insert(index, c);    
 }
 
-void Crdt::insertText(QChar val, int index) {
+void Crdt::insertText(QChar val, Format format, int index) {
 
-    _textBuffer = _textBuffer.insert(index, val);
+    _textBuffer.insert(index, QPair<QString,Format>(val,format));
 }
 
 Char Crdt::generateChar(QChar val, int index, Format format) {
@@ -238,9 +239,9 @@ QString Crdt::getFileName(){
     return _fileName;
 }
 
-QString Crdt::getTextBuffer(){
+QList<QPair<QString, Format>> Crdt::getTextBuffer(){
 
-    if(_textBuffer.isNull() || _textBuffer.isEmpty()){
+    if(_textBuffer.isEmpty()){
         //throw exception
     }
     return _textBuffer;
@@ -298,7 +299,7 @@ int Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     Char c = getChar(qjo["content"].toObject());
     int index = findIndexByPosition(c);
     _file.removeAt(index);
-    _textBuffer.remove(index);
+    _textBuffer.removeAt(index);
 
     return index;
 //    this.controller.deleteFromEditor(char.value, index, siteId);
@@ -310,7 +311,7 @@ int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
     Char c = getChar(qjo["content"].toObject());
     int index = findInsertIndex(c);
     this->insertChar(c, index);
-    _textBuffer.insert(index, c._value);
+    _textBuffer.insert(index, QPair<QString,Format>(c._value,c._format));
 
     return index;
 //  this.insertText(char.value, index);

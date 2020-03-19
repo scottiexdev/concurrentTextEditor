@@ -20,7 +20,7 @@ public:
     Crdt();    
     Crdt(QString siteID);
     QString getFileName();
-    QString getTextBuffer();
+    QList<QPair<QString, Format>> getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndex(Char c);
     void handleLocalInsert(QChar val, int index, Format format);
@@ -35,7 +35,7 @@ public:
 
     // Insertion
     void insertChar(Char val, int index);
-    void insertText(QChar val, int index);
+    void insertText(QChar val, Format format, int index);
 
     //  Deletion
     void deleteChar(Char val, int index);
@@ -51,7 +51,7 @@ public:
     int findIndexByPosition(Char c);
 
 private:
-    QString parseFile(QJsonDocument unparsedFile);
+    QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);
 
     int _base = 32;
     int _boundary = 10;
@@ -59,7 +59,7 @@ private:
 
     QString _fileName;
     QUuid _siteID;
-    QString _textBuffer;
+    QList<QPair<QString, Format>> _textBuffer;
     // File representation
     QList<Char> _file;     
     int _strategy;
