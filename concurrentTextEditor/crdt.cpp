@@ -61,9 +61,9 @@ QString Crdt::parseFile(QJsonDocument unparsedFile){
     return _textBuffer;
 }
 
-void Crdt::handleLocalInsert(QChar val, int index) {
+void Crdt::handleLocalInsert(QChar val, int index, Format format) {
 
-    Char c = generateChar(val, index);
+    Char c = generateChar(val, index, format);
     insertChar(c, index);
     insertText(c._value, index);
 
@@ -90,7 +90,7 @@ void Crdt::insertText(QChar val, int index) {
     _textBuffer = _textBuffer.insert(index, val);
 }
 
-Char Crdt::generateChar(QChar val, int index) {
+Char Crdt::generateChar(QChar val, int index, Format format) {
 
     QList<Identifier> posBefore;
     QList<Identifier> posAfter;
@@ -104,7 +104,7 @@ Char Crdt::generateChar(QChar val, int index) {
     //TODO: version counter per globality
     //const localCounter = this.vector.localVersion.counter;
 
-    return Char(val, 0/*to implement*/, _siteID, newPos);
+    return Char(val, 0/*to implement*/, _siteID, newPos, format);
 }
 
 int Crdt::retrieveStrategy(int level) {
@@ -323,6 +323,7 @@ Char Crdt::getChar(QJsonObject jsonChar ){
 
     // Estrazione di Char da newChar JSonObject
     QChar val = jsonChar["value"].toString()[0];
+    Format format = static_cast<Format>(jsonChar["format"].toInt());
     QUuid siteID = jsonChar["siteID"].toString();
     int counter = jsonChar["counter"].toInt();
     QJsonArray identifiers = jsonChar["position"].toArray();
@@ -336,5 +337,10 @@ Char Crdt::getChar(QJsonObject jsonChar ){
         positions.append(identifier);
     }
 
-    return Char(val,counter,siteID,positions);
+    return Char(val,counter,siteID,positions,format);
+}
+
+
+Format Crdt::getCurrentFormat(int index) {
+    return _file.at(index)._format;
 }

@@ -278,6 +278,7 @@ void WorkerClient::broadcastEditWorker(QString fileName, Char c, EditType editTy
     QJsonObject content;
 
     content["value"] = QJsonValue(c._value);
+    content["format"] = QJsonValue(c._format);
     content["counter"] = QJsonValue(c._counter);
     content["siteID"] = QJsonValue(c._siteID.toString());
     QJsonArray position;

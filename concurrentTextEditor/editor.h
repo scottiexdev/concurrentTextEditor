@@ -33,6 +33,8 @@ private slots:
     void on_actionExport_PDF_triggered();
     void on_actionPaste_triggered();
 
+    void on_actionBold_triggered();
+
 private:
     Ui::Editor *ui;
     WorkerClient *_workerClient;

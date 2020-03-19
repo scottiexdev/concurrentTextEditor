@@ -7,6 +7,8 @@
 #include <QKeyEvent>
 #include <QJsonDocument>
 #include <QtMath>
+#include <QTextDocumentFragment>
+#include <QFont>
 
 #include "Enums.h"
 #include "crdt.h"
@@ -27,6 +29,11 @@ public:
     void setShared(bool shared) {_shared = shared; }
     void setOwner(QString owner) { _owner = owner; }
 
+    //formatting functions
+    void bold(int position, int anchor);
+    void italics(int position, int anchor);
+    void underline(int position, int anchor);
+
 private:
     Crdt _crdt;
     void deleteSelection(int start, int end);
@@ -34,6 +41,7 @@ private:
     QMap<QString, QColor> _usersColor;
     bool _shared = false;
     QString _owner = "";
+    Format _currentFormat = Format::plain;
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);

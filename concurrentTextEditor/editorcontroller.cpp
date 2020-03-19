@@ -17,6 +17,14 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int anchor = this->textCursor().anchor();
     int deltaPositions = abs(cursorPosition - anchor);
     int start, end;
+    Format currentFormat;
+    //get format
+    if(cursorPosition==0) {
+        currentFormat = _currentFormat;
+    }
+    else {
+        currentFormat = _crdt.getCurrentFormat(cursorPosition-1);
+    }
 
     QString completeFilename = _crdt.getFileName();
 
@@ -72,7 +80,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
         // Write clipboard text into crdt and broadcast edit        
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
-            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition);
+            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition, currentFormat);
             emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
@@ -81,7 +89,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
     // Handle Char insert or return
-    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff) || pressed_key == Qt::Key_Return) {
+    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key != Qt::Key_Control) || pressed_key == Qt::Key_Return) {
 
         //cancel the selection (if there is one)
         if(deltaPositions!=0) {
@@ -89,7 +97,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             cursorPosition=start;
         }
 
-        _crdt.handleLocalInsert(key->text().data()[0], cursorPosition);
+        _crdt.handleLocalInsert(key->text().data()[0], cursorPosition, currentFormat);
         this->textCursor().insertText(key->text().data()[0],highlight);
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
 
@@ -224,4 +232,25 @@ void EditorController::setAccess(bool isPublic){
 
 Crdt EditorController::getCrdt() {
     return _crdt;
+}
+
+void EditorController::bold(int position, int anchor) {
+
+    _currentFormat = Format::bold;
+    QTextCharFormat bold;
+    bold.setFontWeight(QFont::Bold);
+    this->textCursor().mergeCharFormat(bold);
+    int start, end;
+    int deltaPositions = abs(position - anchor);
+
+    QString completeFilename = _crdt.getFileName();
+
+    if(_shared == 1)
+        completeFilename = _owner + "/" +  _crdt.getFileName();
+
+    if(deltaPositions != 0){
+        start = anchor > position ? position : anchor;
+        end = start == anchor ? position : anchor;
+    }
+
 }

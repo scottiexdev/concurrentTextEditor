@@ -23,11 +23,13 @@ public:
     QString getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndex(Char c);
-    void handleLocalInsert(QChar val, int index);
+    void handleLocalInsert(QChar val, int index, Format format);
     void handleLocalDelete(int index);
-    Char generateChar(QChar val, int index);
+    Char generateChar(QChar val, int index, Format format);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
+
+    Format getCurrentFormat(int index);
 
     Char getChar(QJsonObject jsonChar);
 

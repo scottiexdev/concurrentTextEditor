@@ -108,3 +108,10 @@ void Editor::on_actionExport_PDF_triggered()
 void Editor::on_actionPaste_triggered(){
 
 }
+
+void Editor::on_actionBold_triggered()
+{
+    int position = ui->editorController->textCursor().position();
+    int anchor = ui->editorController->textCursor().anchor();
+    ui->editorController->bold(position, anchor);
+}
