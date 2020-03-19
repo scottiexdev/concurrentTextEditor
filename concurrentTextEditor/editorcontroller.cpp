@@ -245,7 +245,9 @@ void EditorController::setFormat(QTextCharFormat &charFormat, Format format) {
             charFormat.setFontUnderline(true);
             break;
         case Format::plain:
-            //non setto nulla
+            charFormat.setFontWeight(QFont::Normal);
+            charFormat.setFontUnderline(false);
+            charFormat.setFontItalic(false);
             break;
         default:
             break;//se entro qua è finita
