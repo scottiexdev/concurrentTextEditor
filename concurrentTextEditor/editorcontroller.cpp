@@ -227,6 +227,19 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
 
             break;
 
+        case EditType::format:
+            //handle format edit
+            index = _crdt.handleRemoteFormat(qjo);
+            editingCursor = this->textCursor();
+            cursorBeforeEdit = this->textCursor();
+            editingCursor.setPosition(index);
+            this->setTextCursor(editingCursor);
+            setFormat(charFormat, format);
+            //penso non funzioni, il carattere da prendere è prima del cursore? Se sì, come lo seleziono? Lo seleziono e basta
+            this->textCursor().movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
+            this->textCursor().setCharFormat(charFormat);
+            this->setTextCursor(cursorBeforeEdit);
+            break;
         default:
             //handle exception
             break;
@@ -263,23 +276,47 @@ Crdt EditorController::getCrdt() {
     return _crdt;
 }
 
-void EditorController::bold(int position, int anchor) {
-
-    _currentFormat = Format::bold;
-    QTextCharFormat bold;
-    bold.setFontWeight(QFont::Bold);
-    this->textCursor().mergeCharFormat(bold);
+void EditorController::changeFormat(int position, int anchor, Format format) {
+    _currentFormat = format;
     int start, end;
-    int deltaPositions = abs(position - anchor);
 
     QString completeFilename = _crdt.getFileName();
 
     if(_shared == 1)
         completeFilename = _owner + "/" +  _crdt.getFileName();
 
-    if(deltaPositions != 0){
-        start = anchor > position ? position : anchor;
-        end = start == anchor ? position : anchor;
+    //change format on the editor window
+    QTextCharFormat cursorFormat = this->textCursor().charFormat();
+
+    switch(format) {
+        case Format::bold:
+            cursorFormat.setFontWeight(QFont::Bold);
+            break;
+
+        case Format::italics:
+            cursorFormat.setFontItalic(true);
+            break;
+
+        case Format::underline:
+            cursorFormat.setFontUnderline(true);
+            break;
+
+        //TODO: come gestisco il plain text? E come tolgo faccio l'annullamento del markup?
+    }
+    this->textCursor().mergeCharFormat(cursorFormat);
+
+    //change format on the file (no need to check if deltaPositions != 0 because editor checks if position != anchor
+    start = anchor > position ? position : anchor;
+    end = start == anchor ? position : anchor;
+
+    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+        _crdt.handleLocalFormat(floatingCursor - 1, format);
+        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
     }
 
 }
+
+
+
+
+

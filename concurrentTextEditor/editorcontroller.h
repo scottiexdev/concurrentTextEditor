@@ -34,6 +34,7 @@ public:
     void italics(int position, int anchor);
     void underline(int position, int anchor);
     void setFormat(QTextCharFormat& charFormat, Format format);
+    void changeFormat(int position, int anchor, Format format);
 
 private:
     Crdt _crdt;

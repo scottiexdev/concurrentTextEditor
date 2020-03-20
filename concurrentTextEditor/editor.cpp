@@ -113,5 +113,25 @@ void Editor::on_actionBold_triggered()
 {
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
-    ui->editorController->bold(position, anchor);
+    if(position != anchor) {
+        ui->editorController->changeFormat(position, anchor, Format::bold);
+    }
+}
+
+void Editor::on_actionItalics_triggered()
+{
+    int position = ui->editorController->textCursor().position();
+    int anchor = ui->editorController->textCursor().anchor();
+    if(position != anchor) {
+        ui->editorController->changeFormat(position, anchor, Format::italics);
+    }
+}
+
+void Editor::on_actionUnderline_triggered()
+{
+    int position = ui->editorController->textCursor().position();
+    int anchor = ui->editorController->textCursor().anchor();
+    if(position != anchor) {
+        ui->editorController->changeFormat(position, anchor, Format::underline);
+    }
 }

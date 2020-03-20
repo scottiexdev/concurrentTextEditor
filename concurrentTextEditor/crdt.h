@@ -25,6 +25,7 @@ public:
     int findInsertIndex(Char c);
     void handleLocalInsert(QChar val, int index, Format format);
     void handleLocalDelete(int index);
+    void handleLocalFormat(int index, Format format);
     Char generateChar(QChar val, int index, Format format);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
@@ -32,6 +33,7 @@ public:
     Format getCurrentFormat(int index);
 
     Char getChar(QJsonObject jsonChar);
+    void replaceChar(Char val, int index);
 
     // Insertion
     void insertChar(Char val, int index);
@@ -42,6 +44,7 @@ public:
 
     int handleRemoteInsert(const QJsonObject& qjo);
     int handleRemoteDelete(const QJsonObject& qjo);
+    int handleRemoteFormat(const QJsonObject& qjo);
 
     Char _lastChar;
     EditType _lastOperation;

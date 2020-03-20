@@ -81,6 +81,21 @@ void Crdt::handleLocalDelete(int index) {
     _lastOperation = EditType::deletion;
 }
 
+void Crdt::handleLocalFormat(int index, Format format) {
+
+    Char c = _file.at(index);
+    c._format = format;
+    replaceChar(c, index);
+
+    _lastChar = c;
+    _lastOperation = EditType::format;
+}
+
+void Crdt::replaceChar(Char val, int index) {
+
+    _file.replace(index, val);
+}
+
 void Crdt::insertChar(Char c, int index) {
 
     _file.insert(index, c);    
@@ -318,6 +333,14 @@ int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
 
 //  this.controller.insertIntoEditor(char.value, index, char.siteId);
 
+}
+
+int Crdt::handleRemoteFormat(const QJsonObject &qjo) {
+    Char c = getChar(qjo["content"].toObject());
+    int index = findIndexByPosition(c);
+    _file.replace(index, c);
+    //no need to modify textbuffer
+    return index;
 }
 
 Char Crdt::getChar(QJsonObject jsonChar ){

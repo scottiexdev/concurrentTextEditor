@@ -35,6 +35,10 @@ private slots:
 
     void on_actionBold_triggered();
 
+    void on_actionItalics_triggered();
+
+    void on_actionUnderline_triggered();
+
 private:
     Ui::Editor *ui;
     WorkerClient *_workerClient;

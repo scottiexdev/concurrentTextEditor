@@ -3,7 +3,7 @@
 
 enum messageType  { login, filesRequest, invalid, signup, newFile, userList, edit, deleteFile, invite, openFile };
 
-enum EditType { insertion, deletion, check, fileOk, changeFormat };
+enum EditType { insertion, deletion, check, fileOk, format };
 
 enum Format { plain, bold, italics, underline };
 
