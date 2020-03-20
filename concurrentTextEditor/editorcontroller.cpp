@@ -196,6 +196,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
 
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
     Format format = static_cast<Format>(_crdt.getChar(qjo["content"].toObject())._format);
+    bool prova;
 
     switch(edit) {
 
@@ -236,7 +237,8 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             this->setTextCursor(editingCursor);
             setFormat(charFormat, format);
             //penso non funzioni, il carattere da prendere è prima del cursore? Se sì, come lo seleziono? Lo seleziono e basta
-            this->textCursor().movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
+            //this->textCursor().movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
+            prova = this->textCursor().movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
             this->textCursor().setCharFormat(charFormat);
             this->setTextCursor(cursorBeforeEdit);
             break;
@@ -277,7 +279,7 @@ Crdt EditorController::getCrdt() {
 }
 
 void EditorController::changeFormat(int position, int anchor, Format format) {
-    _currentFormat = format;
+    _currentFormat = format; //non so se serve
     int start, end;
 
     QString completeFilename = _crdt.getFileName();
@@ -286,7 +288,8 @@ void EditorController::changeFormat(int position, int anchor, Format format) {
         completeFilename = _owner + "/" +  _crdt.getFileName();
 
     //change format on the editor window
-    QTextCharFormat cursorFormat = this->textCursor().charFormat();
+    //QTextCharFormat cursorFormat = this->textCursor().charFormat();
+    QTextCharFormat cursorFormat;
 
     switch(format) {
         case Format::bold:
@@ -301,6 +304,11 @@ void EditorController::changeFormat(int position, int anchor, Format format) {
             cursorFormat.setFontUnderline(true);
             break;
 
+        case Format::plain:
+            cursorFormat.setFontWeight(QFont::Normal);
+            cursorFormat.setFontItalic(false);
+            cursorFormat.setFontUnderline(false);
+            break;
         //TODO: come gestisco il plain text? E come tolgo faccio l'annullamento del markup?
     }
     this->textCursor().mergeCharFormat(cursorFormat);

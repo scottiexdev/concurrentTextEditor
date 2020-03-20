@@ -339,6 +339,7 @@ int Crdt::handleRemoteFormat(const QJsonObject &qjo) {
     Char c = getChar(qjo["content"].toObject());
     int index = findIndexByPosition(c);
     _file.replace(index, c);
+    _textBuffer.replace(index, QPair<QString,Format>(c._value,c._format));
     //no need to modify textbuffer
     return index;
 }
