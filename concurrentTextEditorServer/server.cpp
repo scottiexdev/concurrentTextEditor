@@ -226,7 +226,7 @@ void Server::jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc) {
     QSqlQuery qUser, qSignup, qVerify;
     qUser.prepare("SELECT * FROM users WHERE username = :USERNAME AND password = :PASSWORD");
     qVerify.prepare("SELECT * FROM users WHERE username =:USERNAME");
-    qSignup.prepare("INSERT INTO users (username, password) VALUES (:USERNAME, :PASSWORD)");
+    qSignup.prepare("INSERT INTO users (username, password, email, icon) VALUES (:USERNAME, :PASSWORD, :EMAIL, :ICON)");
     const QJsonValue typeVal = doc.value("type");
 
     if(typeVal.isNull() || !typeVal.isString())
@@ -316,8 +316,12 @@ void Server::bindValues(QSqlQuery& q, const QJsonObject &doc) {
 
     const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
     const QString password = doc.value("password").toString(); //TODO: hash password from client
+    const QString email = doc.value("email").toString();
+    const QString icon = doc.value("icon").toString();
     q.bindValue(":USERNAME", simplifiedUser);
     q.bindValue(":PASSWORD", password);
+    q.bindValue(":EMAIL", email);
+    q.bindValue(":ICON", icon);
 }
 
 

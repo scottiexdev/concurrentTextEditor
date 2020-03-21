@@ -14,19 +14,6 @@
    <string>Signup</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_email">
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>E-mail address</string>
-     </property>
-    </widget>
-   </item>
    <item row="4" column="0">
     <widget class="QLabel" name="label_pwd1">
      <property name="minimumSize">
@@ -46,8 +33,8 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QLineEdit" name="lineEdit_PwdIns">
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_pwd2">
      <property name="minimumSize">
       <size>
        <width>150</width>
@@ -60,8 +47,46 @@
        <height>30</height>
       </size>
      </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
+     <property name="text">
+      <string>Repeat Password</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QPushButton" name="pushButton_Pic">
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Choose your picture</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QPushButton" name="pushButton_Signup">
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Signup</string>
      </property>
     </widget>
    </item>
@@ -103,6 +128,38 @@
      </property>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_email">
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>E-mail address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLineEdit" name="lineEdit_PwdIns">
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label_usr">
      <property name="minimumSize">
@@ -119,44 +176,6 @@
      </property>
      <property name="text">
       <string>Username</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="label_pwd2">
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Repeat Password</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QPushButton" name="pushButton">
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Signup</string>
      </property>
     </widget>
    </item>
@@ -177,7 +196,8 @@
   <tabstop>lineEdit_email</tabstop>
   <tabstop>lineEdit_PwdIns</tabstop>
   <tabstop>lineEdit_PwdConf</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_Pic</tabstop>
+  <tabstop>pushButton_Signup</tabstop>
  </tabstops>
  <resources/>
  <connections/>

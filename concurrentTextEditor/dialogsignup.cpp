@@ -16,9 +16,9 @@ dialogsignup::~dialogsignup()
     delete ui;
 }
 
-void dialogsignup::on_pushButton_clicked()
+void dialogsignup::on_pushButton_Signup_clicked()
 {
-    bool ok=false, ok1=false; //variable needed to handle different pwd
+    bool ok=false, ok1=false, c=false; //variable needed to handle different pwd
     // Regex ok ma accetta anche robe del tipo abc@def@pippo.it => to fix
     QRegularExpression regex("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)");
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
@@ -46,9 +46,23 @@ void dialogsignup::on_pushButton_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
     signup["email"] = email;
+    if(this->icn.isNull() || this->icn.isEmpty())
+        signup["icon"] = this->_defaultIcon;
+    else signup["icon"] = this->icn;
 
-    if(ok && ok1)
+    if(ok && ok1) {
         _workerClient->sendLoginCred(signup);
+        c=true;
+    }
+
+    if(c)
+        this->close();
 }
 
 
+
+void dialogsignup::on_pushButton_Pic_clicked()
+{
+    QString iconpath = QFileDialog::getOpenFileName(this, tr("Profile Picture"), this->_defaultIconPath);
+    this->icn = iconpath;
+}
