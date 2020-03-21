@@ -3,6 +3,7 @@
 
 #include <QUuid>
 #include "Identifier.h"
+#include "Enums.h"
 
 #include <QtMath>
 
@@ -11,9 +12,10 @@ class Char
 public:
 
     //Costruttore
-    Char(QChar value, int counter, QUuid siteID, QList<Identifier> identifiers){
+    Char(QChar value, int counter, QUuid siteID, QList<Identifier> identifiers, Format format = Format::plain){
 
         _value  = value;
+        _format = format;
         _counter = counter;
         _siteID = siteID;
         _position = identifiers;
@@ -22,6 +24,7 @@ public:
     Char(){}
 
     QChar _value;
+    Format _format;
     int _counter;
     QUuid _siteID;
     QList<Identifier> _position;

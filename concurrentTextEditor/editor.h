@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtPrintSupport/QPrinter>
 #include <QFileDialog>
+#include <QClipboard>
 #include "workerclient.h"
 #include "char.h"
 #include "Enums.h"
@@ -32,6 +33,12 @@ public slots:
 private slots:
     void on_actionExport_PDF_triggered();
     void on_actionPaste_triggered();
+
+    void on_actionBold_triggered();
+
+    void on_actionItalics_triggered();
+
+    void on_actionUnderline_triggered();
 
 private:
     Ui::Editor *ui;
