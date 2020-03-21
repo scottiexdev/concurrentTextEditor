@@ -7,9 +7,9 @@ clientmainwindow::clientmainwindow(QWidget *parent)
 {
     ui->setupUi(this);
     _workerClient = new WorkerClient(this);
-
     connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
     connect(_workerClient, &WorkerClient::mySignupOk, this, &clientmainwindow::mySignupOk);
+
 }
 
 clientmainwindow::~clientmainwindow()
