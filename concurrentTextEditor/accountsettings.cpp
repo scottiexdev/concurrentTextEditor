@@ -9,7 +9,7 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
 {
     ui->setupUi(this);
     ui->label_usr->setText("Username: "+worker->getUser());
-    QPixmap pm (_defaultIcon);
+    QPixmap pm(_defaultIcon);
     ui->img_label->setPixmap(pm);
     ui->img_label->setScaledContents(true);
 }
@@ -48,5 +48,7 @@ void accountSettings::on_pushButton_EA_clicked()
 
 void accountSettings::on_pushButton_PP_clicked()
 {
-    QString newicon = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), this->_defaultIconPath);
+    QString newicon_filepath = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), this->_defaultIconPath);
+    // TO DO
+
 }
