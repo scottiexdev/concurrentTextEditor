@@ -86,7 +86,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
     // Handle Char insert or return
-    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key != Qt::Key_Control) || pressed_key == Qt::Key_Return) {
+    if( (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key != Qt::Key_Control) || pressed_key == Qt::Key_Return || pressed_key == Qt::Key_Tab) {
 
         setCurrentFormat(charFormat);
         //cancel the selection (if there is one)
