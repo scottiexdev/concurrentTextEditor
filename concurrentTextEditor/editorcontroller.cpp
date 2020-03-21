@@ -338,11 +338,14 @@ void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
 bool EditorController::isKeySequenceHandled(QKeyEvent* key){
 
     int pressed_key = key->key();
+    QString keyText = key->text();
+    QFlags<Qt::KeyboardModifier> mod = key->modifiers();
 
+    //conditions that are handled in keyPressEvent
     if(key->matches(QKeySequence::Copy) || key->matches(QKeySequence::Paste) || key->matches(QKeySequence::SelectAll)
             || key->matches(QKeySequence::Cut) || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Tab
             || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Return || pressed_key == Qt::Key_Delete
-            || pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Return || (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key)
+            || pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Return || (pressed_key >= 0x20 && pressed_key <= 0x0ff && !mod.testFlag(Qt::ControlModifier))
             || pressed_key == Qt::Key_Paste)
         return true;
 
