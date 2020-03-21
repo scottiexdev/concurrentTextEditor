@@ -9,6 +9,7 @@ clientmainwindow::clientmainwindow(QWidget *parent)
     _workerClient = new WorkerClient(this);
     connect(_workerClient, &WorkerClient::myLoggedIn, this, &clientmainwindow::myLoggedIn);
     connect(_workerClient, &WorkerClient::mySignupOk, this, &clientmainwindow::mySignupOk);
+    connect(_workerClient, &WorkerClient::disconnectClient, this, &clientmainwindow::disconnectClient);
 
 }
 
@@ -17,10 +18,25 @@ clientmainwindow::~clientmainwindow()
     delete ui;
 }
 
+void clientmainwindow::disconnectClient() {
+    QMessageBox::warning(this, "Connection Error", "There was a problem with the server, click OK to return to the login window");
+    hli->deleteLater();
+    _workerClient->disconnectFromServer();
+    this->show();
+}
 
 void clientmainwindow::on_pushButtonLogin_clicked()
 {
-    _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
+    ui->pushButtonLogin->setEnabled(false);
+    ui->pushButtonLogin->setText("Connecting...");
+    ui->pushButtonLogin->repaint();
+
+    if(!_workerClient->connectToServer(QHostAddress::LocalHost, 1967)) {
+        QMessageBox::warning(this, "Error", "Server is not responding");
+        ui->pushButtonLogin->setEnabled(true);
+        ui->pushButtonLogin->setText("Login");
+        return;
+    }
 
     //get login credentials to make query to db
     QString usr = ui->lineEditUsr->text();
@@ -34,6 +50,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     cred["password"] = pwd;
 
     _workerClient->sendLoginCred(cred);
+    ui->pushButtonLogin->setEnabled(true);
+    ui->pushButtonLogin->setText("Login");
 }
 
 void clientmainwindow::on_pushButtonSignup_clicked()

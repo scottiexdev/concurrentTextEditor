@@ -17,6 +17,7 @@ signals:
     void jsonReceived(WorkerServer& sender, const QJsonObject &jsonDoc);
     void error();
     void logMessage(const QString &msg);
+    void userDisconnected(WorkerServer &sender);
 
 public slots:
     void disconnectFromClient();

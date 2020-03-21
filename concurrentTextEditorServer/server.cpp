@@ -3,6 +3,7 @@
 
 Server::Server(QObject *parent) : QTcpServer (parent) {}
 
+
 QString Server::GetName(){
     if(_serverName.isEmpty())
         return "Unknown server";
@@ -32,6 +33,7 @@ void Server::incomingConnection(qintptr socketDescriptor){
     //Aggiungiamo ste connect quando servono cercando di renderle meno marce, sta bind non mi e' troppo chiara
     connect(worker, &WorkerServer::jsonReceived, this, &Server::jsonReceived);
     connect(worker, &WorkerServer::logMessage, this, &Server::logMessage);
+    connect(worker, &WorkerServer::userDisconnected, this, &Server::userDisconnected);
 
     m_clients.append(worker);
     emit logMessage("New client connected");
@@ -75,6 +77,12 @@ bool Server::queryDatabase(QSqlQuery& query){
    }
 
    return true;
+}
+
+void Server::notifyServerDown() {
+    QJsonObject serverDown;
+    serverDown["type"] = messageType::serverDown;
+    broadcastAll(serverDown);
 }
 
 
@@ -175,6 +183,7 @@ void Server::stopServer() {
     }
     _db.removeDatabase(_db.connectionName());
     _db.removeDatabase((QSqlDatabase::defaultConnection));
+    m_clients.clear();
     this->close();
 }
 
@@ -182,13 +191,17 @@ void Server::userDisconnected(WorkerServer& sender) {
 
     m_clients.removeAll(&sender);
     const QString userName = sender.userName();
+    const QList<QString> senderOpenedFile = sender.openedFileList();
 
     if(!userName.isEmpty()) {
-        QJsonObject disconnectedMessage;
-        disconnectedMessage["type"] = QString("userdisconnected");
-        disconnectedMessage["username"] = userName;
-        broadcastAll(disconnectedMessage);
-        emit logMessage(userName + " disconnected");
+        QJsonObject userDel;
+        userDel["type"] = messageType::userList;
+        userDel["action"] = action::del;
+        userDel["username"] = userName;
+
+        for(QString fileName : senderOpenedFile) {
+            broadcastOnlyOpenedFile(fileName,userDel,sender);
+        }
     }
 
     sender.deleteLater();

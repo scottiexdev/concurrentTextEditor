@@ -10,6 +10,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
+
 }
 
 loggedinmainwindow::~loggedinmainwindow()
@@ -64,7 +65,7 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
     // TO FIX THIS: disconnect socket
     //this->_workerClient->disconnectHost();
-
+    this->_workerClient->disconnectFromServer();
     this->close();
     this->parentWidget()->show();
     this->deleteLater();

@@ -63,6 +63,8 @@ void WorkerServer::receiveJson() {
 void WorkerServer::disconnectFromClient(){
 
     m_serverSocket->disconnectFromHost();
+    emit userDisconnected(*this);
+    _openedFileList.clear();
 }
 
 QString WorkerServer::userName() const {

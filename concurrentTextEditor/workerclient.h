@@ -21,7 +21,9 @@ class WorkerClient : public QObject
 public:
     WorkerClient(QObject *parent= nullptr);
 
-    void connectToServer(const QHostAddress& address, quint16 port);
+    bool connectToServer(const QHostAddress& address, quint16 port);
+    void disconnectFromServer();
+    void closeConnection();
     void sendLoginCred(QJsonObject qj);
     //bool receiveLoginResult();
 
@@ -57,6 +59,7 @@ signals:
     void handleRemoteEdit(const QJsonObject& qjo);
     void ifFileOpenOk(const QJsonObject& qjo);
     void fileDeleted();
+    void disconnectClient();
 
 private:
     QTcpSocket* _clientSocket;

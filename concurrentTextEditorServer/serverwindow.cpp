@@ -23,6 +23,7 @@ ServerWindow::~ServerWindow()
 
 void ServerWindow::toggleStartServer() {
     if(m_server->isListening()) {
+        m_server->notifyServerDown();
         m_server->stopServer();
         ui->startStopButton->setText(tr("Start Server"));
         logMessage("Server Stopped");

@@ -35,6 +35,7 @@ public:
     bool ConnectToDatabase(QString databaseLocation = nullptr);
     bool queryDatabase(QSqlQuery& query);
     void logQueryResults(QSqlQuery query);
+    void notifyServerDown();
 
 signals:
     void logMessage(const QString &msg);

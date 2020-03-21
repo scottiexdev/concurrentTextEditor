@@ -50,7 +50,9 @@ private:
         QColor(186, 220, 88),
         QColor(126, 214, 223),
         QColor(199, 236, 238),
-        QColor(149, 175, 192)
+        QColor(149, 175, 192),
+        QColor(179, 157, 219),
+        QColor(176, 190, 197)
     };
     int _colorNumber=0;
 };
