@@ -21,20 +21,22 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     //get format
     QTextCharFormat charFormat;
 
-
     QString completeFilename = _crdt.getFileName();
+
+    // Filter out not handled ket sequences
+    if(!isKeySequenceHandled(key)){
+        QTextEdit::keyPressEvent(key);
+        return;
+    }
 
     if(_shared == 1)
         completeFilename = _owner + "/" +  _crdt.getFileName();
-
-    //clean highlight from remoteEdit
-
 
     //take selection if there is one
     if(deltaPositions != 0){
         start = anchor > cursorPosition ? cursorPosition : anchor;
         end = start == anchor ? cursorPosition : anchor;
-    }
+    }        
 
     //ctrl-c handler to avoid "HeartBug"
     if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Control){
@@ -46,8 +48,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         QTextEdit::keyPressEvent(key);
         return;
     }
-
-
 
     //ctrl-x handle to avoid "UpArrowBug"
     if(key->matches(QKeySequence::Cut)) {
@@ -335,3 +335,16 @@ void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
 }
 
 
+bool EditorController::isKeySequenceHandled(QKeyEvent* key){
+
+    int pressed_key = key->key();
+
+    if(key->matches(QKeySequence::Copy) || key->matches(QKeySequence::Paste) || key->matches(QKeySequence::SelectAll)
+            || key->matches(QKeySequence::Cut) || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Tab
+            || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Return || pressed_key == Qt::Key_Delete
+            || pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Return || (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key)
+            || pressed_key == Qt::Key_Paste)
+        return true;
+
+    return false;
+}

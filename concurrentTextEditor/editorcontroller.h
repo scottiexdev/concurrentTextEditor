@@ -45,6 +45,7 @@ private:
     bool _shared = false;
     QString _owner = "";
     Format _currentFormat = Format::plain;
+    bool isKeySequenceHandled(QKeyEvent* key);
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
