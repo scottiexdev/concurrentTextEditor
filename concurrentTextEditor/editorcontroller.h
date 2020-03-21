@@ -35,6 +35,7 @@ public:
     void underline(int position, int anchor);
     void setFormat(QTextCharFormat& charFormat, Format format);
     void changeFormat(int position, int anchor, Format format);
+    void setCurrentFormat(QTextCharFormat& charFormat);
 
 private:
     Crdt _crdt;

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtPrintSupport/QPrinter>
 #include <QFileDialog>
+#include <QClipboard>
 #include "workerclient.h"
 #include "char.h"
 #include "Enums.h"

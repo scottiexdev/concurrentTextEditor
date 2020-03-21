@@ -17,14 +17,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     int anchor = this->textCursor().anchor();
     int deltaPositions = abs(cursorPosition - anchor);
     int start, end;
-    Format currentFormat;
+    Format currentFormat =_currentFormat;
     //get format
-    if(cursorPosition==0) {
-        currentFormat = _currentFormat;
-    }
-    else {
-        currentFormat = _crdt.getCurrentFormat(cursorPosition-1);
-    }
+    QTextCharFormat charFormat;
+
 
     QString completeFilename = _crdt.getFileName();
 
@@ -51,10 +47,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         return;
     }
 
-    QTextCharFormat charFormat = QTextCharFormat();
-    charFormat.setBackground(Qt::white);
-    setFormat(charFormat, currentFormat);
-    this->textCursor().setCharFormat(charFormat);
+
 
     //ctrl-x handle to avoid "UpArrowBug"
     if(key->matches(QKeySequence::Cut)) {
@@ -68,11 +61,14 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
     //ctrl-v handler
-    if(key->matches(QKeySequence::Paste)){
+    if(key->matches(QKeySequence::Paste) || pressed_key == Qt::Key_Paste) {
 
         QClipboard* clipboard = QApplication::clipboard();
         QString clipText = clipboard->text();
-
+        if(clipText.isNull() || clipText.isEmpty()) {
+            return;
+        }
+        setCurrentFormat(charFormat);
         if(deltaPositions!=0) {
             deleteSelection(start, end);
             //for insert we need to set the position to start, either it's out of range
@@ -92,6 +88,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key != Qt::Key_Control) || pressed_key == Qt::Key_Return) {
 
+        setCurrentFormat(charFormat);
         //cancel the selection (if there is one)
         if(deltaPositions!=0) {
             deleteSelection(start, end);
@@ -238,8 +235,9 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             setFormat(charFormat, format);
             //penso non funzioni, il carattere da prendere è prima del cursore? Se sì, come lo seleziono? Lo seleziono e basta
             //this->textCursor().movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
-            prova = this->textCursor().movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
-            this->textCursor().setCharFormat(charFormat);
+            //prova = this->textCursor().movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+            editingCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+            editingCursor.setCharFormat(charFormat);
             this->setTextCursor(cursorBeforeEdit);
             break;
         default:
@@ -252,12 +250,18 @@ void EditorController::setFormat(QTextCharFormat &charFormat, Format format) {
     switch(format) {
         case Format::bold:
             charFormat.setFontWeight(QFont::Bold);
+            charFormat.setFontUnderline(false);
+            charFormat.setFontItalic(false);
             break;
         case Format::italics:
+            charFormat.setFontWeight(QFont::Normal);
+            charFormat.setFontUnderline(false);
             charFormat.setFontItalic(true);
             break;
         case Format::underline:
+            charFormat.setFontWeight(QFont::Normal);
             charFormat.setFontUnderline(true);
+            charFormat.setFontItalic(false);
             break;
         case Format::plain:
             charFormat.setFontWeight(QFont::Normal);
@@ -279,7 +283,12 @@ Crdt EditorController::getCrdt() {
 }
 
 void EditorController::changeFormat(int position, int anchor, Format format) {
-    _currentFormat = format; //non so se serve
+    if(_currentFormat == format) {
+        _currentFormat = Format::plain;
+    }
+    else {
+        _currentFormat = format; //non so se serve
+    }
     int start, end;
 
     QString completeFilename = _crdt.getFileName();
@@ -290,41 +299,39 @@ void EditorController::changeFormat(int position, int anchor, Format format) {
     //change format on the editor window
     //QTextCharFormat cursorFormat = this->textCursor().charFormat();
     QTextCharFormat cursorFormat;
+    setFormat(cursorFormat,_currentFormat);
 
-    switch(format) {
-        case Format::bold:
-            cursorFormat.setFontWeight(QFont::Bold);
-            break;
-
-        case Format::italics:
-            cursorFormat.setFontItalic(true);
-            break;
-
-        case Format::underline:
-            cursorFormat.setFontUnderline(true);
-            break;
-
-        case Format::plain:
-            cursorFormat.setFontWeight(QFont::Normal);
-            cursorFormat.setFontItalic(false);
-            cursorFormat.setFontUnderline(false);
-            break;
         //TODO: come gestisco il plain text? E come tolgo faccio l'annullamento del markup?
-    }
-    this->textCursor().mergeCharFormat(cursorFormat);
+    this->textCursor().setCharFormat(cursorFormat); //mergeCharFormat credo che mantenga il charformat precedente, ora provo setcharformat
 
     //change format on the file (no need to check if deltaPositions != 0 because editor checks if position != anchor
-    start = anchor > position ? position : anchor;
-    end = start == anchor ? position : anchor;
+    if(position != anchor) {
+        start = anchor > position ? position : anchor;
+        end = start == anchor ? position : anchor;
 
-    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-        _crdt.handleLocalFormat(floatingCursor - 1, format);
-        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
+        for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+            _crdt.handleLocalFormat(floatingCursor - 1, _currentFormat);
+            emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
+        }
     }
-
 }
 
 
+void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
 
+    Format currentFormat;
+
+    if(this->textCursor().position() == 0) {
+        currentFormat = _currentFormat;
+    }
+    else {
+        currentFormat = _crdt.getCurrentFormat(this->textCursor().position() - 1);
+    }
+
+    charFormat.setBackground(Qt::white);
+    setFormat(charFormat, _currentFormat); //PROVA FINALE
+    this->textCursor().setCharFormat(charFormat);
+
+}
 
 

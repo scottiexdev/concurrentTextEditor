@@ -107,31 +107,31 @@ void Editor::on_actionExport_PDF_triggered()
 
 void Editor::on_actionPaste_triggered(){
 
+    QClipboard* clipboard = QApplication::clipboard();
+    QString clipText = clipboard->text();
+    if(!clipText.isNull() && !clipText.isEmpty()){
+        QKeyEvent* pasteEvent  = new QKeyEvent(QEvent::KeyPress, Qt::Key_Paste, Qt::NoModifier, clipText);
+        QCoreApplication::sendEvent(ui->editorController, pasteEvent);
+    }
 }
 
 void Editor::on_actionBold_triggered()
 {
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
-    if(position != anchor) {
-        ui->editorController->changeFormat(position, anchor, Format::bold);
-    }
+    ui->editorController->changeFormat(position, anchor, Format::bold);
 }
 
 void Editor::on_actionItalics_triggered()
 {
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
-    if(position != anchor) {
-        ui->editorController->changeFormat(position, anchor, Format::italics);
-    }
+    ui->editorController->changeFormat(position, anchor, Format::italics);
 }
 
 void Editor::on_actionUnderline_triggered()
 {
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
-    if(position != anchor) {
-        ui->editorController->changeFormat(position, anchor, Format::underline);
-    }
+    ui->editorController->changeFormat(position, anchor, Format::underline);
 }
