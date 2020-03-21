@@ -10,8 +10,20 @@ WorkerClient::WorkerClient(QObject *parent)
     connect(_clientSocket, &QTcpSocket::readyRead, this, &WorkerClient::onReadyRead);
 }
 
-void WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
+bool WorkerClient::connectToServer(const QHostAddress& address, quint16 port){
     _clientSocket->connectToHost(address, port);
+    if(_clientSocket->waitForConnected(5000))
+        return true;
+    else return false;
+}
+
+void WorkerClient::disconnectFromServer() {
+    _clientSocket->disconnectFromHost();
+    _loggedIn = false;
+}
+
+void WorkerClient::closeConnection() {
+    emit disconnectClient();
 }
 
 void WorkerClient::sendLoginCred(QJsonObject qj) {
@@ -88,6 +100,8 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::invalid:
             emit genericError(docObj["reason"].toString());
             break;
+        case messageType::serverDown:
+            closeConnection();
         default:
             return;
     }

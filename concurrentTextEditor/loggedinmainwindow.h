@@ -28,6 +28,7 @@ public slots:
     void errorDisplay(QString str="Error");
     void isFileOpenOkay(const QJsonObject& qjo);
 
+
 private slots:
 
     void on_pushButtonNewFile_2_clicked();

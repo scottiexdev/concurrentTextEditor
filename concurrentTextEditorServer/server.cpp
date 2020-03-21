@@ -3,6 +3,7 @@
 
 Server::Server(QObject *parent) : QTcpServer (parent) {}
 
+
 QString Server::GetName(){
     if(_serverName.isEmpty())
         return "Unknown server";
@@ -76,6 +77,12 @@ bool Server::queryDatabase(QSqlQuery& query){
    }
 
    return true;
+}
+
+void Server::notifyServerDown() {
+    QJsonObject serverDown;
+    serverDown["type"] = messageType::serverDown;
+    broadcastAll(serverDown);
 }
 
 
@@ -176,6 +183,7 @@ void Server::stopServer() {
     }
     _db.removeDatabase(_db.connectionName());
     _db.removeDatabase((QSqlDatabase::defaultConnection));
+    m_clients.clear();
     this->close();
 }
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>822</width>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,14 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0">
-     <widget class="QLabel" name="labelPwd">
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="lineEditUsr">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>150</width>
@@ -29,8 +35,8 @@
         <height>30</height>
        </size>
       </property>
-      <property name="text">
-       <string>Password</string>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
       </property>
      </widget>
     </item>
@@ -53,25 +59,22 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0">
-     <widget class="QPushButton" name="pushButtonSignup">
+    <item row="2" column="0">
+     <widget class="QLabel" name="labelPwd">
       <property name="minimumSize">
        <size>
         <width>150</width>
-        <height>50</height>
+        <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>150</width>
-        <height>50</height>
+        <height>30</height>
        </size>
       </property>
       <property name="text">
-       <string>Signup</string>
-      </property>
-      <property name="default">
-       <bool>true</bool>
+       <string>Password</string>
       </property>
      </widget>
     </item>
@@ -119,6 +122,28 @@
       </property>
      </widget>
     </item>
+    <item row="6" column="0">
+     <widget class="QPushButton" name="pushButtonSignup">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Signup</string>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="0">
      <widget class="QPushButton" name="pushButtonLogin">
       <property name="enabled">
@@ -147,31 +172,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLineEdit" name="lineEditUsr">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>150</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>150</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="cursor">
-       <cursorShape>ArrowCursor</cursorShape>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -179,8 +179,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>822</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

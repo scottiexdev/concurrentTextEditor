@@ -29,6 +29,7 @@ private slots:
     void on_pushButtonSignup_clicked();
     void myLoggedIn();
     void mySignupOk();
+    void disconnectClient();
 
 private:
     Ui::clientmainwindow *ui;

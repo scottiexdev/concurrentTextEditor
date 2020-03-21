@@ -1,7 +1,7 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
-enum messageType  { login, filesRequest, invalid, signup, newFile, userList, edit, deleteFile, invite, openFile };
+enum messageType  { login, filesRequest, invalid, signup, newFile, userList, edit, deleteFile, invite, openFile, serverDown };
 
 enum EditType { insertion, deletion, check, fileOk, format };
 
