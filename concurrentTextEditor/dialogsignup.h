@@ -7,6 +7,7 @@
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QTcpSocket>
+#include <QRegularExpression>
 #include "workerclient.h"
 
 namespace Ui {
