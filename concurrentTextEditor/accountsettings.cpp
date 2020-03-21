@@ -35,11 +35,14 @@ void accountSettings::on_pushButton_U_clicked()
 void accountSettings::on_pushButton_EA_clicked()
 {
     QRegularExpression regex("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)");
-    QString new_email = QInputDialog::getText(this, tr("Change Email"), tr("New Email"), QLineEdit::Normal);
+    bool ok;
+    QString new_email = QInputDialog::getText(this, tr("Change Email"), tr("New Email"), QLineEdit::Normal, tr("email@domain.com"), &ok);
 
-    if(!regex.match(new_email).hasMatch()){
-        QMessageBox::information(this, tr("Error"),tr("new email has not a valid format"));
-        return;
+    if(ok){
+        if(!regex.match(new_email).hasMatch()) {
+            QMessageBox::information(this, tr("Error"),tr("new email has not a valid format"));
+            return;
+        }
     }
 }
 
