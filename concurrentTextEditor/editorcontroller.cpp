@@ -287,7 +287,7 @@ void EditorController::changeFormat(int position, int anchor, Format format) {
         _currentFormat = Format::plain;
     }
     else {
-        _currentFormat = format; //non so se serve
+        _currentFormat = format;
     }
     int start, end;
 
