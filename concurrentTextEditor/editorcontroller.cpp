@@ -3,11 +3,19 @@
 #include <QRandomGenerator>
 #include <QClipboard>
 #include <QApplication>
+#include <QTextBlock>
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 {    
     _crdt = Crdt();
 
+    //Set margins
+    QTextDocument* doc = this->document();
+    QTextBlockFormat blockFormat = doc->begin().blockFormat();
+    blockFormat.setTopMargin(10);
+    blockFormat.setLeftMargin(20);
+    blockFormat.setRightMargin(20);
+    QTextCursor{doc->begin()}.setBlockFormat(blockFormat);
 }
 
 void EditorController::keyPressEvent(QKeyEvent *key)
