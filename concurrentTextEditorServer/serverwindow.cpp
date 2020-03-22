@@ -5,7 +5,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-ServerWindow::ServerWindow(QWidget *parent) :
+ServerWindow::ServerWindow(QWidget *parent, bool autoStart) :
     QWidget(parent),
     ui(new Ui::ServerWindow),
     m_server(new Server(this))
@@ -14,6 +14,9 @@ ServerWindow::ServerWindow(QWidget *parent) :
     connect(ui->startStopButton, &QPushButton::clicked, this, &ServerWindow::toggleStartServer);
     connect(m_server, &Server::logMessage, this, &ServerWindow::logMessage);
     connect(ui->serverConsole, &ServerConsole::executeCommand, m_server, &Server::executeCommand);
+
+    if(autoStart)
+        ui->startStopButton->click();
 }
 
 ServerWindow::~ServerWindow()

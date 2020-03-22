@@ -14,7 +14,7 @@ class ServerWindow : public QWidget
     Q_DISABLE_COPY(ServerWindow)
 
 public:
-    explicit ServerWindow(QWidget *parent = nullptr);
+    explicit ServerWindow(QWidget *parent = nullptr, bool autoStart = true);
     ~ServerWindow();
 
 private:
