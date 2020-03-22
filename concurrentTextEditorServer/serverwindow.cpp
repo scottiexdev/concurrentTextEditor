@@ -16,7 +16,7 @@ ServerWindow::ServerWindow(QWidget *parent, bool autoStart) :
     connect(ui->serverConsole, &ServerConsole::executeCommand, m_server, &Server::executeCommand);
 
     if(autoStart)
-        ui->startStopButton->click();
+        this->toggleStartServer();
 }
 
 ServerWindow::~ServerWindow()
