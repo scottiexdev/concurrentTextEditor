@@ -58,14 +58,17 @@ void Editor::showUser(QString user) {
     _colorNumber++;
     ui->editorController->setUserColor(user, color);
     ui->listWidget->addItem(newUser);
+    ui->activeUsers->setText("Active users: " + QString::number(ui->listWidget->count()));
 }
 
 QString Editor::deleteUser(QString user) {
     for(int i=0; i < ui->listWidget->count(); i++) {
         if(ui->listWidget->item(i)->text()==user) {
+            ui->activeUsers->setText("Active users: " + QString::number(ui->listWidget->count()-1));
             return ui->listWidget->takeItem(i)->text();
         }
     }
+
     //TODO: see how to manage exceptions, how to distinguish them
     throw ("Users isn't active on file, user not found");
 }
