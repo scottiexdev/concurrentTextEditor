@@ -71,12 +71,15 @@ private:
     QMap<QString, Crdt> _openedFiles;
 
     // PATHS:
-    // Deployment paths
-    QString  _workingDirectory = QDir::currentPath();
-    const QString _defaultDatabaseLocation = _workingDirectory.append("/concurrentDb.db");
-    const QString _defaultPublicFilesLocation = _workingDirectory.append("/Files/Public/");
-    const QString _defaultFilesLocation = _workingDirectory.append("/Files/");
-    const QString _defaultIconPath = _workingDirectory.append("/Icons/");
+    // DB paths
+    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+
+    //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db"); // DA METTERE IN DEPLOYMENT
+    const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
+    const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
+    const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
 
     const QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 
