@@ -70,24 +70,18 @@ private:
     // Keeps only one file structure open per client on server side
     QMap<QString, Crdt> _openedFiles;
 
-    // PATHS
-    //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultAbsolutePublicFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
-    //const QString _defaultAbsoluteFilesLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Files/";
-    //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db");
-    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultAbsolutePublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
-    const QString _defaultAbsoluteFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files";
-//    const QString _defaultAbsolutePublicFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/Public/";
-//    const QString _defaultAbsoluteFilesLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Files/";
-//    const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    // PATHS:
+    // DB paths
+    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 
-    // ICON PATHS
-    //QString _defaultIconPath = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-    QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-    //QString _defaultIcon = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+    //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db"); // DA METTERE IN DEPLOYMENT
+    const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
+    const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
+    const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
 
-    QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
+    const QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 
     // PRIVATE FUNCTIONS
 

@@ -1,7 +1,21 @@
 #include "server.h"
 #include "workerserver.h"
 
-Server::Server(QObject *parent) : QTcpServer (parent) {}
+Server::Server(QObject *parent) : QTcpServer (parent) {
+
+    // Check public directory existance and it if it doesn't exist
+    QDir dir = QDir(_defaultFilesLocation);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+
+    dir = QDir(_defaultPublicFilesLocation);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+
+    dir = QDir(_defaultIconPath);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+}
 
 
 QString Server::GetName(){
@@ -93,9 +107,9 @@ void Server::sendListFile(WorkerServer &sender, bool isPublic) {
     QDir dir;
 
     if(isPublic)
-        dir = QDir(_defaultAbsolutePublicFilesLocation);
+        dir = QDir(_defaultPublicFilesLocation);
     else
-        dir = QDir(_defaultAbsoluteFilesLocation + sender.userName());
+        dir = QDir(_defaultFilesLocation + sender.userName());
 
     QJsonArray listFile;
 
@@ -472,17 +486,12 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 
 bool Server::checkFilenameAvailability(QString filename, QString username, bool isPublic){
 
-    // Check for public files directory existence and create it if it doesn't exist
-    QDir publicDir = QDir(_defaultAbsolutePublicFilesLocation);
-    if(!publicDir.exists())
-        QDir().mkdir(publicDir.path());
-
     if(isPublic){
-        return checkFilenameInDirectory(filename, QDir(_defaultAbsolutePublicFilesLocation), isPublic);
+        return checkFilenameInDirectory(filename, QDir(_defaultPublicFilesLocation), isPublic);
     }
     else{        
         // Create private directory path
-        QString privateDirectoryPath = _defaultAbsoluteFilesLocation + username;
+        QString privateDirectoryPath = _defaultFilesLocation + username;
         return checkFilenameInDirectory(filename, QDir(privateDirectoryPath), isPublic);
     }
 }
@@ -801,7 +810,7 @@ void Server::broadcastOnlyOpenedFile(QString fileName, const QJsonObject& qjo, W
 
 void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
 
-    QString linksPath = _defaultAbsoluteFilesLocation + "Links";
+    QString linksPath = _defaultFilesLocation + "Links";
     QDir linksDir = QDir(linksPath);
 
     // Check directory existence and create it if it doesn't exist
@@ -897,13 +906,13 @@ void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
     if(!isPublic){
         if(fileName.split("/").size() == 2) {
-            QDir::setCurrent(_defaultAbsoluteFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
+            QDir::setCurrent(_defaultFilesLocation); //shared file: fileName is {user}/{file} => QFile will work
             fileName.split("/")[0] + "/";
         } else {
-            QDir::setCurrent(_defaultAbsoluteFilesLocation + userName);
+            QDir::setCurrent(_defaultFilesLocation + userName);
         }
     }
     else{
-        QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
+        QDir::setCurrent(_defaultPublicFilesLocation);
     }
 }
