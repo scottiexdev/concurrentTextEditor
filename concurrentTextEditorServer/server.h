@@ -17,6 +17,7 @@
 #include <QFileDialog>
 #include <QDialog>
 #include <QTcpSocket>
+#include <QByteArray>
 #include "workerserver.h"
 #include "../concurrentTextEditor/Enums.h"
 
@@ -95,6 +96,7 @@ private:
     void login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender);
     void signup(QSqlQuery& qUser, QSqlQuery& qSignup, const QJsonObject &doc, WorkerServer& sender);
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
+    void updateUsername(const QJsonObject &doc);
 
     // UTILITIES
     QJsonObject createFileData(QFileInfoList file_data, bool isPublic);
@@ -120,7 +122,8 @@ private:
     void insertionHandler(const QJsonObject &doc, WorkerServer &sender);
     void deletionHandler(const QJsonObject &doc, WorkerServer &sender);
     void formatHandler(const QJsonObject &doc, WorkerServer &sender );
-
+    void propicHandler(const QJsonObject &doc);
+    void userHandler(const QJsonObject &doc, WorkerServer &sender);
 
 };
 

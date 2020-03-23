@@ -646,6 +646,12 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
         case EditType::format:
             formatHandler(doc, sender);
             break;
+        case EditType::propic:
+            propicHandler(doc);
+            break;
+        case EditType::username:
+            userHandler(doc, sender);
+            break;
 
     }
 }
@@ -906,4 +912,28 @@ void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
     else{
         QDir::setCurrent(_defaultAbsolutePublicFilesLocation);
     }
+}
+
+void Server::propicHandler(const QJsonObject &doc){
+    // get img
+    auto const encoded = doc["image"].toString().toLatin1();
+    QPixmap pm(encoded);
+    pm.loadFromData(QByteArray::fromBase64(encoded));
+    QImage img = pm.toImage();
+    img.save(_defaultIconPath+doc["filename"].toString());
+
+    //TODO: riuscire a salvare immagine query al db per update in db + json in risposta
+}
+
+void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
+    const QString user = doc["username"].toString().simplified();
+    const QString new_one = doc["new_usn"].toString().simplified();
+
+    QSqlQuery q;
+    q.prepare("UPDATE users SET username = :NEWUSER WHERE username = :USERNAME");
+    q.bindValue(":USERNAME", user);
+    q.bindValue(":NEWUSER", new_one);
+
+    queryDatabase(q);
+    // TODO: json in risposta per far eupdate su gui => signale e slot
 }

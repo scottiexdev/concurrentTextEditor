@@ -341,3 +341,11 @@ void WorkerClient::getSharedFile(QString link) {
     qjo["operation"] = EditType::check;
     sendJson(qjo);
 }
+
+void WorkerClient::changeProPic(QJsonObject &qj){
+    sendJson(qj);
+}
+
+void WorkerClient::newUsername(QJsonObject &qj){
+    sendJson(qj);
+}
