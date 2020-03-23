@@ -1,7 +1,21 @@
 #include "server.h"
 #include "workerserver.h"
 
-Server::Server(QObject *parent) : QTcpServer (parent) {}
+Server::Server(QObject *parent) : QTcpServer (parent) {
+
+    // Check public directory existance and it if it doesn't exist
+    QDir dir = QDir(_defaultAbsolutePublicFilesLocation);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+
+    dir = QDir(_defaultAbsoluteFilesLocation);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+
+    dir = QDir(_defaultIcon);
+    if(!dir.exists())
+        QDir().mkdir(dir.path());
+}
 
 
 QString Server::GetName(){
@@ -471,11 +485,6 @@ int Server::countReturnedRows(QSqlQuery& executedQuery){
 
 
 bool Server::checkFilenameAvailability(QString filename, QString username, bool isPublic){
-
-    // Check for public files directory existence and create it if it doesn't exist
-    QDir publicDir = QDir(_defaultAbsolutePublicFilesLocation);
-    if(!publicDir.exists())
-        QDir().mkdir(publicDir.path());
 
     if(isPublic){
         return checkFilenameInDirectory(filename, QDir(_defaultAbsolutePublicFilesLocation), isPublic);
