@@ -30,6 +30,8 @@ private slots:
 
     void on_pushButton_PP_clicked();
 
+    void on_pushButton_PWD_clicked();
+
 private:
     Ui::accountSettings *ui;
 

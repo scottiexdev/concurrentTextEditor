@@ -102,6 +102,7 @@ private:
     QJsonObject createFileData(QFileInfoList file_data, bool isPublic);
     bool checkFilenameAvailability(QString filename, QString username, bool isPublic);
     bool checkFilenameInDirectory(QString filename, QDir directory, bool isPublic);
+    bool checkUsernameAvailability(QString n_usn);
     void writeEmptyFile(QJsonObject &qjo, QString filename) const;
     void checkPublic(QString fileName, QString userName, bool isPublic);
 

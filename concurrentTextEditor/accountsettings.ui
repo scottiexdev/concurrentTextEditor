@@ -78,6 +78,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_PWD">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>220</y>
+     <width>131</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change Password</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

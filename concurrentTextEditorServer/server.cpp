@@ -916,24 +916,48 @@ void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
 
 void Server::propicHandler(const QJsonObject &doc){
     // get img
-    auto const encoded = doc["image"].toString().toLatin1();
-    QPixmap pm(encoded);
-    pm.loadFromData(QByteArray::fromBase64(encoded));
-    QImage img = pm.toImage();
+    auto encoded = doc["image"].toString().toLatin1();
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(encoded));
+    QImage img = p.toImage();
     img.save(_defaultIconPath+doc["filename"].toString());
+    // TODO: salvare immagine un un suffisso / nome univoco (e.g. username) sul server
 
-    //TODO: riuscire a salvare immagine query al db per update in db + json in risposta
+    if(encoded.isNull() || encoded.isEmpty()) {
+        // TODO: handler errore
+    } else {
+        QSqlQuery q;
+        q.prepare("UPDATE users SET icon = :ICON WHERE username = :USER");
+        q.bindValue(":USER", doc["username"]);
+        q.bindValue(":ICON", _defaultIconPath+doc["filename"].toString());
+        queryDatabase(q);
+    }
+
+    //TODO: json in risposta
 }
 
 void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
     const QString user = doc["username"].toString().simplified();
     const QString new_one = doc["new_usn"].toString().simplified();
 
-    QSqlQuery q;
-    q.prepare("UPDATE users SET username = :NEWUSER WHERE username = :USERNAME");
-    q.bindValue(":USERNAME", user);
-    q.bindValue(":NEWUSER", new_one);
+    if (checkUsernameAvailability(new_one)){
+        QSqlQuery q;
+        q.prepare("UPDATE users SET username = :NEWUSER WHERE username = :USERNAME");
+        q.bindValue(":USERNAME", user);
+        q.bindValue(":NEWUSER", new_one);
 
-    queryDatabase(q);
+        queryDatabase(q);
+    }
+
     // TODO: json in risposta per far eupdate su gui => signale e slot
+}
+
+bool Server::checkUsernameAvailability(QString n_usn){
+    QSqlQuery q;
+    q.prepare("SELECT username FROM users WHERE username = :USER");
+    q.bindValue(":USER", n_usn);
+
+    if(queryDatabase(q) && q.size()==0)
+        return true;
+    else return false;
 }

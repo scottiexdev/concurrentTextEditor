@@ -28,7 +28,7 @@ void accountSettings::on_pushButton_U_clicked()
     // Open Q Dialog con QlineEdit - OK
     // Get username - OK
     // Query per scoprire se quello nuovo è già esistente - OK
-    // Risposta OK v NOK -
+    // Risposta OK v NOK basata su availability new user -
     // Update -
 
     QString new_usn = QInputDialog::getText(this, tr("Change Username"),
@@ -61,22 +61,21 @@ void accountSettings::on_pushButton_EA_clicked()
 
 void accountSettings::on_pushButton_PP_clicked()
 {
-    // connect
-
     QString newicon_filepath = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), this->_defaultIconPath);
     QPixmap pm(newicon_filepath);
     ui->img_label->setPixmap(pm); //TODO: update questo con query al db appena funziona tutto
     ui->img_label->setScaledContents(true);
 
+    QString form = newicon_filepath.split(".").last().toUpper();
+    QByteArray buf = form.toLocal8Bit();
+    const char * format = buf.data();
+
     // inserisco immagine in json
     QBuffer buffer;
-    QByteArray arr;
-    QImage image = pm.toImage();
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer);
-    QLatin1String img = QLatin1String(buffer.data().toBase64());
-
-    // TODO: QImage dentro un json e duale Propichandler su server.cpp
+    pm.save(&buffer, format);
+    auto ba = buffer.data().toBase64();
+    QLatin1String img = QLatin1String(ba);
 
 
     // popolo json
@@ -89,6 +88,13 @@ void accountSettings::on_pushButton_PP_clicked()
 
     _worker->changeProPic(propic);
 
-    // TODO: prendere immagine X, ficcarla in un json X, mandarla al server X, fargliela salvare nel suo path di Icons. Crea un nuovo messageType in Enums.h X
+    // TODO: fix questo errore: libpng warning: iccp: known incorrect srgb profile con alcune immagini png
+}
+
+void accountSettings::on_pushButton_PWD_clicked()
+{
+    //TODO: aprire un Qdialog
+    // inserire password precedente, nuova password e conferma nuova password
+    // sul server: query ad DB, check e json in risposta
 
 }
