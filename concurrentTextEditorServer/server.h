@@ -97,6 +97,7 @@ private:
     void signup(QSqlQuery& qUser, QSqlQuery& qSignup, const QJsonObject &doc, WorkerServer& sender);
     void bindValues(QSqlQuery& q, const QJsonObject &doc);
     void updateUsername(const QJsonObject &doc);
+    QString getIcon(QString user);
 
     // UTILITIES
     QJsonObject createFileData(QFileInfoList file_data, bool isPublic);

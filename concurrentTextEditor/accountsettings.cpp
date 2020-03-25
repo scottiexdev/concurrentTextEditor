@@ -8,12 +8,9 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
     ui(new Ui::accountSettings),
     _worker(worker)
 {
-    _worker->connectToServer(QHostAddress::LocalHost, 1967);
     ui->setupUi(this);
     ui->label_usr->setText("Username: "+worker->getUser());
-    //la QPixMap deve prendere il path salvato sul server per l'user speicfico (necessaria query al db)
-    QPixmap pm(_defaultIcon);
-    ui->img_label->setPixmap(pm);
+    ui->img_label->setPixmap(_worker->getUserIcon());
     ui->img_label->setScaledContents(true);
 }
 
@@ -62,31 +59,37 @@ void accountSettings::on_pushButton_EA_clicked()
 void accountSettings::on_pushButton_PP_clicked()
 {
     QString newicon_filepath = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), this->_defaultIconPath);
-    QPixmap pm(newicon_filepath);
-    ui->img_label->setPixmap(pm); //TODO: update questo con query al db appena funziona tutto
-    ui->img_label->setScaledContents(true);
 
-    QString form = newicon_filepath.split(".").last().toUpper();
-    QByteArray buf = form.toLocal8Bit();
-    const char * format = buf.data();
+    //entra nell'if solo nel caso l'utente scelga un'immagine
+    if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
+        QPixmap pm(newicon_filepath);
+        _worker->setIcon(_defaultIconPath+newicon_filepath.split("/").last());
 
-    // inserisco immagine in json
-    QBuffer buffer;
-    buffer.open(QIODevice::WriteOnly);
-    pm.save(&buffer, format);
-    auto ba = buffer.data().toBase64();
-    QLatin1String img = QLatin1String(ba);
+        QString form = newicon_filepath.split(".").last().toUpper();
+        QByteArray buf = form.toLocal8Bit();
+        const char * format = buf.data();
+
+        // inserisco immagine in json
+        QBuffer buffer;
+        buffer.open(QIODevice::WriteOnly);
+        pm.save(&buffer, format);
+        auto ba = buffer.data().toBase64();
+        QLatin1String img = QLatin1String(ba);
 
 
-    // popolo json
-    QJsonObject propic;
-    propic["username"] = _worker->getUser();
-    propic["type"] = messageType::edit;
-    propic["editType"] = EditType::propic;
-    propic["image"] = img;
-    propic["filename"] = newicon_filepath.split("/").last();
+        // popolo json
+        QJsonObject propic;
+        propic["username"] = _worker->getUser();
+        propic["type"] = messageType::edit;
+        propic["editType"] = EditType::propic;
+        propic["image"] = img;
+        propic["filename"] = newicon_filepath.split("/").last();
 
-    _worker->changeProPic(propic);
+        _worker->changeProPic(propic);
+
+        ui->img_label->setPixmap(_worker->getUserIcon());
+        ui->img_label->setScaledContents(true);
+    }
 
     // TODO: fix questo errore: libpng warning: iccp: known incorrect srgb profile con alcune immagini png
 }

@@ -303,6 +303,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             msg["type"] = QString("login");
             msg["success"] = true;
             msg["username"] = doc.value("username").toString().simplified();
+            msg["icon"] = getIcon(doc.value("username").toString().simplified());
             sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
@@ -924,8 +925,9 @@ void Server::propicHandler(const QJsonObject &doc){
     // TODO: salvare immagine un un suffisso / nome univoco (e.g. username) sul server
 
     if(encoded.isNull() || encoded.isEmpty()) {
-        // TODO: handler errore
+        // TODO: json che invii messaggio di immagine non supportata
     } else {
+        // eseguo update nel db
         QSqlQuery q;
         q.prepare("UPDATE users SET icon = :ICON WHERE username = :USER");
         q.bindValue(":USER", doc["username"]);
@@ -949,7 +951,7 @@ void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
         queryDatabase(q);
     }
 
-    // TODO: json in risposta per far eupdate su gui => signale e slot
+    // TODO: json in risposta per fare update su gui => signale e slot
 }
 
 bool Server::checkUsernameAvailability(QString n_usn){
@@ -960,4 +962,16 @@ bool Server::checkUsernameAvailability(QString n_usn){
     if(queryDatabase(q) && q.size()==0)
         return true;
     else return false;
+}
+
+QString Server::getIcon(QString user){ //metodo usato in login
+    QSqlQuery q;
+    QString icn;
+    q.prepare("SELECT icon FROM users WHERE username = :USER");
+    q.bindValue(":USER", user);
+    q.exec();
+    while (q.next()) {
+        icn = q.value(0).toString();
+    }
+    return icn;
 }

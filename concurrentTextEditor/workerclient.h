@@ -28,7 +28,9 @@ public:
     //bool receiveLoginResult();
 
     void setUser(QString loggedUser);
+    void setIcon(QPixmap icon);
     QString getUser();
+    QPixmap getUserIcon();
 
     void getFileList(QString access);
     void requestFile(QString fileName, QUuid siteID, bool isPublic);
@@ -67,6 +69,7 @@ private:
     bool _loggedIn;
     QString _loggedUser;
     const QString DEFAULT_USER  = "unknownUsername";
+    QPixmap _userIcon;
 
     //Methods
     void jsonReceived(const QJsonObject &qjo);

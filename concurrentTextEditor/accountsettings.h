@@ -40,8 +40,8 @@ private:
     QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
     //QString _defaultIconPath = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
 
-    // EDIT THIS -> prende path direttmente dal db con una query
-    QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
+    // EDIT THIS -> prende path direttmente dal db con una query - inutile?
+    // QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
     WorkerClient *_worker;
 };
 
