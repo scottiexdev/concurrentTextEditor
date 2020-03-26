@@ -9,6 +9,7 @@
 #include <QTcpSocket>
 #include <QRegularExpression>
 #include <QFileDialog>
+#include <QBuffer>
 #include "workerclient.h"
 
 namespace Ui {

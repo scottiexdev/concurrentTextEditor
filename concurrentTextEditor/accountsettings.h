@@ -6,7 +6,8 @@
 #include <QRegularExpression>
 #include <QFileDialog>
 #include <QMessageBox>
-
+#include <QBuffer>
+#include <QHostAddress>
 
 #include "workerclient.h"
 
@@ -29,16 +30,19 @@ private slots:
 
     void on_pushButton_PP_clicked();
 
+    void on_pushButton_PWD_clicked();
+
 private:
     Ui::accountSettings *ui;
 
     // Icons path
     //QString _defaultIconPath = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-    //QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-    QString _defaultIconPath = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+    QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
+    //QString _defaultIconPath = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
 
-    // EDIT THIS -> prende path direttmente dal db con una query
-    QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
+    // EDIT THIS -> prende path direttmente dal db con una query - inutile?
+    // QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
+    WorkerClient *_worker;
 };
 
 #endif // ACCOUNTSETTINGS_H

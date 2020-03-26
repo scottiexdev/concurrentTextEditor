@@ -317,6 +317,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             msg["type"] = QString("login");
             msg["success"] = true;
             msg["username"] = doc.value("username").toString().simplified();
+            msg["icon"] = getIcon(doc.value("username").toString().simplified());
             sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
@@ -655,6 +656,12 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
         case EditType::format:
             formatHandler(doc, sender);
             break;
+        case EditType::propic:
+            propicHandler(doc);
+            break;
+        case EditType::username:
+            userHandler(doc, sender);
+            break;
 
     }
 }
@@ -915,4 +922,65 @@ void Server::checkPublic(QString fileName, QString userName, bool isPublic) {
     else{
         QDir::setCurrent(_defaultPublicFilesLocation);
     }
+}
+
+void Server::propicHandler(const QJsonObject &doc){
+    // get img
+    auto encoded = doc["image"].toString().toLatin1();
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(encoded));
+    QImage img = p.toImage();
+    img.save(_defaultIconPath+doc["filename"].toString());
+    // TODO: salvare immagine un un suffisso / nome univoco (e.g. username) sul server
+
+    if(encoded.isNull() || encoded.isEmpty()) {
+        // TODO: json che invii messaggio di immagine non supportata
+    } else {
+        // eseguo update nel db
+        QSqlQuery q;
+        q.prepare("UPDATE users SET icon = :ICON WHERE username = :USER");
+        q.bindValue(":USER", doc["username"]);
+        q.bindValue(":ICON", _defaultIconPath+doc["filename"].toString());
+        queryDatabase(q);
+    }
+
+    //TODO: json in risposta
+}
+
+void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
+    const QString user = doc["username"].toString().simplified();
+    const QString new_one = doc["new_usn"].toString().simplified();
+
+    if (checkUsernameAvailability(new_one)){
+        QSqlQuery q;
+        q.prepare("UPDATE users SET username = :NEWUSER WHERE username = :USERNAME");
+        q.bindValue(":USERNAME", user);
+        q.bindValue(":NEWUSER", new_one);
+
+        queryDatabase(q);
+    }
+
+    // TODO: json in risposta per fare update su gui => signale e slot
+}
+
+bool Server::checkUsernameAvailability(QString n_usn){
+    QSqlQuery q;
+    q.prepare("SELECT username FROM users WHERE username = :USER");
+    q.bindValue(":USER", n_usn);
+
+    if(queryDatabase(q) && q.size()==0)
+        return true;
+    else return false;
+}
+
+QString Server::getIcon(QString user){ //metodo usato in login
+    QSqlQuery q;
+    QString icn;
+    q.prepare("SELECT icon FROM users WHERE username = :USER");
+    q.bindValue(":USER", user);
+    q.exec();
+    while (q.next()) {
+        icn = q.value(0).toString();
+    }
+    return icn;
 }

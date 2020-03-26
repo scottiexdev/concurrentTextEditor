@@ -48,14 +48,42 @@ void dialogsignup::on_pushButton_Signup_clicked()
     signup["email"] = email;
     if(this->icn.isNull() || this->icn.isEmpty())
         signup["icon"] = this->_defaultIcon;
-    else signup["icon"] = this->icn;
+    else {
+
+        signup["icon"] = _defaultIconPath+this->icn.split("/").last();
+    }
 
     if(ok && ok1) {
         _workerClient->sendLoginCred(signup);
+        // prendo pixmap
+        QPixmap pm(this->icn);
+        QString form = this->icn.split(".").last().toUpper();
+        QByteArray buf = form.toLocal8Bit();
+        const char * format = buf.data(); //formato necessario pr salvare immagine
+
+        // inserisco immagine in json
+        QBuffer buffer;
+        buffer.open(QIODevice::WriteOnly);
+        pm.save(&buffer, format);
+        auto ba = buffer.data().toBase64();
+        QLatin1String img = QLatin1String(ba);
+
+
+        // popolo json
+        QJsonObject propic;
+        propic["username"] = usr;
+        propic["type"] = messageType::edit;
+        propic["editType"] = EditType::propic;
+        propic["image"] = img;
+        propic["filename"] = this->icn.split("/").last();
+
+        _workerClient->setIcon(pm);
+        _workerClient->changeProPic(propic); // la cosa che deve fare è la stessa di quando cambi
+
+        //TODO: fix problema che se faccio signup e poi account settings non fa vedere propric, se slogghi e rilogghi si
         this->close();
     }
 }
-
 
 
 void dialogsignup::on_pushButton_Pic_clicked()

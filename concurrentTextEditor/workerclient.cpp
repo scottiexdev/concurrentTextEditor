@@ -102,6 +102,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
             break;
         case messageType::serverDown:
             closeConnection();
+            break;
         default:
             return;
     }
@@ -150,6 +151,7 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
         //Notify with signal that the login was successfull
         const QJsonValue resultVal = docObj.value(QLatin1String("username"));
         _loggedUser = resultVal.toString();
+        _userIcon = docObj["icon"].toString();
         this->_loggedIn = true;
         emit myLoggedIn();
         return;
@@ -340,4 +342,20 @@ void WorkerClient::getSharedFile(QString link) {
     qjo["type"] = messageType::invite;
     qjo["operation"] = EditType::check;
     sendJson(qjo);
+}
+
+void WorkerClient::changeProPic(QJsonObject &qj){
+    sendJson(qj);
+}
+
+void WorkerClient::newUsername(QJsonObject &qj){
+    sendJson(qj);
+}
+
+QPixmap WorkerClient::getUserIcon(){
+    return _userIcon;
+}
+
+void WorkerClient::setIcon(QPixmap icon){
+    this->_userIcon = icon;
 }
