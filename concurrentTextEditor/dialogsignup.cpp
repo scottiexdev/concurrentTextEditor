@@ -46,15 +46,14 @@ void dialogsignup::on_pushButton_Signup_clicked()
     signup["username"] = usr;
     signup["password"] = pwd1;
     signup["email"] = email;
-    if(this->icn.isNull() || this->icn.isEmpty())
-        signup["icon"] = this->_defaultIcon;
-    else {
-
-        signup["icon"] = _defaultIconPath+this->icn.split("/").last();
+    if(this->icn.isNull() || this->icn.isEmpty()){
+        signup["icon"] = "default";
     }
+    else {
+        QPixmap qpm(icn);
+        _workerClient->setIcon(qpm);
+        signup["icon"] = icn.split("/").last();
 
-    if(ok && ok1) {
-        _workerClient->sendLoginCred(signup);
         // prendo pixmap
         QPixmap pm(this->icn);
         QString form = this->icn.split(".").last().toUpper();
@@ -72,13 +71,15 @@ void dialogsignup::on_pushButton_Signup_clicked()
         // popolo json
         QJsonObject propic;
         propic["username"] = usr;
-        propic["type"] = messageType::edit;
-        propic["editType"] = EditType::propic;
+        propic["type"] = QString("saveicon");
         propic["image"] = img;
         propic["filename"] = this->icn.split("/").last();
 
-        _workerClient->setIcon(pm);
-        _workerClient->changeProPic(propic); // la cosa che deve fare è la stessa di quando cambi
+         _workerClient->saveIcon(propic);
+    }
+
+    if(ok && ok1) {
+        _workerClient->sendLoginCred(signup);
 
         //TODO: fix problema che se faccio signup e poi account settings non fa vedere propric, se slogghi e rilogghi si
         this->close();
@@ -88,6 +89,24 @@ void dialogsignup::on_pushButton_Signup_clicked()
 
 void dialogsignup::on_pushButton_Pic_clicked()
 {
-    QString iconpath = QFileDialog::getOpenFileName(this, tr("Profile Picture"), this->_defaultIconPath);
-    this->icn = iconpath;
+    QString iconpath = QFileDialog::getOpenFileName(this, tr("Profile Picture"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+    //i briefly check if the file chosen is valid & supported
+    QPixmap pm (iconpath);
+    QString form = iconpath.split(".").last().toUpper();
+    QByteArray buf = form.toLocal8Bit();
+    const char * format = buf.data();
+
+    // inserisco immagine in json
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    pm.save(&buffer, format);
+    auto ba = buffer.data().toBase64();
+    QLatin1String img = QLatin1String(ba);
+
+    if (img.isNull() || img.isEmpty() || img == "") {
+        QMessageBox::information(this, "Error", "Something is wrong with the image. Please try to use a different one.");
+    } else {
+        this->icn = iconpath;
+    }
 }

@@ -58,7 +58,7 @@ void accountSettings::on_pushButton_EA_clicked()
 
 void accountSettings::on_pushButton_PP_clicked()
 {
-    QString newicon_filepath = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), this->_defaultIconPath);
+    QString newicon_filepath = QFileDialog::getOpenFileName(this, tr("New Profile Picture"), QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
 
     //entra nell'if solo nel caso l'utente scelga un'immagine
     if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
@@ -85,10 +85,14 @@ void accountSettings::on_pushButton_PP_clicked()
         propic["image"] = img;
         propic["filename"] = newicon_filepath.split("/").last();
 
-        _worker->changeProPic(propic);
+        if (img.isNull() || img.isEmpty() || img == "") {
+            QMessageBox::information(this, "Error", "Something is wrong with the image. Please try to use a different one.");
+        } else {
+            _worker->changeProPic(propic);
 
-        ui->img_label->setPixmap(_worker->getUserIcon());
-        ui->img_label->setScaledContents(true);
+            ui->img_label->setPixmap(pm);
+            ui->img_label->setScaledContents(true);
+        }
     }
 
     // TODO: fix questo errore: libpng warning: iccp: known incorrect srgb profile con alcune immagini png
