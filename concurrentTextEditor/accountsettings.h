@@ -23,6 +23,10 @@ public:
     explicit accountSettings(QWidget *parent = nullptr, WorkerClient *worker = nullptr);
     ~accountSettings();
 
+public slots:
+    void newUsernameNok();
+    void newUsernameOk();
+
 private slots:
     void on_pushButton_U_clicked();
 

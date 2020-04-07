@@ -10,6 +10,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
+    connect(_workerClient, &WorkerClient::newUsernameOk, this, &loggedinmainwindow::newUsernameOk);
     _workerClient->getCurrentIconFromServer();
 }
 
@@ -269,4 +270,8 @@ void loggedinmainwindow::on_PrivatefileListTable_cellClicked(int row, int column
 {
     ui->PublicFileListTable->clearSelection();
     return;
+}
+
+void loggedinmainwindow::newUsernameOk(){
+    ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser());
 }
