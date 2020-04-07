@@ -65,6 +65,8 @@ signals:
     void ifFileOpenOk(const QJsonObject& qjo);
     void fileDeleted();
     void disconnectClient();
+    void newUsernameOk();
+    void newUsernameNok();
 
 private:
     QTcpSocket* _clientSocket;
@@ -82,6 +84,7 @@ private:
     void currentIconHandler(const QJsonObject& qjo);
     void newFileError();
     void sendJson(const QJsonObject &doc);
+    void newUsernameHandler(const QJsonObject &doc);
 
 };
 

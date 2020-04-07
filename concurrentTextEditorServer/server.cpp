@@ -965,17 +965,26 @@ void Server::propicHandler(const QJsonObject &doc){
 void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
     const QString user = doc["username"].toString().simplified();
     const QString new_one = doc["new_usn"].toString().simplified();
+    bool ok = checkUsernameAvailability(new_one);
 
-    if (checkUsernameAvailability(new_one)){
+    QJsonObject qjo;
+    if (ok){
         QSqlQuery q;
         q.prepare("UPDATE users SET username = :NEWUSER WHERE username = :USERNAME");
         q.bindValue(":USERNAME", user);
         q.bindValue(":NEWUSER", new_one);
 
         queryDatabase(q);
-    }
+        qjo["username"] = new_one;
 
-    // TODO: json in risposta per fare update su gui => signale e slot
+        sender.setUserName(new_one);
+    } else qjo["username"] = user;
+
+    qjo["type"] = messageType::edit;
+    qjo["editType"] = EditType::username;
+    qjo["success"] = ok;
+
+    sendJson(sender, qjo);
 }
 
 bool Server::checkUsernameAvailability(QString n_usn){
@@ -983,7 +992,7 @@ bool Server::checkUsernameAvailability(QString n_usn){
     q.prepare("SELECT username FROM users WHERE username = :USER");
     q.bindValue(":USER", n_usn);
 
-    if(queryDatabase(q) && q.size()==0)
+    if(queryDatabase(q) && !q.next())
         return true;
     else return false;
 }

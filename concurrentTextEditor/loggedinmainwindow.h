@@ -27,7 +27,7 @@ public slots:
     void showFiles(QStringList list, QStringList list2, QStringList list3, bool isPublic);
     void errorDisplay(QString str="Error");
     void isFileOpenOkay(const QJsonObject& qjo);
-
+    void newUsernameOk();
 
 private slots:
 

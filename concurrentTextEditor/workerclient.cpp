@@ -70,6 +70,7 @@ void WorkerClient::onReadyRead()
 void WorkerClient::jsonReceived(const QJsonObject &docObj)
 {
     messageType type = static_cast<messageType>(docObj["type"].toInt());
+    EditType etype = static_cast<EditType>(docObj["editType"].toInt());
 
     switch (type) {
 
@@ -89,6 +90,8 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
             showUserListHandler(docObj); //qua ci metto anche la rimozione di un utente da mandare in broadcast
             break;
         case messageType::edit:
+            if (etype == EditType::username)
+                newUsernameHandler(docObj);
             emit handleRemoteEdit(docObj);
             break;
         case messageType::openFile: //fa da invite
@@ -380,4 +383,16 @@ void WorkerClient::currentIconHandler(const QJsonObject &qjo){
     p.loadFromData(QByteArray::fromBase64(encoded));
 
     setIcon(p);
+}
+
+void WorkerClient::newUsernameHandler(const QJsonObject &doc){
+    bool result = doc["success"].toBool();
+    QString new_user = doc["username"].toString();
+
+    if (result) {
+        setUser(new_user);
+        emit newUsernameOk();
+    } else {
+        emit newUsernameNok();
+    }
 }

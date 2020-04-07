@@ -12,6 +12,9 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
     ui->label_usr->setText("Username: "+worker->getUser());
     ui->img_label->setPixmap(_worker->getUserIcon());
     ui->img_label->setScaledContents(true);
+
+    connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
+    connect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
 }
 
 accountSettings::~accountSettings()
@@ -25,7 +28,7 @@ void accountSettings::on_pushButton_U_clicked()
     // Open Q Dialog con QlineEdit - OK
     // Get username - OK
     // Query per scoprire se quello nuovo è già esistente - OK
-    // Risposta OK v NOK basata su availability new user -
+    // Risposta OK v NOK basata su availability new user - OK
     // Update -
 
     QString new_usn = QInputDialog::getText(this, tr("Change Username"),
@@ -94,8 +97,6 @@ void accountSettings::on_pushButton_PP_clicked()
             ui->img_label->setScaledContents(true);
         }
     }
-
-    // TODO: fix questo errore: libpng warning: iccp: known incorrect srgb profile con alcune immagini png
 }
 
 void accountSettings::on_pushButton_PWD_clicked()
@@ -104,4 +105,13 @@ void accountSettings::on_pushButton_PWD_clicked()
     // inserire password precedente, nuova password e conferma nuova password
     // sul server: query ad DB, check e json in risposta
 
+}
+
+void accountSettings::newUsernameNok(){
+    QMessageBox::information(this, "Error", "The username you chose is already taken. Please choose another.");
+}
+
+void accountSettings::newUsernameOk(){
+    this->ui->label_usr->setText("Username: "+_worker->getUser());
+    QMessageBox::information(this, "Success", "Username changed successfully!");
 }
