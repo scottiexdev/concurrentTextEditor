@@ -103,6 +103,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::serverDown:
             closeConnection();
             break;
+        case messageType::getCurrentUserIcon:
+            currentIconHandler(docObj);
+            break;
         default:
             return;
     }
@@ -352,10 +355,29 @@ void WorkerClient::newUsername(QJsonObject &qj){
     sendJson(qj);
 }
 
+void WorkerClient::saveIcon(QJsonObject &qj){
+    sendJson(qj);
+}
+
 QPixmap WorkerClient::getUserIcon(){
     return _userIcon;
 }
 
+void WorkerClient::getCurrentIconFromServer(){
+    QJsonObject qj;
+    qj["username"] = getUser();
+    qj["type"] = messageType::getCurrentUserIcon;
+    sendJson(qj);
+}
+
 void WorkerClient::setIcon(QPixmap icon){
     this->_userIcon = icon;
+}
+
+void WorkerClient::currentIconHandler(const QJsonObject &qjo){
+    auto encoded = qjo["image"].toString().toLatin1();
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(encoded));
+
+    setIcon(p);
 }

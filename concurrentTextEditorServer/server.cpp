@@ -271,6 +271,12 @@ void Server::jsonFromLoggedOut(WorkerServer& sender, const QJsonObject &doc) {
         return;
     }
 
+    //get default icon in signup
+    if(typeVal.toString().compare("saveicon", Qt::CaseInsensitive) == 0){
+        saveIcon(doc);
+        return;
+    }
+
 }
 
 void Server::signup(QSqlQuery& qVerify, QSqlQuery& qSignup, const QJsonObject& doc, WorkerServer& sender) {
@@ -317,7 +323,7 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             msg["type"] = QString("login");
             msg["success"] = true;
             msg["username"] = doc.value("username").toString().simplified();
-            msg["icon"] = getIcon(doc.value("username").toString().simplified());
+            // msg["icon"] = getIcon(doc.value("username").toString().simplified());
             sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
@@ -345,15 +351,19 @@ void Server::bindValues(QSqlQuery& q, const QJsonObject &doc) {
     const QString simplifiedUser = userVal.toString().simplified(); //deletes extra white spaces
     const QString password = doc.value("password").toString(); //TODO: hash password from client
     const QString email = doc.value("email").toString();
-    const QString icon = doc.value("icon").toString();
+    QString icon = doc.value("icon").toString();
     q.bindValue(":USERNAME", simplifiedUser);
     q.bindValue(":PASSWORD", password);
     q.bindValue(":EMAIL", email);
+    if(icon == "default")
+        icon = _defaultIcon;
+    else
+        icon = _defaultIconPath+icon;
     q.bindValue(":ICON", icon);
 }
 
 
-void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
+void Server::jsonFromLoggedIn(WorkerServer &sender, const QJsonObject &doc) {
 
     messageType type = static_cast<messageType>(doc["type"].toInt());
 
@@ -385,6 +395,10 @@ void Server::jsonFromLoggedIn(WorkerServer& sender, const QJsonObject &doc) {
 
         case messageType::deleteFile:
             deleteFileHandler(sender, doc);
+            break;
+
+        case messageType::getCurrentUserIcon:
+            currentIconHandler(sender, doc);
             break;
 
         default:
@@ -930,8 +944,9 @@ void Server::propicHandler(const QJsonObject &doc){
     QPixmap p;
     p.loadFromData(QByteArray::fromBase64(encoded));
     QImage img = p.toImage();
+
+
     img.save(_defaultIconPath+doc["filename"].toString());
-    // TODO: salvare immagine un un suffisso / nome univoco (e.g. username) sul server
 
     if(encoded.isNull() || encoded.isEmpty()) {
         // TODO: json che invii messaggio di immagine non supportata
@@ -983,4 +998,37 @@ QString Server::getIcon(QString user){ //metodo usato in login
         icn = q.value(0).toString();
     }
     return icn;
+}
+
+void Server::saveIcon(const QJsonObject &qj){
+    // get img
+    auto encoded = qj["image"].toString().toLatin1();
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(encoded));
+    QImage img = p.toImage();
+
+
+    img.save(_defaultIconPath+qj["filename"].toString());
+
+    if(encoded.isNull() || encoded.isEmpty()) {
+        // TODO: json che invii messaggio di immagine non supportata
+    }
+}
+
+void Server::currentIconHandler(WorkerServer &sender, const QJsonObject& qj){
+    QString path = getIcon(qj["username"].toString());
+    QPixmap pm(path);
+    const char * format = "PNG";
+
+    QBuffer buf;
+    buf.open(QIODevice::WriteOnly);
+    pm.save(&buf, format);
+    auto ba = buf.data().toBase64();
+    QLatin1String img = QLatin1String(ba);
+
+    QJsonObject qjo;
+    qjo["type"] = messageType::getCurrentUserIcon;
+    qjo["image"] = img;
+
+    sendJson(sender, qjo);
 }

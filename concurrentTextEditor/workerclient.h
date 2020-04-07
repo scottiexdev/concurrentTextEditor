@@ -10,6 +10,7 @@
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QMessageBox>
+#include <QStandardPaths>
 
 #include "char.h"
 #include "Enums.h"
@@ -31,6 +32,7 @@ public:
     void setIcon(QPixmap icon);
     QString getUser();
     QPixmap getUserIcon();
+    void getCurrentIconFromServer();
 
     void getFileList(QString access);
     void requestFile(QString fileName, QUuid siteID, bool isPublic);
@@ -43,7 +45,7 @@ public:
     void userLeft(QString fileName, QString user);
     void changeProPic(QJsonObject &qj);
     void newUsername(QJsonObject &qj);
-
+    void saveIcon(QJsonObject &qj);
 
 private slots:
     void onReadyRead();
@@ -77,6 +79,7 @@ private:
     void signupHandler(const QJsonObject& jsonObj);
     void showallFilesHandler(const QJsonObject& qjo);
     void showUserListHandler(const QJsonObject& qjo);
+    void currentIconHandler(const QJsonObject& qjo);
     void newFileError();
     void sendJson(const QJsonObject &doc);
 

@@ -73,14 +73,16 @@ private:
 
     // PATHS:
     // DB paths
-    const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
+    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
     //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
 
+    //************* COSI' NON FUNZIONA SUL MIO - Giorgio *****************
     //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db"); // DA METTERE IN DEPLOYMENT
     const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
     const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
-    const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
+    // const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
+    QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
 
     const QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 
@@ -100,6 +102,8 @@ private:
     bool checkUsernameAvailability(QString n_usn);
     void writeEmptyFile(QJsonObject &qjo, QString filename) const;
     void checkPublic(QString fileName, QString userName, bool isPublic);
+    void saveIcon(const QJsonObject &qj);
+    void currentIconHandler(WorkerServer& sender, const QJsonObject &qj);
 
     // WORKER SERVER INTERACTIONS
     void sendJson(WorkerServer& dest, const QJsonObject& msg);
