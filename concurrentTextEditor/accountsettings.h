@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QBuffer>
 #include <QHostAddress>
+#include <QFormLayout>
+#include <QDialogButtonBox>
 
 #include "workerclient.h"
 
@@ -18,6 +20,8 @@ class accountSettings;
 class accountSettings : public QDialog
 {
     Q_OBJECT
+protected:
+    void closeEvent(QCloseEvent *event);
 
 public:
     explicit accountSettings(QWidget *parent = nullptr, WorkerClient *worker = nullptr);
@@ -26,6 +30,7 @@ public:
 public slots:
     void newUsernameNok();
     void newUsernameOk();
+    void iconArrived(QPixmap icon);
 
 private slots:
     void on_pushButton_U_clicked();

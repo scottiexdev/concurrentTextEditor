@@ -15,26 +15,24 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
 
     connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
     connect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
+    connect(_worker, &WorkerClient::iconSent, this, &accountSettings::iconArrived);
 }
 
 accountSettings::~accountSettings()
 {
-    // _worker.disconnectFromServer();
+    disconnect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
+    disconnect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
+    disconnect(_worker, &WorkerClient::iconSent, this, &accountSettings::iconArrived);
     delete ui;
 }
 
 void accountSettings::on_pushButton_U_clicked()
 {
-    // Open Q Dialog con QlineEdit - OK
-    // Get username - OK
-    // Query per scoprire se quello nuovo è già esistente - OK
-    // Risposta OK v NOK basata su availability new user - OK
-    // Update -
 
     QString new_usn = QInputDialog::getText(this, tr("Change Username"),
                                              tr("New username:"), QLineEdit::Normal);
     if(new_usn.isNull() || new_usn.isEmpty())
-        new_usn = _worker->getUser();
+        return;
     QJsonObject user;
     user["username"] = _worker->getUser();
     user["type"] = messageType::edit;
@@ -66,7 +64,7 @@ void accountSettings::on_pushButton_PP_clicked()
     //entra nell'if solo nel caso l'utente scelga un'immagine
     if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
         QPixmap pm(newicon_filepath);
-        _worker->setIcon(_defaultIconPath+newicon_filepath.split("/").last());
+        //_worker->setIcon(_defaultIconPath+newicon_filepath.split("/").last());
 
         QString form = newicon_filepath.split(".").last().toUpper();
         QByteArray buf = form.toLocal8Bit();
@@ -105,6 +103,31 @@ void accountSettings::on_pushButton_PWD_clicked()
     // inserire password precedente, nuova password e conferma nuova password
     // sul server: query ad DB, check e json in risposta
 
+    QDialog dialog(this);
+    QFormLayout form(&dialog);
+
+    form.addRow(new QLabel("Please enter your new password"));
+
+
+    // Add the lineEdits with their respective labels
+    QList<QLineEdit *> fields;
+    for(int i = 0; i < 4; ++i) {
+        QLineEdit *lineEdit = new QLineEdit(&dialog);
+        QString label = QString("New ").arg(i + 1);
+        form.addRow(label, lineEdit);
+
+        fields << lineEdit;
+    }
+
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    dialog.exec();
+
 }
 
 void accountSettings::newUsernameNok(){
@@ -114,4 +137,13 @@ void accountSettings::newUsernameNok(){
 void accountSettings::newUsernameOk(){
     this->ui->label_usr->setText("Username: "+_worker->getUser());
     QMessageBox::information(this, "Success", "Username changed successfully!");
+}
+
+void accountSettings::closeEvent(QCloseEvent *event){
+    this->deleteLater();
+}
+
+void accountSettings::iconArrived(QPixmap icon){
+    ui->img_label->setPixmap(icon);
+    ui->img_label->setScaledContents(true);
 }

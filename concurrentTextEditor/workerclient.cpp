@@ -383,6 +383,7 @@ void WorkerClient::currentIconHandler(const QJsonObject &qjo){
     p.loadFromData(QByteArray::fromBase64(encoded));
 
     setIcon(p);
+    emit iconSent(p);
 }
 
 void WorkerClient::newUsernameHandler(const QJsonObject &doc){

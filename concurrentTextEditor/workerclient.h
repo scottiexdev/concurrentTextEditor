@@ -67,6 +67,7 @@ signals:
     void disconnectClient();
     void newUsernameOk();
     void newUsernameNok();
+    void iconSent(QPixmap icon);
 
 private:
     QTcpSocket* _clientSocket;
