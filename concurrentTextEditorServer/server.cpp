@@ -987,9 +987,9 @@ void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){
 
         // change directory name if it exists
         QDir currentDir(_defaultFilesLocation);
-        QDir oldDir(_defaultFilesLocation+"/Files"+user);
+        QDir oldDir(_defaultFilesLocation + user);
         if (oldDir.exists())
-            currentDir.rename(oldDir.dirName(), _defaultFilesLocation+"/Files"+new_one);
+            currentDir.rename(oldDir.dirName(), _defaultFilesLocation + new_one);
 
     } else qjo["username"] = user;
 
