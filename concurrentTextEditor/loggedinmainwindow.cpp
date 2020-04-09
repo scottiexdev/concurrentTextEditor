@@ -7,10 +7,13 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     _workerClient(worker)
 {
     ui->setupUi(this);
+    ui->PublicFileListTable->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->PrivatefileListTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser()); //used to show Username in home window
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
     connect(_workerClient, &WorkerClient::newUsernameOk, this, &loggedinmainwindow::newUsernameOk);
+    connect(ui->PublicFileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenu);
     _workerClient->getCurrentIconFromServer();
 }
 
@@ -275,4 +278,17 @@ void loggedinmainwindow::on_PrivatefileListTable_cellClicked(int row, int column
 
 void loggedinmainwindow::newUsernameOk(){
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser());
+}
+
+void loggedinmainwindow::provideContextMenu(const QPoint &pos){
+    QMenu m;
+    QAction *open = m.addAction("Open");
+    m.addSeparator();
+    QAction *del = m.addAction("Delete");
+    m.addSeparator();
+    QAction *new_file = m.addAction("New Public File");
+
+    QAction *selected = m.exec(QCursor::pos());
+
+    //switch for various cases + emit signals or stuff
 }

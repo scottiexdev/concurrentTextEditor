@@ -57,6 +57,8 @@ private slots:
 
     void on_PrivatefileListTable_cellClicked(int row, int column);
 
+    void provideContextMenu(const QPoint &pos);
+
 public:
 
 
