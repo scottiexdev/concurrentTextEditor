@@ -53,7 +53,6 @@ private slots:
 
     void on_pushButtonOpenSharedFile_3_clicked();
 
-
     void on_PublicFileListTable_cellClicked(int row, int column);
 
     void on_PrivatefileListTable_cellClicked(int row, int column);
