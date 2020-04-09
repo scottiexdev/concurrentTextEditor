@@ -15,26 +15,24 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
 
     connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
     connect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
+    connect(_worker, &WorkerClient::iconSent, this, &accountSettings::iconArrived);
 }
 
 accountSettings::~accountSettings()
 {
-    // _worker.disconnectFromServer();
+    disconnect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
+    disconnect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
+    disconnect(_worker, &WorkerClient::iconSent, this, &accountSettings::iconArrived);
     delete ui;
 }
 
 void accountSettings::on_pushButton_U_clicked()
 {
-    // Open Q Dialog con QlineEdit - OK
-    // Get username - OK
-    // Query per scoprire se quello nuovo è già esistente - OK
-    // Risposta OK v NOK basata su availability new user - OK
-    // Update -
 
     QString new_usn = QInputDialog::getText(this, tr("Change Username"),
                                              tr("New username:"), QLineEdit::Normal);
     if(new_usn.isNull() || new_usn.isEmpty())
-        new_usn = _worker->getUser();
+        return;
     QJsonObject user;
     user["username"] = _worker->getUser();
     user["type"] = messageType::edit;
@@ -47,7 +45,7 @@ void accountSettings::on_pushButton_U_clicked()
 
 void accountSettings::on_pushButton_EA_clicked()
 {
-    QRegularExpression regex("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)");
+    QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
     bool ok;
     QString new_email = QInputDialog::getText(this, tr("Change Email"), tr("New Email"), QLineEdit::Normal, tr("email@domain.com"), &ok);
 
@@ -55,7 +53,7 @@ void accountSettings::on_pushButton_EA_clicked()
         if(!regex.match(new_email).hasMatch()) {
             QMessageBox::information(this, tr("Error"),tr("new email has not a valid format"));
             return;
-        }
+        } else _worker->setNewEmail(new_email);
     }
 }
 
@@ -66,7 +64,6 @@ void accountSettings::on_pushButton_PP_clicked()
     //entra nell'if solo nel caso l'utente scelga un'immagine
     if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
         QPixmap pm(newicon_filepath);
-        _worker->setIcon(_defaultIconPath+newicon_filepath.split("/").last());
 
         QString form = newicon_filepath.split(".").last().toUpper();
         QByteArray buf = form.toLocal8Bit();
@@ -105,6 +102,39 @@ void accountSettings::on_pushButton_PWD_clicked()
     // inserire password precedente, nuova password e conferma nuova password
     // sul server: query ad DB, check e json in risposta
 
+    QDialog dialog(this);
+    QFormLayout form(&dialog);
+
+    QString p1, p2;
+
+    form.addRow(new QLabel("Please enter your new password"));
+    QLineEdit *pwd1 = new QLineEdit(&dialog);
+    pwd1->setEchoMode(QLineEdit::Password);
+    form.addRow(pwd1);
+
+    form.addRow(new QLabel("Please Re-enter your new password"));
+
+    QLineEdit *pwd2 = new QLineEdit(&dialog);
+    pwd2->setEchoMode(QLineEdit::Password);
+    form.addRow(pwd2);
+
+    p1 = pwd1->text();
+    p2 = pwd2->text();
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    dialog.exec();
+
+    p1 = pwd1->text();
+    p2 = pwd2->text();
+
+    if(p1 != p2) {
+        QMessageBox::information(this, "Error", "Passwords do not match");
+    } else _worker->setNewPassowrd(p1);
 }
 
 void accountSettings::newUsernameNok(){
@@ -114,4 +144,13 @@ void accountSettings::newUsernameNok(){
 void accountSettings::newUsernameOk(){
     this->ui->label_usr->setText("Username: "+_worker->getUser());
     QMessageBox::information(this, "Success", "Username changed successfully!");
+}
+
+void accountSettings::closeEvent(QCloseEvent *event){
+    this->deleteLater();
+}
+
+void accountSettings::iconArrived(QPixmap icon){
+    ui->img_label->setPixmap(icon);
+    ui->img_label->setScaledContents(true);
 }

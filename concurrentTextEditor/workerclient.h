@@ -46,6 +46,8 @@ public:
     void changeProPic(QJsonObject &qj);
     void newUsername(QJsonObject &qj);
     void saveIcon(QJsonObject &qj);
+    void setNewPassowrd(QString pwd);
+    void setNewEmail(QString email);
 
 private slots:
     void onReadyRead();
@@ -67,6 +69,7 @@ signals:
     void disconnectClient();
     void newUsernameOk();
     void newUsernameNok();
+    void iconSent(QPixmap icon);
 
 private:
     QTcpSocket* _clientSocket;
@@ -85,6 +88,8 @@ private:
     void newFileError();
     void sendJson(const QJsonObject &doc);
     void newUsernameHandler(const QJsonObject &doc);
+//    void newEmailResponse(const QJsonObject &doc);
+//    void newPasswordResponse(const QJsonObject &doc);
 
 };
 

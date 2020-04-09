@@ -20,7 +20,7 @@ void dialogsignup::on_pushButton_Signup_clicked()
 {
     bool ok=false, ok1=false; //variable needed to handle different pwd
     // Regex ok ma accetta anche robe del tipo abc@def@pippo.it => to fix
-    QRegularExpression regex("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)");
+    QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
     _workerClient->connectToServer(QHostAddress::LocalHost, 1967);
 
     QString usr = ui->lineEdit_Usr->text();

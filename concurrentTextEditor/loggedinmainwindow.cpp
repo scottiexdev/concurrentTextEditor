@@ -246,6 +246,7 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
 
 void loggedinmainwindow::on_pushButtonSettings_2_clicked()
 {
+    _workerClient->getCurrentIconFromServer();
     _ac = new accountSettings(this, _workerClient);
     _ac->show();
 }
