@@ -72,21 +72,10 @@ private:
     QMap<QString, Crdt> _openedFiles;
 
     // PATHS:
-    // DB paths
-    //const QString _defaultDatabaseLocation = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultDatabaseLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    //const QString _defaultDatabaseLocation = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/concurrentDb.db";
-    const QString _defaultPublicFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files/Public";
-    const QString _defaultFilesLocation = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Files";
-    const QString _defaultPrivateFilesLocaton = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer";
-
-    //************* COSI' NON FUNZIONA SUL MIO - Giorgio *****************
-    //const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db"); // DA METTERE IN DEPLOYMENT
-//    const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
-//    const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
-    // const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
-    QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-
+    const QString _defaultDatabaseLocation = QDir::currentPath().append("/concurrentDb.db"); // DA METTERE IN DEPLOYMENT
+    const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
+    const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
+    const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
     const QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 
     // PRIVATE FUNCTIONS
