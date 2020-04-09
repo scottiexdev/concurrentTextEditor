@@ -127,6 +127,8 @@ private:
     void formatHandler(const QJsonObject &doc, WorkerServer &sender );
     void propicHandler(const QJsonObject &doc);
     void userHandler(const QJsonObject &doc, WorkerServer &sender);
+    void passwordHandler(const QJsonObject &doc, WorkerServer &sender);
+    void emailHandler(const QJsonObject &doc, WorkerServer &sender);
 
 };
 

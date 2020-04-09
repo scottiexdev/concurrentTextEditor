@@ -676,6 +676,12 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
         case EditType::username:
             userHandler(doc, sender);
             break;
+        case EditType::password:
+            passwordHandler(doc, sender);
+            break;
+        case EditType::email:
+            emailHandler(doc, sender);
+            break;
 
     }
 }
@@ -1025,10 +1031,6 @@ void Server::saveIcon(const QJsonObject &qj){
 
 
     img.save(_defaultIconPath+qj["filename"].toString());
-
-    if(encoded.isNull() || encoded.isEmpty()) {
-        // TODO: json che invii messaggio di immagine non supportata
-    }
 }
 
 void Server::currentIconHandler(WorkerServer &sender, const QJsonObject& qj){
@@ -1047,4 +1049,50 @@ void Server::currentIconHandler(WorkerServer &sender, const QJsonObject& qj){
     qjo["image"] = img;
 
     sendJson(sender, qjo);
+}
+
+void Server::passwordHandler(const QJsonObject &doc, WorkerServer &sender){
+    QSqlQuery q;
+    QString user = doc["username"].toString();
+    QString pwd = doc["password"].toString();
+    q.prepare("UPDATE users SET password = :PASSWORD WHERE username = :USERNAME");
+    q.bindValue(":USERNAME", user);
+    q.bindValue(":PASSWORD", pwd);
+
+    queryDatabase(q);
+//    QJsonObject response;
+//    response["username"] = user;
+//    response["type"] = messageType::edit;
+//    response["editType"] = EditType::password;
+
+
+//    if(queryDatabase(q))
+//        response["success"] = true;
+//    else response["success"] = false;
+
+//    sendJson(sender, doc);
+}
+
+void Server::emailHandler(const QJsonObject &doc, WorkerServer &sender){
+    QSqlQuery q;
+    QString user = doc["username"].toString();
+    QString email = doc["email"].toString();
+    q.prepare("UPDATE users SET email = :EMAIL WHERE username = :USERNAME");
+    q.bindValue(":USERNAME", user);
+    q.bindValue(":EMAIL", email);
+
+    queryDatabase(q);
+
+//    QJsonObject response;
+//    response["username"] = user;
+//    response["type"] = messageType::edit;
+//    response["editType"] = EditType::email;
+//    response["email"] = email;
+
+
+//    if(queryDatabase(q))
+//        response["success"] = true;
+//    else response["success"] = false;
+
+//    sendJson(sender, doc);
 }

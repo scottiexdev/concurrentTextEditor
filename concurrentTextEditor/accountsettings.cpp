@@ -45,7 +45,7 @@ void accountSettings::on_pushButton_U_clicked()
 
 void accountSettings::on_pushButton_EA_clicked()
 {
-    QRegularExpression regex("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)");
+    QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
     bool ok;
     QString new_email = QInputDialog::getText(this, tr("Change Email"), tr("New Email"), QLineEdit::Normal, tr("email@domain.com"), &ok);
 
@@ -53,7 +53,7 @@ void accountSettings::on_pushButton_EA_clicked()
         if(!regex.match(new_email).hasMatch()) {
             QMessageBox::information(this, tr("Error"),tr("new email has not a valid format"));
             return;
-        }
+        } else _worker->setNewEmail(new_email);
     }
 }
 
@@ -64,7 +64,6 @@ void accountSettings::on_pushButton_PP_clicked()
     //entra nell'if solo nel caso l'utente scelga un'immagine
     if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
         QPixmap pm(newicon_filepath);
-        //_worker->setIcon(_defaultIconPath+newicon_filepath.split("/").last());
 
         QString form = newicon_filepath.split(".").last().toUpper();
         QByteArray buf = form.toLocal8Bit();
@@ -106,19 +105,21 @@ void accountSettings::on_pushButton_PWD_clicked()
     QDialog dialog(this);
     QFormLayout form(&dialog);
 
+    QString p1, p2;
+
     form.addRow(new QLabel("Please enter your new password"));
+    QLineEdit *pwd1 = new QLineEdit(&dialog);
+    pwd1->setEchoMode(QLineEdit::Password);
+    form.addRow(pwd1);
 
+    form.addRow(new QLabel("Please Re-enter your new password"));
 
-    // Add the lineEdits with their respective labels
-    QList<QLineEdit *> fields;
-    for(int i = 0; i < 4; ++i) {
-        QLineEdit *lineEdit = new QLineEdit(&dialog);
-        QString label = QString("New ").arg(i + 1);
-        form.addRow(label, lineEdit);
+    QLineEdit *pwd2 = new QLineEdit(&dialog);
+    pwd2->setEchoMode(QLineEdit::Password);
+    form.addRow(pwd2);
 
-        fields << lineEdit;
-    }
-
+    p1 = pwd1->text();
+    p2 = pwd2->text();
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
@@ -128,6 +129,12 @@ void accountSettings::on_pushButton_PWD_clicked()
 
     dialog.exec();
 
+    p1 = pwd1->text();
+    p2 = pwd2->text();
+
+    if(p1 != p2) {
+        QMessageBox::information(this, "Error", "Passwords do not match");
+    } else _worker->setNewPassowrd(p1);
 }
 
 void accountSettings::newUsernameNok(){

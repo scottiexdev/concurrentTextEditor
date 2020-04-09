@@ -92,6 +92,10 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::edit:
             if (etype == EditType::username)
                 newUsernameHandler(docObj);
+//            if (etype == EditType::email)
+//                newEmailResponse(docObj);
+//            if (etype == EditType::password)
+//                newPasswordResponse(docObj);
             emit handleRemoteEdit(docObj);
             break;
         case messageType::openFile: //fa da invite
@@ -396,4 +400,24 @@ void WorkerClient::newUsernameHandler(const QJsonObject &doc){
     } else {
         emit newUsernameNok();
     }
+}
+
+void WorkerClient::setNewPassowrd(QString pwd){
+    QJsonObject qj;
+    qj["username"] = getUser();
+    qj["type"] = messageType::edit;
+    qj["editType"] = EditType::password;
+    qj["password"] = pwd;
+
+    sendJson(qj);
+}
+
+void WorkerClient::setNewEmail(QString email){
+    QJsonObject qj;
+    qj["username"] = getUser();
+    qj["type"] = messageType::edit;
+    qj["editType"] = EditType::email;
+    qj["email"] = email;
+
+    sendJson(qj);
 }
