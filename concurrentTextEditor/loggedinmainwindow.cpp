@@ -13,7 +13,8 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
     connect(_workerClient, &WorkerClient::newUsernameOk, this, &loggedinmainwindow::newUsernameOk);
-    connect(ui->PublicFileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenu);
+    connect(ui->PublicFileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPub);
+    connect(ui->PrivatefileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPri);
     _workerClient->getCurrentIconFromServer();
 }
 
@@ -280,7 +281,8 @@ void loggedinmainwindow::newUsernameOk(){
     ui->welcomeLabel->setText("Welcome, "+ _workerClient->getUser());
 }
 
-void loggedinmainwindow::provideContextMenu(const QPoint &pos){
+void loggedinmainwindow::provideContextMenuPub(const QPoint &pos){
+    ui->PrivatefileListTable->clearSelection();
     QMenu m;
     QAction *open = m.addAction("Open");
     m.addSeparator();
@@ -290,5 +292,47 @@ void loggedinmainwindow::provideContextMenu(const QPoint &pos){
 
     QAction *selected = m.exec(QCursor::pos());
 
-    //switch for various cases + emit signals or stuff
+    if(selected == open) {
+        if (ui->PublicFileListTable->selectedItems().isEmpty()){
+            errorDisplay("Please select a file by clicking on it.");
+            return;
+        }
+        QString filename = ui->PublicFileListTable->selectedItems().first()->text();
+        _e = new Editor(this, _workerClient, filename, true, false);
+        _e->show();
+    }
+    if(selected == new_file) {
+        this->newFile(true);
+    }
+    if(selected == del) {
+        this ->on_pushButtonDeleteFile_3_clicked();
+    }
+}
+
+void loggedinmainwindow::provideContextMenuPri(const QPoint &pos){
+    ui->PublicFileListTable->clearSelection();
+    QMenu m;
+    QAction *open = m.addAction("Open");
+    m.addSeparator();
+    QAction *del = m.addAction("Delete");
+    m.addSeparator();
+    QAction *new_file = m.addAction("New Private File");
+
+    QAction *selected = m.exec(QCursor::pos());
+
+    if(selected == open) {
+        if (ui->PrivatefileListTable->selectedItems().isEmpty()){
+            errorDisplay("Please select a file by clicking on it.");
+            return;
+        }
+        QString filename = ui->PrivatefileListTable->selectedItems().first()->text();
+        _e = new Editor(this, _workerClient, filename, false, false);
+        _e->show();
+    }
+    if(selected == new_file) {
+        this->newFile(false);
+    }
+    if(selected == del) {
+        this ->on_pushButtonDeleteFile_3_clicked();
+    }
 }
