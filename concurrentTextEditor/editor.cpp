@@ -138,3 +138,13 @@ void Editor::on_actionUnderline_triggered()
     int anchor = ui->editorController->textCursor().anchor();
     ui->editorController->changeFormat(position, anchor, Format::underline);
 }
+
+void Editor::on_actionCopy_triggered()
+{
+    ui->editorController->copy();
+}
+
+void Editor::on_actionCut_triggered()
+{
+    ui->editorController->cut();
+}

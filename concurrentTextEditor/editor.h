@@ -32,6 +32,7 @@ public slots:
 
 private slots:
     void on_actionExport_PDF_triggered();
+
     void on_actionPaste_triggered();
 
     void on_actionBold_triggered();
@@ -39,6 +40,10 @@ private slots:
     void on_actionItalics_triggered();
 
     void on_actionUnderline_triggered();
+
+    void on_actionCopy_triggered();
+
+    void on_actionCut_triggered();
 
 private:
     Ui::Editor *ui;
