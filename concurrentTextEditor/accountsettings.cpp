@@ -65,15 +65,7 @@ void accountSettings::on_pushButton_PP_clicked()
     if(!newicon_filepath.isNull() || !newicon_filepath.isEmpty()){
         QPixmap pm(newicon_filepath);
 
-        QString form = newicon_filepath.split(".").last().toUpper();
-        QByteArray buf = form.toLocal8Bit();
-        const char * format = buf.data();
-
-        // inserisco immagine in json
-        QBuffer buffer;
-        buffer.open(QIODevice::WriteOnly);
-        pm.save(&buffer, format);
-        auto ba = buffer.data().toBase64();
+        QByteArray ba = _worker->getLatinStringFromImg(newicon_filepath);
         QLatin1String img = QLatin1String(ba);
 
 

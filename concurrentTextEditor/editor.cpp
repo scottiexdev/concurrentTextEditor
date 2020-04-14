@@ -28,6 +28,15 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     //Notifica il server che l'utente si e' connesso a quel file
     _workerClient->userJoined(fileName, _workerClient->getUser());    
     ui->editorController->setAccess(isPublic);
+
+    // Get Icons to show in GUI
+    ui->actionCut->setIcon(_workerClient->getIcon(UiEditor::cut));
+    ui->actionCopy->setIcon(_workerClient->getIcon(UiEditor::copy));
+    ui->actionPaste->setIcon(_workerClient->getIcon(UiEditor::paste));
+    ui->actionBold->setIcon(_workerClient->getIcon(UiEditor::bold1));
+    ui->actionExport_PDF->setIcon(_workerClient->getIcon(UiEditor::pdf));
+    ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
+    ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
 }
 
 Editor::~Editor()
@@ -120,6 +129,8 @@ void Editor::on_actionPaste_triggered(){
 
 void Editor::on_actionBold_triggered()
 {
+    setFormatUi(UiEditor::bold1);
+
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
     ui->editorController->changeFormat(position, anchor, Format::bold);
@@ -127,6 +138,8 @@ void Editor::on_actionBold_triggered()
 
 void Editor::on_actionItalics_triggered()
 {
+    setFormatUi(UiEditor::italics1);
+
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
     ui->editorController->changeFormat(position, anchor, Format::italics);
@@ -134,6 +147,8 @@ void Editor::on_actionItalics_triggered()
 
 void Editor::on_actionUnderline_triggered()
 {
+    setFormatUi(UiEditor::underlined);
+
     int position = ui->editorController->textCursor().position();
     int anchor = ui->editorController->textCursor().anchor();
     ui->editorController->changeFormat(position, anchor, Format::underline);
@@ -147,4 +162,27 @@ void Editor::on_actionCopy_triggered()
 void Editor::on_actionCut_triggered()
 {
     ui->editorController->cut();
+}
+
+void Editor::setFormatUi(UiEditor tag){
+    switch (tag) {
+        case UiEditor::bold1:
+            if(!b) {ui->actionBold->setIcon(_workerClient->getIcon(UiEditor::boldSelected)); b = true;}
+            else {ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1)); b = false; }
+            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
+            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
+            break;
+        case UiEditor::italics1:
+            if(!i) {ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italicsSelected)); i =true;}
+            else {ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1)); i = false;}
+            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1));
+            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
+            break;
+        case UiEditor::underlined:
+            if(!u) {ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlinedSelected)); u=true;}
+            else {ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined)); u = false;}
+            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1));
+            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
+            break;
+    }
 }

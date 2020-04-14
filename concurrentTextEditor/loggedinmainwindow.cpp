@@ -16,6 +16,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     connect(ui->PublicFileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPub);
     connect(ui->PrivatefileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPri);
     _workerClient->getCurrentIconFromServer();
+    _workerClient->getEditorUIIcons();
 }
 
 loggedinmainwindow::~loggedinmainwindow()

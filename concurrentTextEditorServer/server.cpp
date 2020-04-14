@@ -401,6 +401,10 @@ void Server::jsonFromLoggedIn(WorkerServer &sender, const QJsonObject &doc) {
             currentIconHandler(sender, doc);
             break;
 
+        case messageType::getEditorIcons:
+            sendEditorIcons(sender, doc);
+            break;
+
         default:
             emit logMessage("Message type not handled");
 
@@ -1036,13 +1040,8 @@ void Server::saveIcon(const QJsonObject &qj){
 
 void Server::currentIconHandler(WorkerServer &sender, const QJsonObject& qj){
     QString path = getIcon(qj["username"].toString());
-    QPixmap pm(path);
-    const char * format = "PNG";
 
-    QBuffer buf;
-    buf.open(QIODevice::WriteOnly);
-    pm.save(&buf, format);
-    auto ba = buf.data().toBase64();
+    QByteArray ba = getLatinStringFromImg(path);
     QLatin1String img = QLatin1String(ba);
 
     QJsonObject qjo;
@@ -1096,4 +1095,47 @@ void Server::emailHandler(const QJsonObject &doc, WorkerServer &sender){
 //    else response["success"] = false;
 
 //    sendJson(sender, doc);
+}
+
+void Server::sendEditorIcons(WorkerServer &sender, const QJsonObject &qj){
+    QByteArray b = getLatinStringFromImg(_defaultEditorIconPath+"/bold.png"),
+            bs = getLatinStringFromImg(_defaultEditorIconPath+"/bold_selected.png"),
+            i = getLatinStringFromImg(_defaultEditorIconPath+"/italics.png"),
+            is, u = getLatinStringFromImg(_defaultEditorIconPath+"/underlined.png"),
+            us, cu = getLatinStringFromImg(_defaultEditorIconPath+"/cut.png"),
+            co = getLatinStringFromImg(_defaultEditorIconPath+"/copy.png"),
+            pa = getLatinStringFromImg(_defaultEditorIconPath+"/paste.png"),
+            exp = getLatinStringFromImg(_defaultEditorIconPath+"/export.png");
+    QLatin1String bold = QLatin1String(b), bold_sel = QLatin1String(bs), it = QLatin1String(i), it_sel, und = QLatin1String(u),
+            und_sel, cut = QLatin1String(cu), copy = QLatin1String(co), paste = QLatin1String(pa), expo = QLatin1String(exp);
+
+    QJsonObject qjo;
+    qjo["type"] = messageType::getEditorIcons;
+    qjo["bold"] = bold;
+    qjo["bold_sel"] = bold_sel;
+    qjo["italics"] = it;
+    qjo["underlined"] = und;
+    qjo["copy"] = copy;
+    qjo["cut"] = cut;
+    qjo["paste"] = paste;
+    qjo["export"] = expo;
+    //TODO: set also others missing
+
+    sendJson(sender, qjo);
+
+}
+
+QByteArray Server::getLatinStringFromImg(QString path){
+    QPixmap pm(path);
+    QString form = path.split(".").last().toUpper();
+    QByteArray buf_form = form.toLocal8Bit();
+    const char * format = buf_form.data();
+
+    QBuffer buf;
+    buf.open(QIODevice::WriteOnly);
+    pm.save(&buf, format);
+    auto ba = buf.data().toBase64();
+    QLatin1String img = QLatin1String(ba);
+
+    return ba;
 }

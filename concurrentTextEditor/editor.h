@@ -23,6 +23,7 @@ protected:
 public:
     explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic, bool shared = false);
     ~Editor();    
+    void setFormatUi(UiEditor tag);
 
 public slots:
     void handleFile(QJsonDocument buf);
@@ -60,6 +61,7 @@ private:
         QColor(176, 190, 197)
     };
     int _colorNumber=0;
+    bool b=false, i=false, u=false;
 };
 
 #endif // EDITOR_H

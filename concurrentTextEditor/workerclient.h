@@ -11,6 +11,8 @@
 #include <QJsonArray>
 #include <QMessageBox>
 #include <QStandardPaths>
+#include <QBuffer>
+#include <QIcon>
 
 #include "char.h"
 #include "Enums.h"
@@ -33,7 +35,7 @@ public:
     QString getUser();
     QPixmap getUserIcon();
     void getCurrentIconFromServer();
-
+    QByteArray getLatinStringFromImg(QString path);
     void getFileList(QString access);
     void requestFile(QString fileName, QUuid siteID, bool isPublic);
     void deleteFile(QString fileName, bool isPublic);
@@ -48,6 +50,8 @@ public:
     void saveIcon(QJsonObject &qj);
     void setNewPassowrd(QString pwd);
     void setNewEmail(QString email);
+    void getEditorUIIcons();
+    QIcon getIcon(UiEditor tag);
 
 private slots:
     void onReadyRead();
@@ -78,7 +82,10 @@ private:
     const QString DEFAULT_USER  = "unknownUsername";
     QPixmap _userIcon;
 
+    QPixmap bold, bold_s, italics, italics_s, underlined, underlined_s, cut, copy, paste, pdf;
+
     //Methods
+    QPixmap getPixmapFromJson(const QJsonValue &jv);
     void jsonReceived(const QJsonObject &qjo);
     void loginHandler(const QJsonObject& jsonObj);
     void signupHandler(const QJsonObject& jsonObj);
@@ -88,6 +95,7 @@ private:
     void newFileError();
     void sendJson(const QJsonObject &doc);
     void newUsernameHandler(const QJsonObject &doc);
+    void editorIconsHandler(const QJsonObject &doc);
 //    void newEmailResponse(const QJsonObject &doc);
 //    void newPasswordResponse(const QJsonObject &doc);
 

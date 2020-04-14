@@ -54,7 +54,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -108,19 +108,11 @@
    <addaction name="actionUnderline"/>
   </widget>
   <action name="actionExport_PDF">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/export-pdf-512.png</normaloff>../concurrentTextEditorServer/IconsBar/export-pdf-512.png</iconset>
-   </property>
    <property name="text">
     <string>Export PDF</string>
    </property>
   </action>
   <action name="actionCopy">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/copy.png</normaloff>../concurrentTextEditorServer/IconsBar/copy.png</iconset>
-   </property>
    <property name="text">
     <string>Copy</string>
    </property>
@@ -129,10 +121,6 @@
    </property>
   </action>
   <action name="actionPaste">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/paste.png</normaloff>../concurrentTextEditorServer/IconsBar/paste.png</iconset>
-   </property>
    <property name="text">
     <string>Paste</string>
    </property>
@@ -141,10 +129,6 @@
    </property>
   </action>
   <action name="actionCut">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/cut.png</normaloff>../concurrentTextEditorServer/IconsBar/cut.png</iconset>
-   </property>
    <property name="text">
     <string>Cut</string>
    </property>
@@ -153,10 +137,6 @@
    </property>
   </action>
   <action name="actionBold">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/bold.png</normaloff>../concurrentTextEditorServer/IconsBar/bold.png</iconset>
-   </property>
    <property name="text">
     <string>Bold</string>
    </property>
@@ -165,10 +145,6 @@
    </property>
   </action>
   <action name="actionItalics">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/italics.png</normaloff>../concurrentTextEditorServer/IconsBar/italics.png</iconset>
-   </property>
    <property name="text">
     <string>Italics</string>
    </property>
@@ -177,10 +153,6 @@
    </property>
   </action>
   <action name="actionUnderline">
-   <property name="icon">
-    <iconset>
-     <normaloff>../concurrentTextEditorServer/IconsBar/underlined.png</normaloff>../concurrentTextEditorServer/IconsBar/underlined.png</iconset>
-   </property>
    <property name="text">
     <string>Underline</string>
    </property>
