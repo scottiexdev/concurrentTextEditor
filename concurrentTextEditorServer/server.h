@@ -98,7 +98,7 @@ private:
     void checkPublic(QString fileName, QString userName, bool isPublic);
     void saveIcon(const QJsonObject &qj);
     void currentIconHandler(WorkerServer& sender, const QJsonObject &qj);
-    void sendEditorIcons(WorkerServer& sender, const QJsonObject &qj);
+//    void sendEditorIcons(WorkerServer& sender, const QJsonObject &qj);
     QByteArray getLatinStringFromImg(QString path);
 
     // WORKER SERVER INTERACTIONS

@@ -13,6 +13,7 @@
 #include <QStandardPaths>
 #include <QBuffer>
 #include <QIcon>
+#include <QDir>
 
 #include "char.h"
 #include "Enums.h"
@@ -50,7 +51,7 @@ public:
     void saveIcon(QJsonObject &qj);
     void setNewPassowrd(QString pwd);
     void setNewEmail(QString email);
-    void getEditorUIIcons();
+//    void getEditorUIIcons();
     QIcon getIcon(UiEditor tag);
 
 private slots:
@@ -95,7 +96,7 @@ private:
     void newFileError();
     void sendJson(const QJsonObject &doc);
     void newUsernameHandler(const QJsonObject &doc);
-    void editorIconsHandler(const QJsonObject &doc);
+    void editorIconsHandler();
 //    void newEmailResponse(const QJsonObject &doc);
 //    void newPasswordResponse(const QJsonObject &doc);
 

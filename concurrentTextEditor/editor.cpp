@@ -176,20 +176,20 @@ void Editor::setFormatUi(UiEditor tag){
         case UiEditor::bold1:
             if(!b) {ui->actionBold->setIcon(_workerClient->getIcon(UiEditor::boldSelected)); b = true;}
             else {ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1)); b = false; }
-            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
-            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
+            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1)); i=false;
+            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined)); u=false;
             break;
         case UiEditor::italics1:
             if(!i) {ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italicsSelected)); i =true;}
             else {ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1)); i = false;}
-            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1));
-            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
+            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1)); b=false;
+            ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined)); u=false;
             break;
         case UiEditor::underlined:
             if(!u) {ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlinedSelected)); u=true;}
             else {ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined)); u = false;}
-            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1));
-            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
+            ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1)); b=false;
+            ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1)); i=false;
             break;
     }
 }

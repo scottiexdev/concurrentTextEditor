@@ -7,6 +7,7 @@ WorkerClient::WorkerClient(QObject *parent)
     , _clientSocket(new QTcpSocket(this))
     , _loggedIn(false)
 {
+    editorIconsHandler();
     connect(_clientSocket, &QTcpSocket::readyRead, this, &WorkerClient::onReadyRead);
 }
 
@@ -113,9 +114,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::getCurrentUserIcon:
             currentIconHandler(docObj);
             break;
-        case messageType::getEditorIcons:
-            editorIconsHandler(docObj);
-            break;
+//        case messageType::getEditorIcons:
+//            editorIconsHandler(docObj);
+//            break;
         default:
             return;
     }
@@ -424,13 +425,13 @@ void WorkerClient::setNewEmail(QString email){
     sendJson(qj);
 }
 
-void WorkerClient::getEditorUIIcons(){
-    QJsonObject qj;
-    qj["username"] = getUser();
-    qj["type"] = messageType::getEditorIcons;
+//void WorkerClient::getEditorUIIcons(){
+//    QJsonObject qj;
+//    qj["username"] = getUser();
+//    qj["type"] = messageType::getEditorIcons;
 
-    sendJson(qj);
-}
+//    sendJson(qj);
+//}
 
 QByteArray WorkerClient::getLatinStringFromImg(QString path){
     QPixmap pm(path);
@@ -453,15 +454,19 @@ QPixmap WorkerClient::getPixmapFromJson(const QJsonValue &jv){
     return p;
 }
 
-void WorkerClient::editorIconsHandler(const QJsonObject &doc){
-    this->bold = getPixmapFromJson(doc["bold"]);
-    this->bold_s = getPixmapFromJson(doc["bold_sel"]);
-    this->italics = getPixmapFromJson(doc["italics"]);
-    this->underlined = getPixmapFromJson(doc["underlined"]);
-    this->copy = getPixmapFromJson(doc["copy"]);
-    this->cut = getPixmapFromJson(doc["cut"]);
-    this->paste = getPixmapFromJson(doc["paste"]);
-    this->pdf = getPixmapFromJson(doc["export"]);
+void WorkerClient::editorIconsHandler(){
+    QString icDir = QDir::currentPath().append("/IconsBar");
+
+    this->bold = QPixmap(icDir+"/bold.png");
+    this->bold_s = QPixmap(icDir+"/bold_selected.png");
+    this->italics = QPixmap(icDir+"/italics.png");
+    this->italics_s = QPixmap(icDir+"/italics_selected.png");
+    this->underlined = QPixmap(icDir+"/underlined.png");
+    this->underlined_s = QPixmap(icDir+"/underline_selected.png");
+    this->copy = QPixmap(icDir+"/copy.png");
+    this->cut = QPixmap(icDir+"/cut.png");
+    this->paste = QPixmap(icDir+"/paste.png");
+    this->pdf = QPixmap(icDir+"/export.png");
 }
 
 QIcon WorkerClient::getIcon(UiEditor tag){
