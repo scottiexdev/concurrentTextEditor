@@ -58,7 +58,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     }
 
     //ctrl-x handle to avoid "UpArrowBug"
-    if(key->matches(QKeySequence::Cut)) {
+    if(key->matches(QKeySequence::Cut) || pressed_key == Qt::Key_Cut) {
          //cancel the selection (if there is one)
         if(deltaPositions!=0) {
             //Iterate over characters to be removed
@@ -354,7 +354,7 @@ bool EditorController::isKeySequenceHandled(QKeyEvent* key){
             || key->matches(QKeySequence::Cut) || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Tab
             || pressed_key == Qt::Key_Control || pressed_key == Qt::Key_Return || pressed_key == Qt::Key_Delete
             || pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Return || (pressed_key >= 0x20 && pressed_key <= 0x0ff && !mod.testFlag(Qt::ControlModifier))
-            || pressed_key == Qt::Key_Paste)
+            || pressed_key == Qt::Key_Paste || pressed_key == Qt::Key_Cut)
         return true;
 
     return false;

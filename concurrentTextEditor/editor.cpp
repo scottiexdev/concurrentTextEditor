@@ -119,12 +119,9 @@ void Editor::on_actionExport_PDF_triggered()
 
 void Editor::on_actionPaste_triggered(){
 
-    QClipboard* clipboard = QApplication::clipboard();
-    QString clipText = clipboard->text();
-    if(!clipText.isNull() && !clipText.isEmpty()){
-        QKeyEvent* pasteEvent  = new QKeyEvent(QEvent::KeyPress, Qt::Key_Paste, Qt::NoModifier, clipText);
-        QCoreApplication::sendEvent(ui->editorController, pasteEvent);
-    }
+    QKeyEvent* pasteEvent  = new QKeyEvent(QEvent::KeyPress, Qt::Key_Paste, Qt::NoModifier);
+    QCoreApplication::sendEvent(ui->editorController, pasteEvent);
+
 }
 
 void Editor::on_actionBold_triggered()
@@ -161,6 +158,8 @@ void Editor::on_actionCopy_triggered()
 
 void Editor::on_actionCut_triggered()
 {
+    QKeyEvent* cutEvent  = new QKeyEvent(QEvent::KeyPress, Qt::Key_Cut, Qt::NoModifier);
+    QCoreApplication::sendEvent(ui->editorController, cutEvent);
     ui->editorController->cut();
 }
 
