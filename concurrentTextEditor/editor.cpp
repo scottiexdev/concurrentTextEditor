@@ -9,6 +9,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     _workerClient(worker)
 {
     ui->setupUi(this);
+    ui->editorController->setContextMenuPolicy(Qt::CustomContextMenu);
     this->setWindowTitle(fileName);
     connect(_workerClient, &WorkerClient::handleFile, this, &Editor::handleFile);
     connect(_workerClient, &WorkerClient::showUser, this, &Editor::showUser);
@@ -16,6 +17,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     connect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     connect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
     connect(_workerClient, &WorkerClient::fileDeleted, this, &Editor::fileDeleted);
+    connect(ui->editorController, &EditorController::customContextMenuRequested, this, &Editor::customContextMenuRequested);
 
     _workerClient->requestFile(fileName, ui->editorController->getSiteID(), isPublic);
 
@@ -47,6 +49,7 @@ Editor::~Editor()
     disconnect(ui->editorController, &EditorController::broadcastEditWorker, _workerClient, &WorkerClient::broadcastEditWorker);
     disconnect(_workerClient, &WorkerClient::handleRemoteEdit, ui->editorController, &EditorController::handleRemoteEdit);
     disconnect(_workerClient, &WorkerClient::fileDeleted, this, &Editor::fileDeleted);
+    disconnect(ui->editorController, &EditorController::customContextMenuRequested, this, &Editor::customContextMenuRequested);
     delete ui;
 }
 
@@ -106,6 +109,10 @@ void Editor::on_actionExport_PDF_triggered()
         return;
     QStringList pathList = savePDF->selectedFiles();
     QString path(pathList.join("\\"));
+    if(path.isNull() || path.isEmpty()) {
+        QMessageBox::warning(this, tr("Export PDF"), tr("Path not valid"));
+        return;
+    }
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setPaperSize(QPrinter::A4);
@@ -115,6 +122,7 @@ void Editor::on_actionExport_PDF_triggered()
     doc.setHtml(ui->editorController->toHtml());
     doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     doc.print(&printer);
+    QMessageBox::information(this, tr("Export PDF"), tr("PDF exported successfully!"));
 }
 
 void Editor::on_actionPaste_triggered(){
@@ -183,5 +191,31 @@ void Editor::setFormatUi(UiEditor tag){
             ui->actionBold ->setIcon(_workerClient->getIcon(UiEditor::bold1));
             ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
             break;
+    }
+}
+
+void Editor::on_editorController_customContextMenuRequested(const QPoint &pos)
+{
+    QMenu editMenu;
+    QAction *cut = editMenu.addAction("Cut");
+    QAction *copy = editMenu.addAction("Copy");
+    QAction *paste = editMenu.addAction("Paste");
+    editMenu.addSeparator();
+    QAction *exPDF = editMenu.addAction("Export PDF");
+
+    QAction *selected = editMenu.exec(QCursor::pos());
+
+    if(selected == cut) {
+        on_actionCut_triggered();
+    }
+    if(selected == copy) {
+        on_actionCopy_triggered();
+    }
+    if(selected == paste) {
+        on_actionPaste_triggered();
+    }
+
+    if(selected == exPDF) {
+        on_actionExport_PDF_triggered();
     }
 }

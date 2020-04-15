@@ -46,6 +46,8 @@ private slots:
 
     void on_actionCut_triggered();
 
+    void on_editorController_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::Editor *ui;
     WorkerClient *_workerClient;
