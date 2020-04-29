@@ -18,6 +18,7 @@
 #include <QDialog>
 #include <QTcpSocket>
 #include <QByteArray>
+#include <QPixmap>
 #include "workerserver.h"
 #include "../concurrentTextEditor/Enums.h"
 
@@ -76,6 +77,7 @@ private:
     const QString _defaultFilesLocation = QDir::currentPath().append("/Files/");
     const QString _defaultPublicFilesLocation = QDir::currentPath().append("/Files/Public/");
     const QString _defaultIconPath = QDir::currentPath().append("/Icons/");
+    const QString _defaultEditorIconPath = QDir::currentPath().append("/IconsBar");
     const QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 
     // PRIVATE FUNCTIONS
@@ -96,6 +98,8 @@ private:
     void checkPublic(QString fileName, QString userName, bool isPublic);
     void saveIcon(const QJsonObject &qj);
     void currentIconHandler(WorkerServer& sender, const QJsonObject &qj);
+//    void sendEditorIcons(WorkerServer& sender, const QJsonObject &qj);
+    QByteArray getLatinStringFromImg(QString path);
 
     // WORKER SERVER INTERACTIONS
     void sendJson(WorkerServer& dest, const QJsonObject& msg);

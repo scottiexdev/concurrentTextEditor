@@ -7,6 +7,7 @@ WorkerClient::WorkerClient(QObject *parent)
     , _clientSocket(new QTcpSocket(this))
     , _loggedIn(false)
 {
+    editorIconsHandler();
     connect(_clientSocket, &QTcpSocket::readyRead, this, &WorkerClient::onReadyRead);
 }
 
@@ -113,6 +114,9 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::getCurrentUserIcon:
             currentIconHandler(docObj);
             break;
+//        case messageType::getEditorIcons:
+//            editorIconsHandler(docObj);
+//            break;
         default:
             return;
     }
@@ -382,9 +386,8 @@ void WorkerClient::setIcon(QPixmap icon){
 }
 
 void WorkerClient::currentIconHandler(const QJsonObject &qjo){
-    auto encoded = qjo["image"].toString().toLatin1();
-    QPixmap p;
-    p.loadFromData(QByteArray::fromBase64(encoded));
+
+    QPixmap p = getPixmapFromJson(qjo["image"]);
 
     setIcon(p);
     emit iconSent(p);
@@ -420,4 +423,87 @@ void WorkerClient::setNewEmail(QString email){
     qj["email"] = email;
 
     sendJson(qj);
+}
+
+//void WorkerClient::getEditorUIIcons(){
+//    QJsonObject qj;
+//    qj["username"] = getUser();
+//    qj["type"] = messageType::getEditorIcons;
+
+//    sendJson(qj);
+//}
+
+QByteArray WorkerClient::getLatinStringFromImg(QString path){
+    QPixmap pm(path);
+    QString form = path.split(".").last().toUpper();
+    QByteArray buf_form = form.toLocal8Bit();
+    const char * format = buf_form.data();
+
+    QBuffer buf;
+    buf.open(QIODevice::WriteOnly);
+    pm.save(&buf, format);
+    QByteArray ba = buf.data().toBase64();
+    return ba;
+}
+
+QPixmap WorkerClient::getPixmapFromJson(const QJsonValue &jv){
+    auto encoded = jv.toString().toLatin1();
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(encoded));
+
+    return p;
+}
+
+void WorkerClient::editorIconsHandler(){
+    QString icDir = QDir::currentPath().append("/IconsBar");
+
+    this->bold = QPixmap(icDir+"/bold.png");
+    this->bold_s = QPixmap(icDir+"/bold_selected.png");
+    this->italics = QPixmap(icDir+"/italics.png");
+    this->italics_s = QPixmap(icDir+"/italics_selected.png");
+    this->underlined = QPixmap(icDir+"/underlined.png");
+    this->underlined_s = QPixmap(icDir+"/underline_selected.png");
+    this->copy = QPixmap(icDir+"/copy.png");
+    this->cut = QPixmap(icDir+"/cut.png");
+    this->paste = QPixmap(icDir+"/paste.png");
+    this->pdf = QPixmap(icDir+"/export.png");
+}
+
+QIcon WorkerClient::getIcon(UiEditor tag){
+    QIcon q;
+
+    switch (tag) {
+        case UiEditor::bold1:
+            q.addPixmap(this->bold);
+            break;
+        case UiEditor::boldSelected:
+            q.addPixmap(this->bold_s);
+            break;
+        case UiEditor::italics1:
+            q.addPixmap(this->italics);
+            break;
+        case UiEditor::italicsSelected:
+            q.addPixmap(this->italics_s);
+            break;
+        case UiEditor::underlined:
+            q.addPixmap(this->underlined);
+            break;
+        case UiEditor::underlinedSelected:
+            q.addPixmap(this->underlined_s);
+            break;
+        case UiEditor::cut:
+            q.addPixmap(this->cut);
+            break;
+        case UiEditor::copy:
+            q.addPixmap(this->copy);
+            break;
+        case UiEditor::paste:
+            q.addPixmap(this->paste);
+            break;
+        case UiEditor::pdf:
+            q.addPixmap(this->pdf);
+            break;
+    }
+
+    return q;
 }

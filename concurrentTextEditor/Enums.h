@@ -9,4 +9,6 @@ enum Format { plain, bold, italics, underline };
 
 enum action { add, del, show, request };
 
+enum UiEditor { bold1, boldSelected, italics1, italicsSelected, underlined, underlinedSelected, cut, copy, paste, pdf };
+
 #endif // ENUMS_H

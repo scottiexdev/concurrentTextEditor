@@ -23,6 +23,7 @@ protected:
 public:
     explicit Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isPublic, bool shared = false);
     ~Editor();    
+    void setFormatUi(UiEditor tag);
 
 public slots:
     void handleFile(QJsonDocument buf);
@@ -32,6 +33,7 @@ public slots:
 
 private slots:
     void on_actionExport_PDF_triggered();
+
     void on_actionPaste_triggered();
 
     void on_actionBold_triggered();
@@ -39,6 +41,12 @@ private slots:
     void on_actionItalics_triggered();
 
     void on_actionUnderline_triggered();
+
+    void on_actionCopy_triggered();
+
+    void on_actionCut_triggered();
+
+    void on_editorController_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::Editor *ui;
@@ -55,6 +63,7 @@ private:
         QColor(176, 190, 197)
     };
     int _colorNumber=0;
+    bool b=false, i=false, u=false;
 };
 
 #endif // EDITOR_H
