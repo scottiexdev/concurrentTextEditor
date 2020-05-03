@@ -462,6 +462,12 @@
    <string>ConcurrentTextEditor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QLabel" name="welcomeLabel">
@@ -471,6 +477,13 @@
         <height>20</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
        <string>TextLabel</string>
       </property>
@@ -478,11 +491,17 @@
     </item>
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Actions</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" rowspan="2">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
         <layout class="QVBoxLayout" name="verticalLayout">
          <property name="leftMargin">
           <number>25</number>
@@ -500,8 +519,8 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -516,8 +535,8 @@
           <widget class="QPushButton" name="pushButtonNewFile_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -532,8 +551,8 @@
           <widget class="QPushButton" name="pushButtonOpenFile_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -548,8 +567,8 @@
           <widget class="QPushButton" name="pushButtonOpenSharedFile_3">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -564,8 +583,8 @@
           <widget class="QPushButton" name="pushButtonSettings_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -580,8 +599,8 @@
           <widget class="QPushButton" name="pushButtonUpdate_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -596,8 +615,8 @@
           <widget class="QPushButton" name="pushButtonInvite_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -615,8 +634,8 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -631,8 +650,8 @@
           <widget class="QPushButton" name="pushButtonLogout_2">
            <property name="minimumSize">
             <size>
-             <width>171</width>
-             <height>31</height>
+             <width>180</width>
+             <height>35</height>
             </size>
            </property>
            <property name="cursor">
@@ -646,8 +665,14 @@
         </layout>
        </item>
        <item row="0" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="rightMargin">
+          <number>75</number>
+         </property>
+         <property name="bottomMargin">
+          <number>35</number>
+         </property>
+         <item row="0" column="0">
           <widget class="QLabel" name="PublicFilesLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -657,6 +682,7 @@
            </property>
            <property name="font">
             <font>
+             <pointsize>10</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -666,7 +692,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1" colspan="3">
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -676,13 +702,13 @@
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>209</width>
+             <width>100</width>
              <height>20</height>
             </size>
            </property>
           </spacer>
          </item>
-         <item>
+         <item row="0" column="4">
           <widget class="QLabel" name="PrivateFilesLabel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -698,21 +724,20 @@
             </font>
            </property>
            <property name="text">
-            <string>Private Files</string>
+            <string>Your Private Files</string>
            </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item row="1" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
+         <item row="1" column="0" colspan="2">
           <widget class="QTableWidget" name="PublicFileListTable">
            <property name="maximumSize">
             <size>
              <width>850</width>
              <height>550</height>
             </size>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
            </property>
            <property name="autoFillBackground">
             <bool>true</bool>
@@ -731,20 +756,23 @@
            </attribute>
           </widget>
          </item>
-         <item>
+         <item row="1" column="2">
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>100</width>
              <height>20</height>
             </size>
            </property>
           </spacer>
          </item>
-         <item>
+         <item row="1" column="3" colspan="2">
           <widget class="QTableWidget" name="PrivatefileListTable">
            <property name="maximumSize">
             <size>
