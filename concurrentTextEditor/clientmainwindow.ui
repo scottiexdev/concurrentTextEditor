@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>600</height>
+    <width>800</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>700</width>
-    <height>600</height>
+    <width>800</width>
+    <height>700</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>700</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>800</height>
    </size>
   </property>
   <property name="palette">
@@ -495,9 +495,14 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>300</width>
+        <width>150</width>
         <height>30</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Username</string>
@@ -549,6 +554,11 @@
         <height>30</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Password</string>
       </property>
@@ -596,6 +606,11 @@
         <height>50</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Login</string>
       </property>
@@ -623,7 +638,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>150</width>
+        <width>500</width>
         <height>30</height>
        </size>
       </property>
@@ -655,6 +670,11 @@
         <height>50</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Signup</string>
       </property>
@@ -670,7 +690,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>700</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
