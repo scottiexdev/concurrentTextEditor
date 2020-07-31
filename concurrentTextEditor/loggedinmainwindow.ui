@@ -469,64 +469,9 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="welcomeLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonLogout_2">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>35</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>35</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>Logout   </string>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../build-concurrentTextEditor-Desktop_Qt_5_14_1_MinGW_32_bit-Profile/IconsBar/logout.png</normaloff>../build-concurrentTextEditor-Desktop_Qt_5_14_1_MinGW_32_bit-Profile/IconsBar/logout.png</iconset>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
+    <property name="bottomMargin">
+     <number>35</number>
+    </property>
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="sizePolicy">
@@ -535,12 +480,17 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
       <property name="title">
-       <string>Actions</string>
+       <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="2" rowspan="2">
-        <layout class="QGridLayout" name="gridLayout_2">
+        <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0" columnstretch="0,0,0,0,0">
          <property name="rightMargin">
           <number>75</number>
          </property>
@@ -557,7 +507,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <pointsize>11</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -593,7 +543,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <pointsize>11</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -605,11 +555,22 @@
          </item>
          <item row="1" column="0" colspan="2">
           <widget class="QTableWidget" name="PublicFileListTable">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="maximumSize">
             <size>
              <width>850</width>
              <height>550</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
            </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
@@ -640,7 +601,7 @@
             <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::MinimumExpanding</enum>
+            <enum>QSizePolicy::Preferred</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -652,11 +613,22 @@
          </item>
          <item row="1" column="3" colspan="2">
           <widget class="QTableWidget" name="PrivatefileListTable">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="maximumSize">
             <size>
              <width>850</width>
              <height>550</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
            </property>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>true</bool>
@@ -766,6 +738,12 @@
            </property>
            <property name="text">
             <string>Open File</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -884,6 +862,12 @@
        </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="pushButtonUpdate_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
            <width>35</width>
@@ -892,8 +876,8 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>35</width>
-           <height>35</height>
+           <width>40</width>
+           <height>40</height>
           </size>
          </property>
          <property name="palette">
@@ -1360,6 +1344,64 @@
        </item>
       </layout>
      </widget>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="welcomeLabel">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonLogout_2">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>35</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
+        <property name="text">
+         <string>Logout   </string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../build-concurrentTextEditor-Desktop_Qt_5_14_1_MinGW_32_bit-Profile/IconsBar/logout.png</normaloff>../build-concurrentTextEditor-Desktop_Qt_5_14_1_MinGW_32_bit-Profile/IconsBar/logout.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
