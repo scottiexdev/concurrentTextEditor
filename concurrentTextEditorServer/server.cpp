@@ -1059,18 +1059,17 @@ void Server::passwordHandler(const QJsonObject &doc, WorkerServer &sender){
     q.bindValue(":USERNAME", user);
     q.bindValue(":PASSWORD", pwd);
 
-    queryDatabase(q);
-//    QJsonObject response;
-//    response["username"] = user;
-//    response["type"] = messageType::edit;
-//    response["editType"] = EditType::password;
+    QJsonObject response;
+    response["username"] = user;
+    response["type"] = messageType::edit;
+    response["editType"] = EditType::password;
 
 
-//    if(queryDatabase(q))
-//        response["success"] = true;
-//    else response["success"] = false;
+    if(queryDatabase(q))
+        response["success"] = true;
+    else response["success"] = false;
 
-//    sendJson(sender, doc);
+    sendJson(sender, response);
 }
 
 void Server::emailHandler(const QJsonObject &doc, WorkerServer &sender){

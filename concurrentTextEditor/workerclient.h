@@ -74,6 +74,7 @@ signals:
     void disconnectClient();
     void newUsernameOk();
     void newUsernameNok();
+    void newPwdOk();
     void iconSent(QPixmap icon);
 
 private:
@@ -98,7 +99,7 @@ private:
     void newUsernameHandler(const QJsonObject &doc);
     void editorIconsHandler();
 //    void newEmailResponse(const QJsonObject &doc);
-//    void newPasswordResponse(const QJsonObject &doc);
+    void newPasswordResponse(const QJsonObject &doc);
 
 };
 

@@ -30,6 +30,7 @@ public:
 public slots:
     void newUsernameNok();
     void newUsernameOk();
+    void newPWdOk();
     void iconArrived(QPixmap icon);
 
 private slots:
