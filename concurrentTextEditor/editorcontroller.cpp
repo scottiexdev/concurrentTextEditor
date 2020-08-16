@@ -16,7 +16,7 @@ EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
     blockFormat.setTopMargin(10);
     blockFormat.setLeftMargin(20);
     blockFormat.setRightMargin(20);
-    QTextCursor{doc->begin()}.setBlockFormat(blockFormat);
+    QTextCursor{doc->end()}.setBlockFormat(blockFormat);
 }
 
 void EditorController::keyPressEvent(QKeyEvent *key)

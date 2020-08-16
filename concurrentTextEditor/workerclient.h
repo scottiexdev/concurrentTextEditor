@@ -80,7 +80,7 @@ signals:
 private:
     QTcpSocket* _clientSocket;
     bool _loggedIn;
-    QString _loggedUser;
+    QString _loggedUser, _loggedEmail;
     const QString DEFAULT_USER  = "unknownUsername";
     QPixmap _userIcon;
 

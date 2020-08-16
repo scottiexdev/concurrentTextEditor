@@ -12,7 +12,7 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
     ui->label_usr->setText("Username: "+worker->getUser());
     ui->label_email->setText("Email: ");
     ui->img_label->setPixmap(_worker->getUserIcon());
-    ui->img_label->setScaledContents(true);
+    ui->img_label->setScaledContents(false);
 
     connect(_worker, &WorkerClient::newPwdOk, this, &accountSettings::newPWdOk);
     connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
