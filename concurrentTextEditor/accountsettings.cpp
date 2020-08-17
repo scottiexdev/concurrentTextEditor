@@ -10,10 +10,11 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
 {
     ui->setupUi(this);
     ui->label_usr->setText("Username: "+worker->getUser());
-    ui->label_email->setText("Email: ");
+    ui->label_email->setText("Email: "+ worker->getEmail());
     ui->img_label->setPixmap(_worker->getUserIcon());
-    ui->img_label->setScaledContents(false);
+    ui->img_label->setScaledContents(true);
 
+    connect(_worker, &WorkerClient::newEmailOk, this, &accountSettings::emailChanged);
     connect(_worker, &WorkerClient::newPwdOk, this, &accountSettings::newPWdOk);
     connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
     connect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
@@ -151,4 +152,9 @@ void accountSettings::closeEvent(QCloseEvent *event){
 void accountSettings::iconArrived(QPixmap icon){
     ui->img_label->setPixmap(icon);
     ui->img_label->setScaledContents(true);
+}
+
+void accountSettings::emailChanged(){
+    this->ui->label_email->setText("Email: "+_worker->getEmail());
+    QMessageBox::information(this, "Success", "Email changed successfully!");
 }

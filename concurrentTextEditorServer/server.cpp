@@ -308,6 +308,7 @@ void Server::signup(QSqlQuery& qVerify, QSqlQuery& qSignup, const QJsonObject& d
         successmsg["type"] = QString("signup");
         successmsg["success"] = true;
         successmsg["username"] = simplifiedUser;
+        successmsg["email"] = doc.value("email").toString();
         sendJson(sender,successmsg);
     }
 }
@@ -323,7 +324,15 @@ void Server::login(QSqlQuery& q, const QJsonObject &doc, WorkerServer& sender) {
             msg["type"] = QString("login");
             msg["success"] = true;
             msg["username"] = doc.value("username").toString().simplified();
-            // msg["icon"] = getIcon(doc.value("username").toString().simplified());
+            QSqlQuery q;
+            QString email;
+            q.prepare("SELECT email FROM users WHERE username = :USER");
+            q.bindValue(":USER", doc.value("username").toString().simplified());
+            q.exec();
+            while (q.next()) {
+                email = q.value(0).toString();
+            }
+            msg["email"] = email;
             sender.setUserName(msg["username"].toString());
             sendJson(sender, msg);
 
@@ -1082,47 +1091,19 @@ void Server::emailHandler(const QJsonObject &doc, WorkerServer &sender){
 
     queryDatabase(q);
 
-//    QJsonObject response;
-//    response["username"] = user;
-//    response["type"] = messageType::edit;
-//    response["editType"] = EditType::email;
-//    response["email"] = email;
+    QJsonObject response;
+    response["username"] = user;
+    response["type"] = messageType::edit;
+    response["editType"] = EditType::email;
+    response["email"] = email;
 
 
-//    if(queryDatabase(q))
-//        response["success"] = true;
-//    else response["success"] = false;
+    if(queryDatabase(q))
+        response["success"] = true;
+    else response["success"] = false;
 
-//    sendJson(sender, doc);
+    sendJson(sender, response);
 }
-
-//void Server::sendEditorIcons(WorkerServer &sender, const QJsonObject &qj){
-//    QByteArray b = getLatinStringFromImg(_defaultEditorIconPath+"/bold.png"),
-//            bs = getLatinStringFromImg(_defaultEditorIconPath+"/bold_selected.png"),
-//            i = getLatinStringFromImg(_defaultEditorIconPath+"/italics.png"),
-//            is, u = getLatinStringFromImg(_defaultEditorIconPath+"/underlined.png"),
-//            us, cu = getLatinStringFromImg(_defaultEditorIconPath+"/cut.png"),
-//            co = getLatinStringFromImg(_defaultEditorIconPath+"/copy.png"),
-//            pa = getLatinStringFromImg(_defaultEditorIconPath+"/paste.png"),
-//            exp = getLatinStringFromImg(_defaultEditorIconPath+"/export.png");
-//    QLatin1String bold = QLatin1String(b), bold_sel = QLatin1String(bs), it = QLatin1String(i), it_sel, und = QLatin1String(u),
-//            und_sel, cut = QLatin1String(cu), copy = QLatin1String(co), paste = QLatin1String(pa), expo = QLatin1String(exp);
-
-//    QJsonObject qjo;
-//    qjo["type"] = messageType::getEditorIcons;
-//    qjo["bold"] = bold;
-//    qjo["bold_sel"] = bold_sel;
-//    qjo["italics"] = it;
-//    qjo["underlined"] = und;
-//    qjo["copy"] = copy;
-//    qjo["cut"] = cut;
-//    qjo["paste"] = paste;
-//    qjo["export"] = expo;
-//    //TODO: set also others missing
-
-//    sendJson(sender, qjo);
-
-//}
 
 QByteArray Server::getLatinStringFromImg(QString path){
     QPixmap pm(path);
