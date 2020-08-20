@@ -47,6 +47,7 @@ void dialogsignup::on_pushButton_Signup_clicked()
     signup["password"] = pwd1;
     signup["email"] = email;
     if(this->icn.isNull() || this->icn.isEmpty()){
+        QMessageBox::information(this, "Notice", "It seems you did not choose any valid profile picture, in this way the default one will be assigned to you.");
         signup["icon"] = "default";
     }
     else {

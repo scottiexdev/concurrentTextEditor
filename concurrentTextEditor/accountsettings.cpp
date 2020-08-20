@@ -10,9 +10,12 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
 {
     ui->setupUi(this);
     ui->label_usr->setText("Username: "+worker->getUser());
+    ui->label_email->setText("Email: "+ worker->getEmail());
     ui->img_label->setPixmap(_worker->getUserIcon());
     ui->img_label->setScaledContents(true);
 
+    connect(_worker, &WorkerClient::newEmailOk, this, &accountSettings::emailChanged);
+    connect(_worker, &WorkerClient::newPwdOk, this, &accountSettings::newPWdOk);
     connect(_worker, &WorkerClient::newUsernameOk, this, &accountSettings::newUsernameOk);
     connect(_worker, &WorkerClient::newUsernameNok, this, &accountSettings::newUsernameNok);
     connect(_worker, &WorkerClient::iconSent, this, &accountSettings::iconArrived);
@@ -124,8 +127,8 @@ void accountSettings::on_pushButton_PWD_clicked()
     p1 = pwd1->text();
     p2 = pwd2->text();
 
-    if(p1 != p2) {
-        QMessageBox::information(this, "Error", "Passwords do not match");
+    if(p1 != p2 || p1.isNull() || p2.isNull() || p1.isEmpty() || p2.isEmpty()) {
+        QMessageBox::information(this, "Error", "Passwords do not match or are empty");
     } else _worker->setNewPassowrd(p1);
 }
 
@@ -138,6 +141,10 @@ void accountSettings::newUsernameOk(){
     QMessageBox::information(this, "Success", "Username changed successfully!");
 }
 
+void accountSettings::newPWdOk(){
+    QMessageBox::information(this, "Success", "Password changed successfully!");
+}
+
 void accountSettings::closeEvent(QCloseEvent *event){
     this->deleteLater();
 }
@@ -145,4 +152,9 @@ void accountSettings::closeEvent(QCloseEvent *event){
 void accountSettings::iconArrived(QPixmap icon){
     ui->img_label->setPixmap(icon);
     ui->img_label->setScaledContents(true);
+}
+
+void accountSettings::emailChanged(){
+    this->ui->label_email->setText("Email: "+_worker->getEmail());
+    QMessageBox::information(this, "Success", "Email changed successfully!");
 }

@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QTextBlock>
+#include <QTimer>
 
 EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 {    
@@ -15,7 +16,7 @@ EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
     blockFormat.setTopMargin(10);
     blockFormat.setLeftMargin(20);
     blockFormat.setRightMargin(20);
-    QTextCursor{doc->begin()}.setBlockFormat(blockFormat);
+    QTextCursor{doc->end()}.setBlockFormat(blockFormat);
 }
 
 void EditorController::keyPressEvent(QKeyEvent *key)
@@ -90,6 +91,8 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             cursorPosition++;
         }
         this->textCursor().insertText(clipText, charFormat);
+
+
         return;
     }
 
@@ -106,6 +109,8 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition, currentFormat);
         this->textCursor().insertText(key->text().data()[0], charFormat);
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+
+
 
         return;
     }
@@ -152,7 +157,7 @@ void EditorController::deleteSelection(int start, int end) {
     }
 }
 
-//Scrive sull'editor il testo parsato
+// Scrive sull'editor il testo parsato
 void EditorController::write(){
 
     QTextCharFormat format;
@@ -165,13 +170,16 @@ void EditorController::write(){
         setFormat(format, pair.second);
         this->textCursor().insertText(pair.first, format);
     }
+
+
 }
 
 
-//TODO: Tutte ste eccezioni vanno catchate nell Editor
+// TODO: Tutte ste eccezioni vanno catchate nell Editor
 
 
-//Wrappers for crdt methods
+// Wrappers for crdt methods
+
 QString EditorController::getFileName(){
 
     return _crdt.getFileName();
@@ -218,6 +226,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value), charFormat);
             // Set cursor back to original position (before editing)
             this->setTextCursor(cursorBeforeEdit);
+
 
             break;
 

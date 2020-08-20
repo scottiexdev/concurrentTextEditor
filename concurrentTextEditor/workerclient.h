@@ -35,6 +35,7 @@ public:
     void setIcon(QPixmap icon);
     QString getUser();
     QPixmap getUserIcon();
+    QString getEmail() {return this->_loggedEmail;};
     void getCurrentIconFromServer();
     QByteArray getLatinStringFromImg(QString path);
     void getFileList(QString access);
@@ -52,6 +53,7 @@ public:
     void setNewPassowrd(QString pwd);
     void setNewEmail(QString email);
 //    void getEditorUIIcons();
+    void newEmailResponse(const QJsonObject& qjo);
     QIcon getIcon(UiEditor tag);
 
 private slots:
@@ -74,12 +76,14 @@ signals:
     void disconnectClient();
     void newUsernameOk();
     void newUsernameNok();
+    void newPwdOk();
+    void newEmailOk();
     void iconSent(QPixmap icon);
 
 private:
     QTcpSocket* _clientSocket;
     bool _loggedIn;
-    QString _loggedUser;
+    QString _loggedUser, _loggedEmail;
     const QString DEFAULT_USER  = "unknownUsername";
     QPixmap _userIcon;
 
@@ -98,7 +102,7 @@ private:
     void newUsernameHandler(const QJsonObject &doc);
     void editorIconsHandler();
 //    void newEmailResponse(const QJsonObject &doc);
-//    void newPasswordResponse(const QJsonObject &doc);
+    void newPasswordResponse(const QJsonObject &doc);
 
 };
 

@@ -93,10 +93,10 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::edit:
             if (etype == EditType::username)
                 newUsernameHandler(docObj);
-//            if (etype == EditType::email)
-//                newEmailResponse(docObj);
-//            if (etype == EditType::password)
-//                newPasswordResponse(docObj);
+            if (etype == EditType::email)
+                newEmailResponse(docObj);
+            if (etype == EditType::password)
+                newPasswordResponse(docObj);
             emit handleRemoteEdit(docObj);
             break;
         case messageType::openFile: //fa da invite
@@ -165,6 +165,7 @@ void WorkerClient::loginHandler(const QJsonObject& docObj){
         //Notify with signal that the login was successfull
         const QJsonValue resultVal = docObj.value(QLatin1String("username"));
         _loggedUser = resultVal.toString();
+        _loggedEmail = docObj.value((QLatin1String("email"))).toString();
         _userIcon = docObj["icon"].toString();
         this->_loggedIn = true;
         emit myLoggedIn();
@@ -192,6 +193,7 @@ void WorkerClient::signupHandler(const QJsonObject &jsonObj) {
         //signup is ok, i can close dialogsignup window and open homeloggedin
         const QJsonValue resultVal = jsonObj.value(QLatin1String("username"));
         this->_loggedUser = resultVal.toString();
+        _loggedEmail = jsonObj.value((QLatin1String("email"))).toString();
         this->_loggedIn = true;
         emit mySignupOk();
         return;
@@ -405,6 +407,12 @@ void WorkerClient::newUsernameHandler(const QJsonObject &doc){
     }
 }
 
+void WorkerClient::newPasswordResponse(const QJsonObject &doc) {
+    bool result = doc["success"].toBool();
+    if (result)
+        emit newPwdOk();
+}
+
 void WorkerClient::setNewPassowrd(QString pwd){
     QJsonObject qj;
     qj["username"] = getUser();
@@ -422,16 +430,8 @@ void WorkerClient::setNewEmail(QString email){
     qj["editType"] = EditType::email;
     qj["email"] = email;
 
-    sendJson(qj);
-}
+    sendJson(qj);}
 
-//void WorkerClient::getEditorUIIcons(){
-//    QJsonObject qj;
-//    qj["username"] = getUser();
-//    qj["type"] = messageType::getEditorIcons;
-
-//    sendJson(qj);
-//}
 
 QByteArray WorkerClient::getLatinStringFromImg(QString path){
     QPixmap pm(path);
@@ -506,4 +506,12 @@ QIcon WorkerClient::getIcon(UiEditor tag){
     }
 
     return q;
+}
+
+void WorkerClient::newEmailResponse(const QJsonObject& qjo){
+    bool result = qjo["success"].toBool();
+    if (result) {
+        _loggedEmail = qjo["email"].toString();
+        emit newEmailOk();
+    }
 }

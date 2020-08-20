@@ -19,6 +19,9 @@ TODO's:
  - Funzione che manda il file - done
  - Finestra con text editor all'apertura di un file - done
  - Arricchire il json che manda la lista dei file con piu' info sul file (ex owner, created etc)
+ 
+ Note:
+ - la cartella IconsBar va inserita dentro "build-concurrentTextEditor-Desktop[...]-Profile"
 
 
 Git from command line:
