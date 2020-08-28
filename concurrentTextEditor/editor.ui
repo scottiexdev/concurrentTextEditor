@@ -31,9 +31,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -103,18 +103,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -177,9 +177,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -249,18 +249,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -323,9 +323,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -395,18 +395,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
-        <green>232</green>
-        <blue>240</blue>
+        <red>221</red>
+        <green>235</green>
+        <blue>248</blue>
        </color>
       </brush>
      </colorrole>
@@ -461,6 +461,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(221, 235, 248);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -475,6 +478,9 @@
        <font>
         <pointsize>11</pointsize>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
       <property name="sizeAdjustPolicy">
        <enum>QAbstractScrollArea::AdjustIgnored</enum>
@@ -515,6 +521,9 @@ p, li { white-space: pre-wrap; }
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
      </widget>
     </item>

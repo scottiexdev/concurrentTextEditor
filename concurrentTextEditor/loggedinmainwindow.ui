@@ -37,9 +37,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -109,18 +109,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>216</red>
+        <green>232</green>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -183,9 +183,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -255,18 +255,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>255</red>
-        <green>255</green>
-        <blue>255</blue>
+        <red>216</red>
+        <green>232</green>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -329,9 +329,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -401,18 +401,18 @@
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -467,6 +467,9 @@
   <property name="windowTitle">
    <string>ConcurrentTextEditor</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(216, 232, 227);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -495,6 +498,9 @@
           <italic>true</italic>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(4, 111, 119);</string>
         </property>
         <property name="text">
          <string>TextLabel</string>
@@ -525,6 +531,9 @@
         </property>
         <property name="layoutDirection">
          <enum>Qt::RightToLeft</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 85, 85);</string>
         </property>
         <property name="text">
          <string>Logout   </string>
@@ -596,6 +605,9 @@
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
+           </property>
            <property name="text">
             <string>New Private File</string>
            </property>
@@ -623,6 +635,9 @@
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
+           </property>
            <property name="text">
             <string>New Public File</string>
            </property>
@@ -649,6 +664,9 @@
            </property>
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
            </property>
            <property name="text">
             <string>Open File</string>
@@ -683,6 +701,9 @@
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
+           </property>
            <property name="text">
             <string>Open Shared File</string>
            </property>
@@ -713,6 +734,9 @@
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
+           </property>
            <property name="text">
             <string>Delete File</string>
            </property>
@@ -739,6 +763,9 @@
            </property>
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 164, 171);</string>
            </property>
            <property name="text">
             <string>Invite</string>
@@ -779,6 +806,9 @@
            </property>
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(246, 186, 101);</string>
            </property>
            <property name="text">
             <string>Account Settings</string>
@@ -826,6 +856,9 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(4, 111, 119);</string>
+           </property>
            <property name="text">
             <string>Your Private Files</string>
            </property>
@@ -850,6 +883,9 @@
              <pointsize>10</pointsize>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(178, 210, 200);</string>
+           </property>
            <attribute name="horizontalHeaderCascadingSectionResizes">
             <bool>true</bool>
            </attribute>
@@ -872,6 +908,9 @@
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(4, 111, 119);</string>
            </property>
            <property name="text">
             <string>Public Files</string>
@@ -918,6 +957,9 @@
            </property>
            <property name="autoFillBackground">
             <bool>true</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(178, 210, 200);</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
@@ -976,9 +1018,9 @@
          <colorrole role="Button">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1048,18 +1090,18 @@
          <colorrole role="Base">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>255</red>
-            <green>255</green>
-            <blue>255</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
          <colorrole role="Window">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1122,9 +1164,9 @@
          <colorrole role="Button">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1194,18 +1236,18 @@
          <colorrole role="Base">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>255</red>
-            <green>255</green>
-            <blue>255</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
          <colorrole role="Window">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1268,9 +1310,9 @@
          <colorrole role="Button">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1340,18 +1382,18 @@
          <colorrole role="Base">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
          <colorrole role="Window">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
-            <red>228</red>
-            <green>232</green>
-            <blue>240</blue>
+            <red>246</red>
+            <green>186</green>
+            <blue>101</blue>
            </color>
           </brush>
          </colorrole>
@@ -1414,6 +1456,9 @@
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(246, 186, 101);</string>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -1431,7 +1476,7 @@
      <x>0</x>
      <y>0</y>
      <width>950</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

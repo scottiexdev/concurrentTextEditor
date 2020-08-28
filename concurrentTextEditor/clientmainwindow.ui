@@ -43,9 +43,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -61,27 +61,27 @@
      <colorrole role="Midlight">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>241</red>
+        <red>235</red>
         <green>243</green>
-        <blue>247</blue>
+        <blue>241</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Dark">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Mid">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>152</red>
+        <red>144</red>
         <green>155</green>
-        <blue>160</blue>
+        <blue>151</blue>
        </color>
       </brush>
      </colorrole>
@@ -124,9 +124,9 @@
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -142,9 +142,9 @@
      <colorrole role="AlternateBase">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>241</red>
+        <red>235</red>
         <green>243</green>
-        <blue>247</blue>
+        <blue>241</blue>
        </color>
       </brush>
      </colorrole>
@@ -189,9 +189,9 @@
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -207,27 +207,27 @@
      <colorrole role="Midlight">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>241</red>
+        <red>235</red>
         <green>243</green>
-        <blue>247</blue>
+        <blue>241</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Dark">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Mid">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>152</red>
+        <red>144</red>
         <green>155</green>
-        <blue>160</blue>
+        <blue>151</blue>
        </color>
       </brush>
      </colorrole>
@@ -270,9 +270,9 @@
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -288,9 +288,9 @@
      <colorrole role="AlternateBase">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>241</red>
+        <red>235</red>
         <green>243</green>
-        <blue>247</blue>
+        <blue>241</blue>
        </color>
       </brush>
      </colorrole>
@@ -326,18 +326,18 @@
      <colorrole role="WindowText">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Button">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -353,36 +353,36 @@
      <colorrole role="Midlight">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>241</red>
+        <red>235</red>
         <green>243</green>
-        <blue>247</blue>
+        <blue>241</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Dark">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Mid">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>152</red>
+        <red>144</red>
         <green>155</green>
-        <blue>160</blue>
+        <blue>151</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Text">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
@@ -398,27 +398,27 @@
      <colorrole role="ButtonText">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>114</red>
+        <red>108</red>
         <green>116</green>
-        <blue>120</blue>
+        <blue>113</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -434,9 +434,9 @@
      <colorrole role="AlternateBase">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>228</red>
+        <red>216</red>
         <green>232</green>
-        <blue>240</blue>
+        <blue>227</blue>
        </color>
       </brush>
      </colorrole>
@@ -500,18 +500,27 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="11" column="0">
-       <widget class="QPushButton" name="pushButtonSignup">
+      <property name="verticalSpacing">
+       <number>2</number>
+      </property>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineEditUsr">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>150</width>
-          <height>50</height>
+          <height>30</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>150</width>
-          <height>50</height>
+          <height>40</height>
          </size>
         </property>
         <property name="font">
@@ -519,11 +528,44 @@
           <pointsize>11</pointsize>
          </font>
         </property>
-        <property name="text">
-         <string>Signup</string>
+        <property name="cursor">
+         <cursorShape>ArrowCursor</cursorShape>
         </property>
-        <property name="default">
-         <bool>true</bool>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(216, 232, 227);</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="lineEditPwd">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(216, 232, 227);</string>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
         </property>
        </widget>
       </item>
@@ -557,39 +599,11 @@
           <kerning>true</kerning>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(4, 111, 119);</string>
+        </property>
         <property name="text">
          <string>Don't have an account?</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelUsr">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-          <italic>false</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Username</string>
         </property>
        </widget>
       </item>
@@ -615,11 +629,83 @@
           <pointsize>11</pointsize>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(246, 186, 101);</string>
+        </property>
         <property name="text">
          <string>Login</string>
         </property>
         <property name="autoDefault">
          <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelUsr">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(4, 111, 119);</string>
+        </property>
+        <property name="text">
+         <string>Username</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QPushButton" name="pushButtonSignup">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(246, 186, 101);</string>
+        </property>
+        <property name="text">
+         <string>Signup</string>
         </property>
         <property name="default">
          <bool>true</bool>
@@ -648,71 +734,16 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(4, 111, 119);</string>
         </property>
         <property name="text">
          <string>Password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="lineEditUsr">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>ArrowCursor</cursorShape>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLineEdit" name="lineEditPwd">
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
-        </property>
-        <property name="echoMode">
-         <enum>QLineEdit::Password</enum>
         </property>
        </widget>
       </item>

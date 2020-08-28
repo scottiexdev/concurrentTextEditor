@@ -485,6 +485,9 @@
         <height>35</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(178, 210, 200);</string>
+      </property>
       <property name="text">
        <string>Edit Profile Picture</string>
       </property>
@@ -497,6 +500,9 @@
         <width>150</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(178, 210, 200);</string>
       </property>
       <property name="text">
        <string>Edit Username</string>
@@ -511,6 +517,9 @@
         <height>35</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(178, 210, 200);</string>
+      </property>
       <property name="text">
        <string>Change Email Address</string>
       </property>
@@ -523,6 +532,9 @@
         <width>150</width>
         <height>35</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(178, 210, 200);</string>
       </property>
       <property name="text">
        <string>Change Password</string>
@@ -554,6 +566,9 @@
         <width>269</width>
         <height>241</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(4, 111, 119);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::WinPanel</enum>
@@ -593,6 +608,9 @@
         <bold>true</bold>
        </font>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(4, 111, 119);</string>
+      </property>
       <property name="text">
        <string/>
       </property>
@@ -611,6 +629,9 @@
         <weight>75</weight>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(4, 111, 119);</string>
       </property>
       <property name="text">
        <string/>
