@@ -7,6 +7,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
     _workerClient(worker)
 {
     ui->setupUi(this);
+    ui->statusbar->showMessage("Concurrent Text Editor, version 1.0.0");
     ui->pushButtonOpenFile_2->setEnabled(false);
     ui->PublicFileListTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->PrivatefileListTable->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -76,6 +77,7 @@ void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
     // TO FIX THIS: disconnect socket
     //this->_workerClient->disconnectHost();
+    ui->statusbar->showMessage("Logging out...");
     this->_workerClient->disconnectFromServer();
     this->close();
     this->parentWidget()->show();
@@ -96,6 +98,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
         return;
     }    
 
+    ui->statusbar->showMessage("Opening file...");
 
     if(publicEmpty){
         fileName = ui->PrivatefileListTable->selectedItems().first()->text();
@@ -111,6 +114,7 @@ void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
     // Clear selection
     ui->PublicFileListTable->clearSelection();
     ui->PrivatefileListTable->clearSelection();
+    ui->statusbar->showMessage("File opened!");
 }
 
 
@@ -141,6 +145,7 @@ void loggedinmainwindow::newFile(bool isPublic){
     QString fileName = QInputDialog::getText(this, "New File", "Please insert new filename: ", QLineEdit::Normal, QString("FileName"), &ok);
 
     if(!fileName.isEmpty() && ok) {
+        ui->statusbar->showMessage("Creating a new file...");
         filename_req["type"] = messageType::newFile;
         filename_req["filename"] = fileName.append(".cte");
         filename_req["access"] = isPublic;
@@ -149,6 +154,7 @@ void loggedinmainwindow::newFile(bool isPublic){
         // Spawn editor -WRONG spawn editor on new file received
         _e = new Editor(this, _workerClient, fileName, isPublic, false);
         _e->show();
+        ui->statusbar->showMessage("File opened!");
     }
     else if(ok){
         errorDisplay("Insert a name for the file");
@@ -161,11 +167,13 @@ void loggedinmainwindow::newFile(bool isPublic){
 void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int column)
 {
     QString fileName = ui->PublicFileListTable->item(row, 0)->text();
+    ui->statusbar->showMessage("Opening file...");
     //_workerClient->requestFile(fileName);
     // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
     _e->show();
+    ui->statusbar->showMessage("File opened!");
 }
 
 
@@ -174,19 +182,23 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
 {
     QString fileName = ui->PrivatefileListTable->item(row, 0)->text();
 
+    ui->statusbar->showMessage("Opening file...");
     // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
 
     // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, false, false);
     //hide();
     _e->show();
+    ui->statusbar->showMessage("File opened!");
 }
 
 void loggedinmainwindow::on_pushButtonInvite_2_clicked()
 {
     // Invite makes sense only if a selected file in PrivateFilesListTable is selected
+    ui->statusbar->showMessage("Generating invite link...");
     if(ui->PrivatefileListTable->selectedItems().isEmpty()) {
         errorDisplay("Can't generate invite link. Please select a private file by clicking on it.");
+        ui->statusbar->showMessage("Invite link generation failed");
         return;
     }
 
@@ -201,6 +213,7 @@ void loggedinmainwindow::on_pushButtonInvite_2_clicked()
     clip->setText(link);
 
     QInputDialog::getText(this, "Sharing link", "Generated link for file: " + fileName + " and copied to clipboard.", QLineEdit::Normal, link);
+    ui->statusbar->showMessage("Invite link generated");
 }
 
 QString loggedinmainwindow::generateInviteLink(QString fileName, QString username){
@@ -236,6 +249,7 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
         errorDisplay("Please select a file by clicking on it.");
         return;
     }
+    ui->statusbar->showMessage("Deleting file...");
     int ret = QMessageBox::warning(this, tr("Delete File"),
                                    tr("The file will be permanentely deleted, do you want to proceed?"),
                                    QMessageBox::Yes | QMessageBox::No);
@@ -244,13 +258,16 @@ void loggedinmainwindow::on_pushButtonDeleteFile_3_clicked()
         if(!ui->PublicFileListTable->selectedItems().isEmpty()) {
             fileName = ui->PublicFileListTable->selectedItems().first()->text();
             isPublic = true;
+            ui->statusbar->showMessage(fileName+" deleted");
         }
         else if (!ui->PrivatefileListTable->selectedItems().isEmpty()){
             fileName = ui->PrivatefileListTable->selectedItems().first()->text();
             isPublic = false;
+            ui->statusbar->showMessage(fileName+" deleted");
         }
         _workerClient->deleteFile(fileName, isPublic);
         this->on_pushButtonUpdate_2_clicked();
+
     }
 }
 

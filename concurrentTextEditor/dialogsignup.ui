@@ -38,8 +38,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -110,8 +110,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -119,8 +119,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -184,8 +184,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -256,8 +256,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -265,8 +265,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -330,8 +330,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -402,8 +402,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -411,8 +411,8 @@
       <brush brushstyle="SolidPattern">
        <color alpha="255">
         <red>216</red>
-        <green>232</green>
-        <blue>227</blue>
+        <green>242</green>
+        <blue>237</blue>
        </color>
       </brush>
      </colorrole>
@@ -468,7 +468,7 @@
    <string>Signup</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(216, 232, 227);</string>
+   <string notr="true">background-color: rgb(216, 242, 237);</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -486,7 +486,7 @@
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
+     <item alignment="Qt::AlignLeft">
       <widget class="QLabel" name="label_usr">
        <property name="minimumSize">
         <size>
@@ -502,9 +502,10 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Corbel</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -534,6 +535,9 @@
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(255,255,255)</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -546,9 +550,10 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Corbel</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -566,6 +571,9 @@
          <width>180</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(255,255,255)</string>
        </property>
       </widget>
      </item>
@@ -585,9 +593,10 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Corbel</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -612,6 +621,9 @@
          <height>30</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(255,255,255)</string>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
@@ -633,9 +645,10 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Corbel</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -659,6 +672,9 @@
          <width>150</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:rgb(255,255,255)</string>
        </property>
        <property name="text">
         <string/>
@@ -701,7 +717,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item alignment="Qt::AlignHCenter">
       <widget class="QPushButton" name="pushButton_Signup">
        <property name="minimumSize">
         <size>

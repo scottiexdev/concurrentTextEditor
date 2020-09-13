@@ -532,7 +532,7 @@
          <cursorShape>ArrowCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(216, 232, 227);</string>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
        </widget>
       </item>
@@ -559,7 +559,7 @@
          <enum>Qt::StrongFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(216, 232, 227);</string>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <property name="inputMethodHints">
          <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
@@ -770,7 +770,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
