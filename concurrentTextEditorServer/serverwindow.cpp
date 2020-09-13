@@ -31,7 +31,7 @@ void ServerWindow::toggleStartServer() {
         ui->startStopButton->setText(tr("Start Server"));
         logMessage("Server Stopped");
     } else {
-        if(!m_server->listen(QHostAddress::LocalHost, 1967)) {
+        if(!m_server->listen(QHostAddress::AnyIPv4, 8888)) {
             QMessageBox::critical(this, tr("Error"), tr("Unable to connect"));
             return;
         }

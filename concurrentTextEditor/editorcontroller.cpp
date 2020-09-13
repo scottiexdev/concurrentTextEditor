@@ -21,6 +21,7 @@ EditorController::EditorController(QWidget *parent) : QTextEdit(parent)
 
 void EditorController::keyPressEvent(QKeyEvent *key)
 {
+    ensureCursorVisible();
     int pressed_key = key->key();
     int cursorPosition = this->textCursor().position();
     int anchor = this->textCursor().anchor();

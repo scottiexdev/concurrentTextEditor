@@ -717,7 +717,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignHCenter">
+     <item>
       <widget class="QPushButton" name="pushButton_Signup">
        <property name="minimumSize">
         <size>
@@ -761,9 +761,6 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>pushButton_Signup</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

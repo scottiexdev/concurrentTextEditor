@@ -119,6 +119,8 @@ void Editor::on_actionExport_PDF_triggered()
     printer.setOutputFileName(path);
 
     QTextDocument doc;
+    ui->editorController->selectAll();
+    ui->editorController->setTextBackgroundColor(Qt::white);
     doc.setHtml(ui->editorController->toHtml());
     doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
     doc.print(&printer);
