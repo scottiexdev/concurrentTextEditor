@@ -468,7 +468,26 @@
    <string>Signup</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(216, 242, 237);</string>
+   <string notr="true">QPushButton {
+    background-color: #81d4fa;
+    border: 1px;
+    font: 14px;
+    height: 100%;
+	width: 250px;
+	display: block;
+}
+
+QPushButton:hover {
+	background-color: #4ba3c7;
+}
+
+QLabel {
+	color: #4ba3c7;
+};
+
+background-color: rgb(221, 235, 248);
+
+</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -509,7 +528,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(4, 111, 119);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Username</string>
@@ -557,7 +576,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(4, 111, 119);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>E-mail address</string>
@@ -600,7 +619,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(4, 111, 119);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Insert Password</string>
@@ -652,7 +671,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(4, 111, 119);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Repeat Password</string>
@@ -700,11 +719,14 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>-1</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(178, 210, 200);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Choose your picture</string>
@@ -733,11 +755,14 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>-1</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(246, 186, 101);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Signup</string>

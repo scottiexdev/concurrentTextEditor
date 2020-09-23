@@ -31,6 +31,8 @@ private slots:
     void mySignupOk();
     void disconnectClient();
 
+    void on_lineEditPwd_returnPressed();
+
 private:
     Ui::clientmainwindow *ui;
     dialogsignup *d;

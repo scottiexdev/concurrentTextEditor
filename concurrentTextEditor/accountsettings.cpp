@@ -9,8 +9,8 @@ accountSettings::accountSettings(QWidget *parent, WorkerClient *worker) :
     _worker(worker)
 {
     ui->setupUi(this);
-    ui->label_usr->setText("Username: "+worker->getUser());
-    ui->label_email->setText("Email: "+ worker->getEmail());
+    ui->label_usr->setText(worker->getUser());
+    ui->label_email->setText(worker->getEmail());
     ui->img_label->setPixmap(_worker->getUserIcon());
     ui->img_label->setScaledContents(true);
 
@@ -150,6 +150,19 @@ void accountSettings::closeEvent(QCloseEvent *event){
 }
 
 void accountSettings::iconArrived(QPixmap icon){
+    QPixmap target = QPixmap(size());
+    target.fill(Qt::transparent);
+    //QPixmap icon_scaled = QPixmap(icon).scaled(270, 270, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    QPainter painter(&target);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+    QPainterPath path = QPainterPath();
+    path.addRoundedRect(270, 270, 270, 270, 100, 100);
+    painter.setClipPath(path);
+    painter.drawPixmap(270, 270, icon);
+
     ui->img_label->setPixmap(icon);
     ui->img_label->setScaledContents(true);
 }

@@ -15,7 +15,7 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
 
     QString icDir = QDir::currentPath().append("/IconsBar");
     ui->pushButtonLogout_2->setIcon(QIcon(QPixmap(icDir+"/logout.png")));
-    ui->pushButtonUpdate_2->setIcon(QIcon(QPixmap(icDir+"/refresh.png")));
+    //ui->pushButtonUpdate_2->setIcon(QIcon(QPixmap(icDir+"/refresh.png")));
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
     connect(_workerClient, &WorkerClient::newUsernameOk, this, &loggedinmainwindow::newUsernameOk);

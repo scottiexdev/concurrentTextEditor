@@ -31,8 +31,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     ui->pushButtonLogin->setText("Connecting...");
     ui->pushButtonLogin->repaint();
 
-    //if(!_workerClient->connectToServer(QHostAddress::LocalHost, 1967)) {
-    if(!_workerClient->connectToServer(QHostAddress("31.27.137.160"), 8888)) {
+    if(!_workerClient->connectToServer(QHostAddress::LocalHost, 8888)) {
+    //if(!_workerClient->connectToServer(QHostAddress("31.27.137.160"), 8888)) {
         QMessageBox::warning(this, "Error", "Server is not responding");
         ui->pushButtonLogin->setEnabled(true);
         ui->pushButtonLogin->setText("Login");
@@ -76,4 +76,9 @@ void clientmainwindow::mySignupOk(){
     hide();
     hli->show();
     hli->requestFileList();
+}
+
+void clientmainwindow::on_lineEditPwd_returnPressed()
+{
+    on_pushButtonLogin_clicked();
 }

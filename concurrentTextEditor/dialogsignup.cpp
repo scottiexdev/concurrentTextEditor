@@ -31,7 +31,7 @@ void dialogsignup::on_pushButton_Signup_clicked()
 
     if(!regex.match(email).hasMatch()){
         QMessageBox email_nok;
-        email_nok.setText("The email you enetered has not a valid email format");
+        email_nok.setText("The email you entered has not a valid email format");
         email_nok.exec();
     } else ok1=true;
 

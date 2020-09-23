@@ -10,7 +10,7 @@
 #include <QHostAddress>
 #include <QFormLayout>
 #include <QDialogButtonBox>
-
+#include <QPainter>
 #include "workerclient.h"
 
 namespace Ui {
