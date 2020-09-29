@@ -21,7 +21,7 @@ TODO's:
  - Arricchire il json che manda la lista dei file con piu' info sul file (ex owner, created etc)
  
  Note:
- - la cartella IconsBar va inserita dentro "build-concurrentTextEditor-Desktop[...]-Profile"
+ - la cartella IconsBar va inserita dentro "build-concurrentTextEditor-Desktop[...]-Debug"
 
 
 Git from command line:
