@@ -15,14 +15,12 @@ loggedinmainwindow::loggedinmainwindow(QWidget *parent, WorkerClient* worker) :
 
     QString icDir = QDir::currentPath().append("/IconsBar");
     ui->pushButtonLogout_2->setIcon(QIcon(QPixmap(icDir+"/logout.png")));
-    //ui->pushButtonUpdate_2->setIcon(QIcon(QPixmap(icDir+"/refresh.png")));
     connect(_workerClient, &WorkerClient::genericError, this, &loggedinmainwindow::errorDisplay);
     connect(_workerClient, &WorkerClient::ifFileOpenOk, this, &loggedinmainwindow::isFileOpenOkay);
     connect(_workerClient, &WorkerClient::newUsernameOk, this, &loggedinmainwindow::newUsernameOk);
     connect(ui->PublicFileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPub);
     connect(ui->PrivatefileListTable, &QTableView::customContextMenuRequested, this, &loggedinmainwindow::provideContextMenuPri);
     _workerClient->getCurrentIconFromServer();
-//    _workerClient->getEditorUIIcons();
 }
 
 loggedinmainwindow::~loggedinmainwindow()
@@ -48,7 +46,6 @@ void loggedinmainwindow::showFiles(QStringList filesList, QStringList createdLis
     QStringList headers;
     headers.push_back("Filename");
     headers.push_back("Created");
-    //headers.push_back("Owner"); #da risolvere la questione dell'owner
     table->setHorizontalHeaderLabels(headers);    
 
     int cnt = 0;
@@ -63,7 +60,6 @@ void loggedinmainwindow::showFiles(QStringList filesList, QStringList createdLis
         table->setItem(cnt, 0, fileItem);
         table->setItem(cnt, 1, creationItem);
 
-        //ui->fileListTable->setItem(cnt, 2, new QTableWidgetItem(ownerList.at(cnt)));
         cnt++;
     }
 
@@ -75,17 +71,13 @@ void loggedinmainwindow::errorDisplay(QString str){
 
 void loggedinmainwindow::on_pushButtonLogout_2_clicked()
 {
-    // TO FIX THIS: disconnect socket
-    //this->_workerClient->disconnectHost();
     ui->statusbar->showMessage("Logging out...");
     this->_workerClient->disconnectFromServer();
     this->close();
     this->parentWidget()->show();
     this->deleteLater();
-    //QApplication::quit();
 }
 
-// PREVIOUS VERSION
 void loggedinmainwindow::on_pushButtonOpenFile_2_clicked()
 {
 
@@ -151,7 +143,6 @@ void loggedinmainwindow::newFile(bool isPublic){
         filename_req["access"] = isPublic;
         _workerClient->newFileRequest(filename_req);
 
-        // Spawn editor -WRONG spawn editor on new file received
         _e = new Editor(this, _workerClient, fileName, isPublic, false);
         _e->show();
         ui->statusbar->showMessage("File opened!");
@@ -168,7 +159,7 @@ void loggedinmainwindow::on_PublicFileListTable_cellDoubleClicked(int row, int c
 {
     QString fileName = ui->PublicFileListTable->item(row, 0)->text();
     ui->statusbar->showMessage("Opening file...");
-    //_workerClient->requestFile(fileName);
+
     // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, true, false);
     //hide();
@@ -183,11 +174,7 @@ void loggedinmainwindow::on_PrivatefileListTable_cellDoubleClicked(int row, int 
     QString fileName = ui->PrivatefileListTable->item(row, 0)->text();
 
     ui->statusbar->showMessage("Opening file...");
-    // ADD HERE MESSAGE TO ASK SERVER IF FILE IS AVAILABLE
-
-    // Detect if private or public
     _e = new Editor(this, _workerClient, fileName, false, false);
-    //hide();
     _e->show();
     ui->statusbar->showMessage("File opened!");
 }
@@ -202,7 +189,6 @@ void loggedinmainwindow::on_pushButtonInvite_2_clicked()
         return;
     }
 
-    // Generate link for selected file - TODO: change this
     QString fileName = ui->PrivatefileListTable->selectedItems().first()->text();
 
     QString link = generateInviteLink(fileName, _workerClient->getUser());

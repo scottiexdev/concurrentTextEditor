@@ -56,7 +56,6 @@ QList<QPair<QString, Format>> Crdt::parseFile(QJsonDocument unparsedFile){
         int index = findInsertIndex(c);
         _file.insert(index, c);
         _textBuffer.insert(index, QPair<QString, Format>(c._value, c._format));
-        //_textBuffer.insert(index, c._value);
     }
 
     return _textBuffer;
@@ -75,7 +74,7 @@ void Crdt::handleLocalInsert(QChar val, int index, Format format) {
 void Crdt::handleLocalDelete(int index) {
 
     Char c = _file.takeAt(index);
-    _textBuffer.removeAt(index); //si può mettere anche lunghezza del blocco da eliminare IN AVANTI (per quando eliminiamo una selezione)
+    _textBuffer.removeAt(index);
 
     _lastChar = c;
     _lastOperation = EditType::deletion;
@@ -120,7 +119,7 @@ Char Crdt::generateChar(QChar val, int index, Format format) {
     //TODO: version counter per globality
     //const localCounter = this.vector.localVersion.counter;
 
-    return Char(val, 0/*to implement*/, _siteID, newPos, format);
+    return Char(val, 0, _siteID, newPos, format);
 }
 
 int Crdt::retrieveStrategy(int level) {
@@ -184,9 +183,6 @@ QList<Identifier> Crdt::generatePosBetween(QList<Identifier> posBefore, QList<Id
       } else if (id1._siteID == id2._siteID) {
         newPos.append(id1);
         return generatePosBetween(posBefore.mid(1), posAfter.mid(1), newPos, level+1);
-      } else {
-        //implement exception
-        //throw new Error("Fix Position Sorting");
       }
     }
 
@@ -246,19 +242,10 @@ void Crdt::updateFileAtIndex(int index, Char c){
 
 
 QString Crdt::getFileName(){
-
-    if(_fileName.isNull() || _fileName.isEmpty()){
-        //throw exception
-    }
-
     return _fileName;
 }
 
 QList<QPair<QString, Format>> Crdt::getTextBuffer(){
-
-    if(_textBuffer.isEmpty()){
-        //throw exception
-    }
     return _textBuffer;
 }
 
@@ -272,11 +259,6 @@ int Crdt::findIndexByPosition(Char c){
     int left = 0;
     int right = _file.length()- 1;
     int mid, compareNum;
-
-    if (_file.length() == 0) {
-          // throw exception
-            return -1;
-    }
 
     while (left + 1 < right) {
       mid = qFloor(left + (right - left) / 2);
@@ -299,10 +281,6 @@ int Crdt::findIndexByPosition(Char c){
     else if (c.compareTo(_file[right]) == 0) {
       return right;
     }
-    else {
-      // throw exception
-        return -1;
-    }
 }
 
 void Crdt::deleteChar(Char val, int index){
@@ -317,8 +295,6 @@ int Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     _textBuffer.removeAt(index);
 
     return index;
-//    this.controller.deleteFromEditor(char.value, index, siteId);
-//    this.deleteText(index);
 }
 
 int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
@@ -329,13 +305,10 @@ int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
     _textBuffer.insert(index, QPair<QString,Format>(c._value,c._format));
 
     return index;
-//  this.insertText(char.value, index);
-
-//  this.controller.insertIntoEditor(char.value, index, char.siteId);
-
 }
 
 int Crdt::handleRemoteFormat(const QJsonObject &qjo) {
+
     Char c = getChar(qjo["content"].toObject());
     int index = findIndexByPosition(c);
     _file.replace(index, c);

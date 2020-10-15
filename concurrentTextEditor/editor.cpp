@@ -22,7 +22,7 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     _workerClient->requestFile(fileName, ui->editorController->getSiteID(), isPublic);
 
     //Prende lista degli utenti attivi su quel file
-    _workerClient->requestUserList(fileName); // DEVE SAPERE SE PRIVATO O PUBBLICO?
+    _workerClient->requestUserList(fileName);
     if(shared){
         ui->editorController->setOwner(fileName.split("/")[0]);
         ui->editorController->setShared(shared);
@@ -55,7 +55,7 @@ Editor::~Editor()
 
 //Al posto di QString avremo il JSonDocument ricevuto, che corrisponde al file
 void Editor::handleFile(QJsonDocument unparsedFile) {
-    //Il document ricevuto viene passato a editorcontroller che lo converte il data structures
+    //Il document ricevuto viene passato a editorcontroller che lo converte il data structure
     //c++ e lo visualizza
     if(!ui->editorController->parseCteFile(unparsedFile)){
         //throw exception;
@@ -80,9 +80,6 @@ QString Editor::deleteUser(QString user) {
             return ui->listWidget->takeItem(i)->text();
         }
     }
-
-    //TODO: see how to manage exceptions, how to distinguish them
-    throw ("Users isn't active on file, user not found");
 }
 
 void Editor::closeEvent(QCloseEvent *event) {

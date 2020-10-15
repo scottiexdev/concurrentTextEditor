@@ -35,14 +35,6 @@ private:
     WorkerClient *_workerClient;
 
     QString icn;
-
-//    // Icons path - NO MORE NEEDED
-//    // QString _defaultIconPath = "/home/albo/Documents/repos/master/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-//    QString _defaultIconPath = "C:/Users/giorg/Documents/GitHub/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-//    // QString _defaultIcon = "C:/Users/silvi/Google Drive/Politecnico/Magistrale/ProgettoDefinitivo/concurrentTextEditor/concurrentTextEditorServer/Icons/";
-
-//    // EDIT THIS -> prende path direttmente dal db con una query
-//    QString _defaultIcon=  _defaultIconPath+ "male_icon.png";
 };
 
 #endif // DIALOGSIGNUP_H

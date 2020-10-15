@@ -93,9 +93,6 @@ void accountSettings::on_pushButton_PP_clicked()
 
 void accountSettings::on_pushButton_PWD_clicked()
 {
-    //TODO: aprire un Qdialog
-    // inserire password precedente, nuova password e conferma nuova password
-    // sul server: query ad DB, check e json in risposta
 
     QDialog dialog(this);
     QFormLayout form(&dialog);
@@ -152,7 +149,6 @@ void accountSettings::closeEvent(QCloseEvent *event){
 void accountSettings::iconArrived(QPixmap icon){
     QPixmap target = QPixmap(size());
     target.fill(Qt::transparent);
-    //QPixmap icon_scaled = QPixmap(icon).scaled(270, 270, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
     QPainter painter(&target);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);

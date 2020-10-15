@@ -765,9 +765,7 @@ QPushButton:not(:last-child) {
       </property>
       <property name="font">
        <font>
-        <family>MS Shell Dlg 2</family>
-        <weight>50</weight>
-        <bold>false</bold>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="styleSheet">

@@ -36,15 +36,6 @@ void Server::incomingConnection(qintptr socketDescriptor){
           return;
     }
 
-    //<signal, slot>
-
-    //connect the signals coming from the worker to the slots of the central server
-    //connect(worker, &WorkerServer::disconnectedFromClient, this, std::bind(&Server::userDisconnected, this, worker));
-    //connect(worker, &WorkerServer::error, this, std::bind(&Server::userError, this, worker));
-    //connect(worker, &WorkerServer::jsonReceived, this, std::bind(&Server::jsonReceived, this, worker, std::placeholders::_1));
-    //connect(worker, &WorkerServer::logMessage, this, &Server::logMessage);
-
-    //Aggiungiamo ste connect quando servono cercando di renderle meno marce, sta bind non mi e' troppo chiara
     connect(worker, &WorkerServer::jsonReceived, this, &Server::jsonReceived);
     connect(worker, &WorkerServer::logMessage, this, &Server::logMessage);
     connect(worker, &WorkerServer::userDisconnected, this, &Server::userDisconnected);
@@ -237,7 +228,6 @@ void Server::broadcast(const QJsonObject& message, WorkerServer& exclude) {
 
     for(WorkerServer* worker : m_clients) {
 
-        //TO CHECK - comparing addresses here?
         if(worker == &exclude)
             continue;
 
@@ -391,7 +381,7 @@ void Server::jsonFromLoggedIn(WorkerServer &sender, const QJsonObject &doc) {
             break;
 
         case messageType::userList:
-            userListHandler(sender, doc); //qua ci metto la gestione della rimozione di un utente da mandare in broadcast
+            userListHandler(sender, doc);
             break;
 
         case messageType::edit:
@@ -409,10 +399,6 @@ void Server::jsonFromLoggedIn(WorkerServer &sender, const QJsonObject &doc) {
         case messageType::getCurrentUserIcon:
             currentIconHandler(sender, doc);
             break;
-
-//        case messageType::getEditorIcons:
-//            sendEditorIcons(sender, doc);
-//            break;
 
         default:
             emit logMessage("Message type not handled");
@@ -467,7 +453,7 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
         _openedFiles.insert(fileName, file);
     }
 
-    sender.addOpenFile(fileName); // FORSE IL SENDER DEVE COMUNQUE TENERE USER/FILE Aggiunge file alla lista dei file aperti
+    sender.addOpenFile(fileName);
 
     sendJson(sender, msgF);       // Manda file in formato Json, unparsed
     f.close();
@@ -552,7 +538,6 @@ bool Server::checkFilenameInDirectory(QString filename, QDir directory, bool isP
 
 void Server::newFileHandler(WorkerServer &sender, const QJsonObject &doc) {
 
-     //TODO: implement this with exceptions
      QString filename = doc.value("filename").toString();
      bool publicAccess = doc["access"].toBool();
 
@@ -652,7 +637,6 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
             userDel["action"] = action::del;
             userDel["username"] = QString(doc["user"].toString());
 
-            //broadcast specifico, invio solo a quelli che hanno il file aperto
             for(WorkerServer* worker : m_clients) {
                 QList<QString> openedFile = worker->openedFileList();
                 if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName)) {
@@ -683,15 +667,19 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
         case EditType::format:
             formatHandler(doc, sender);
             break;
+
         case EditType::propic:
             propicHandler(doc);
             break;
+
         case EditType::username:
             userHandler(doc, sender);
             break;
+
         case EditType::password:
             passwordHandler(doc, sender);
             break;
+
         case EditType::email:
             emailHandler(doc, sender);
             break;
@@ -911,7 +899,7 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
             linkValidation["sharing"] = true;
             sendJson(sender, linkValidation);
         } else {
-            linkValidation["type"] = messageType::invalid; //da cambiare in openFile, ma lascio questo ommento per i posteri
+            linkValidation["type"] = messageType::invalid;
             linkValidation["reason"] = "Invalid link";
             // Send response to client
             sender.sendJson(linkValidation);
@@ -933,7 +921,7 @@ void Server::deleteFileHandler(WorkerServer &sender, const QJsonObject &doc) {
     bool notPresent = checkFilenameInDirectory(fileName, QDir::current(), isPublic);
     if(!notPresent) {
         QFile::remove(fileName);
-        _openedFiles.remove(fileName); //anche se non serve perchè fa solo cache però è meglio perchè libero memoria per il server (idea del recupero)
+        _openedFiles.remove(fileName);
         broadcastOnlyOpenedFile(fileName, doc, sender);
     }
     //Refresh file list for everyone
@@ -977,8 +965,6 @@ void Server::propicHandler(const QJsonObject &doc){
         q.bindValue(":ICON", _defaultIconPath+doc["filename"].toString());
         queryDatabase(q);
     }
-
-    //TODO: json in risposta
 }
 
 void Server::userHandler(const QJsonObject &doc, WorkerServer &sender){

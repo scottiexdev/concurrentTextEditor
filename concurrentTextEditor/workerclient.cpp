@@ -67,7 +67,6 @@ void WorkerClient::onReadyRead()
     }
 }
 
-//DROPPED CONST MODIFIER ON QJSONOBJECT - TO CHECK WHY IT WAS THERE
 void WorkerClient::jsonReceived(const QJsonObject &docObj)
 {
     messageType type = static_cast<messageType>(docObj["type"].toInt());
@@ -88,7 +87,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
             newFileError();
             break;
         case messageType::userList:
-            showUserListHandler(docObj); //qua ci metto anche la rimozione di un utente da mandare in broadcast
+            showUserListHandler(docObj);
             break;
         case messageType::edit:
             if (etype == EditType::username)
@@ -103,7 +102,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
             emit ifFileOpenOk(docObj);
             break;
         case messageType::deleteFile:
-            emit fileDeleted(); //emit agli editor che hanno il file aperto ("il file esiste?" forse è da implementare)
+            emit fileDeleted();
             break;
         case messageType::invalid:
             emit genericError(docObj["reason"].toString());
@@ -114,9 +113,7 @@ void WorkerClient::jsonReceived(const QJsonObject &docObj)
         case messageType::getCurrentUserIcon:
             currentIconHandler(docObj);
             break;
-//        case messageType::getEditorIcons:
-//            editorIconsHandler(docObj);
-//            break;
+
         default:
             return;
     }

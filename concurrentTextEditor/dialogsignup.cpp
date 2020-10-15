@@ -19,10 +19,9 @@ dialogsignup::~dialogsignup()
 void dialogsignup::on_pushButton_Signup_clicked()
 {
     bool ok=false, ok1=false; //variable needed to handle different pwd
-    // Regex ok ma accetta anche robe del tipo abc@def@pippo.it => to fix
     QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
-    //_workerClient->connectToServer(QHostAddress::LocalHost, 1967);
-    _workerClient->connectToServer(QHostAddress("31.27.137.160"), 8888);
+    //_workerClient->connectToServer(QHostAddress::LocalHost, 8888);
+    _workerClient->connectToServer(QHostAddress("79.16.203.18"), 8888);
 
     QString usr = ui->lineEdit_Usr->text();
     QString pwd1 = ui->lineEdit_PwdIns->text();
@@ -82,8 +81,6 @@ void dialogsignup::on_pushButton_Signup_clicked()
 
     if(ok && ok1) {
         _workerClient->sendLoginCred(signup);
-
-        //TODO: fix problema che se faccio signup e poi account settings non fa vedere propric, se slogghi e rilogghi si
         this->close();
     }
 }
@@ -110,5 +107,6 @@ void dialogsignup::on_pushButton_Pic_clicked()
         QMessageBox::information(this, "Error", "Something is wrong with the image. Please try to use a different one.");
     } else {
         this->icn = iconpath;
+        QMessageBox::information(this, "Success", "Picture set!");
     }
 }

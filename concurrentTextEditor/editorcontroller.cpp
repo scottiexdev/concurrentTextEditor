@@ -116,8 +116,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         return;
     }
 
-
-    //maybe the next two are refactorable
     // Handle selection deletion with backspace or delete key
     if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && deltaPositions != 0) {
         deleteSelection(start, end);
@@ -158,15 +156,12 @@ void EditorController::deleteSelection(int start, int end) {
     }
 }
 
-// Scrive sull'editor il testo parsato
+
 void EditorController::write(){
 
     QTextCharFormat format;
-    //non sarà più una qstring, ma una list di qpairs
     QList<QPair<QString, Format>> textBuffer = _crdt.getTextBuffer();
-    //if(_textBuffer.isNull()){
-        //throw exception
-    //}
+
     for (auto pair : textBuffer) {
         setFormat(format, pair.second);
         this->textCursor().insertText(pair.first, format);
@@ -174,10 +169,6 @@ void EditorController::write(){
 
 
 }
-
-
-// TODO: Tutte ste eccezioni vanno catchate nell Editor
-
 
 // Wrappers for crdt methods
 
@@ -251,15 +242,11 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             editingCursor.setPosition(index);
             this->setTextCursor(editingCursor);
             setFormat(charFormat, format);
-            //penso non funzioni, il carattere da prendere è prima del cursore? Se sì, come lo seleziono? Lo seleziono e basta
-            //this->textCursor().movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
-            //prova = this->textCursor().movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
             editingCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
             editingCursor.setCharFormat(charFormat);
             this->setTextCursor(cursorBeforeEdit);
             break;
         default:
-            //handle exception
             break;
     }
 }
@@ -318,10 +305,7 @@ void EditorController::changeFormat(int position, int anchor, Format format) {
     //QTextCharFormat cursorFormat = this->textCursor().charFormat();
     QTextCharFormat cursorFormat;
     setFormat(cursorFormat,_currentFormat);
-
-        //TODO: come gestisco il plain text? E come tolgo faccio l'annullamento del markup?
-    this->textCursor().setCharFormat(cursorFormat); //mergeCharFormat credo che mantenga il charformat precedente, ora provo setcharformat
-
+    this->textCursor().setCharFormat(cursorFormat);
     //change format on the file (no need to check if deltaPositions != 0 because editor checks if position != anchor
     if(position != anchor) {
         start = anchor > position ? position : anchor;
@@ -347,7 +331,7 @@ void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
     }
 
     charFormat.setBackground(Qt::white);
-    setFormat(charFormat, _currentFormat); //PROVA FINALE
+    setFormat(charFormat, _currentFormat);
     this->textCursor().setCharFormat(charFormat);
 
 }

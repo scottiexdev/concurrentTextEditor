@@ -8,7 +8,6 @@ class Identifier
 {
 public:
 
-    //Costruttore
     Identifier(int digit, QUuid siteID): _digit(digit), _siteID(siteID){ }
 
     Identifier(){}

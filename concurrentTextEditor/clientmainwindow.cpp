@@ -31,8 +31,8 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     ui->pushButtonLogin->setText("Connecting...");
     ui->pushButtonLogin->repaint();
 
-    if(!_workerClient->connectToServer(QHostAddress::LocalHost, 8888)) {
-    //if(!_workerClient->connectToServer(QHostAddress("31.27.137.160"), 8888)) {
+    //if(!_workerClient->connectToServer(QHostAddress::LocalHost, 8888)) {
+    if(!_workerClient->connectToServer(QHostAddress("79.16.203.18"), 8888)) {
         QMessageBox::warning(this, "Error", "Server is not responding");
         ui->pushButtonLogin->setEnabled(true);
         ui->pushButtonLogin->setText("Login");
@@ -63,7 +63,7 @@ void clientmainwindow::on_pushButtonSignup_clicked()
 
 void clientmainwindow::myLoggedIn() {
     hli = new loggedinmainwindow(this, _workerClient);
-    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);void showFiles(QStringList list);
+    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);
     hide();
     hli->show();
     hli->requestFileList();
@@ -71,7 +71,7 @@ void clientmainwindow::myLoggedIn() {
 
 void clientmainwindow::mySignupOk(){
     hli = new loggedinmainwindow(this, _workerClient);
-    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);void showFiles(QStringList list);
+    connect(_workerClient, &WorkerClient::showFiles, hli, &loggedinmainwindow::showFiles);
     d->close();
     hide();
     hli->show();

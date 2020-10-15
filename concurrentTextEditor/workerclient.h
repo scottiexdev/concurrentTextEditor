@@ -101,7 +101,6 @@ private:
     void sendJson(const QJsonObject &doc);
     void newUsernameHandler(const QJsonObject &doc);
     void editorIconsHandler();
-//    void newEmailResponse(const QJsonObject &doc);
     void newPasswordResponse(const QJsonObject &doc);
 
 };
