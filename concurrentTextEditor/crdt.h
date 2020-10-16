@@ -62,7 +62,7 @@ public:
     bool containsReturn(QList<Char> chars);
 
     QList<Char> firstRowToEndLine(QPair<int, int> rowCh);
-    QList<Char> lastRowToendPos(QPair<int,int> endPos);
+    QList<Char> lastRowToEndPos(QPair<int,int> endPos);
 
 private:
     QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);
