@@ -53,12 +53,13 @@ public:
     void updateFileAtIndex(int index, Char c);
     int findIndexByPosition(Char c);
 
-
+    QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
     QPair<int, int> findInsertPosition(Char c);
     QPair<int, int> findEndPosition(Char c, QList<Char> lastLine, int totalLines);
     QList<Identifier> findPosBefore(QPair<int, int> rowCh);
     QList<Identifier> findPosAfter(QPair<int, int> rowCh);
+    bool containsReturn(QList<Char> chars);
 
 private:
     QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);

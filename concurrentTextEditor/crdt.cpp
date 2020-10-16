@@ -84,7 +84,9 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
-        if(chars.
+        if(containsReturn(chars)) {
+            newLineRemoved = true;
+        }
     }
 }
 
@@ -102,8 +104,18 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
     return chars;
 }
 
+QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> endPos) {
+    int charNum = endPos.second - startPos.second;
 
+}
 
+bool Crdt::containsReturn(QList<Char> chars) {
+    foreach(Char c, chars) {
+        if(c._value == '\n')
+            return true;
+    }
+    return false;
+}
 //QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
 
 //    Char c = _file.takeAt(index);
