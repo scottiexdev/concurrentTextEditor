@@ -53,9 +53,12 @@ QList<QPair<QString, Format>> Crdt::parseFile(QJsonDocument unparsedFile){
         Char c = getChar(tmpChar.toObject());
 
         //Find index for new char and insert it into _file Struct and _textBuffer
-        int index = findInsertIndex(c);
-        _file.insert(index, c);
-        _textBuffer.insert(index, QPair<QString, Format>(c._value, c._format));
+        //NOT NECESSARY ANYMORE, THE FILE IS WRITTEN IN ORDER
+        //int index = findInsertIndex(c);
+        //_file.insert(index, c);
+        //_textBuffer.insert(index, QPair<QString, Format>(c._value, c._format));
+        _file.append(c);
+        _textBuffer.append(QPair<QString, Format>(c._value, c._format));
     }
 
     return _textBuffer;
@@ -107,7 +110,7 @@ void Crdt::insertText(QChar val, Format format, int index) {
 
 Char Crdt::generateChar(QChar val, int index, Format format) {
 
-    QList<Identifier> posBefore;
+    QList<Identifier> posBefore = findPosBefore;
     QList<Identifier> posAfter;
     QList<Identifier> newPos;
     if(index-1 >= 0)
@@ -260,6 +263,10 @@ int Crdt::findIndexByPosition(Char c){
     int right = _file.length()- 1;
     int mid, compareNum;
 
+    if (_file.length() == 0) {
+      return -1;
+    }
+
     while (left + 1 < right) {
       mid = qFloor(left + (right - left) / 2);
       compareNum = c.compareTo(_file[mid]);
@@ -280,6 +287,9 @@ int Crdt::findIndexByPosition(Char c){
     }
     else if (c.compareTo(_file[right]) == 0) {
       return right;
+    }
+    else {
+        return -1;
     }
 }
 
@@ -325,6 +335,7 @@ Char Crdt::getChar(QJsonObject jsonChar ){
     QUuid siteID = jsonChar["siteID"].toString();
     int counter = jsonChar["counter"].toInt();
     QJsonArray identifiers = jsonChar["position"].toArray();
+    QPair<int, int> rowCh = QPair<int, int>(jsonChar["row"].toInt(), jsonChar["ch"].toInt());
     QList<Identifier> positions;
 
     foreach (const QJsonValue &tmpID, identifiers) {
@@ -335,7 +346,7 @@ Char Crdt::getChar(QJsonObject jsonChar ){
         positions.append(identifier);
     }
 
-    return Char(val,counter,siteID,positions,format);
+    return Char(val,counter,siteID,rowCh,positions,format);
 }
 
 
