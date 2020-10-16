@@ -60,6 +60,10 @@ public:
     QList<Identifier> findPosBefore(QPair<int, int> rowCh);
     QList<Identifier> findPosAfter(QPair<int, int> rowCh);
 
+    QList<Char> fromReturn(QPair<int, int> rowCh);
+    QList<Char> toReturn(QPair<int, int> rowCh);
+    QList<Char> lastRowToendPos(QPair<int,int> endPos);
+
 private:
     QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);
 
