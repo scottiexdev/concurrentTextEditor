@@ -12,22 +12,12 @@ class Char
 public:
 
     //Costruttore
-//    Char(QChar value, int counter, QUuid siteID, QList<Identifier> identifiers, Format format = Format::plain){
-
-//        _value  = value;
-//        _format = format;
-//        _counter = counter;
-//        _siteID = siteID;
-//        _position = identifiers;
-//    }
-
-    Char(QChar value, int counter, QUuid siteID, QPair<int, int> rowCh, QList<Identifier> identifiers, Format format = Format::plain){
+    Char(QChar value, int counter, QUuid siteID, QList<Identifier> identifiers, Format format = Format::plain){
 
         _value  = value;
         _format = format;
         _counter = counter;
         _siteID = siteID;
-        _rowCh = rowCh;
         _position = identifiers;
     }
 
@@ -37,7 +27,6 @@ public:
     Format _format;
     int _counter;
     QUuid _siteID;
-    QPair<int, int> _rowCh;
     QList<Identifier> _position;
 
     int compareTo(Char otherChar) {

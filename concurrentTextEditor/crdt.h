@@ -36,7 +36,7 @@ public:
     void replaceChar(Char val, int index);
 
     // Insertion
-    void insertChar(Char val, int index);
+    void insertChar(Char val, QPair<int,int> rowCh);
     void insertText(QChar val, Format format, int index);
 
     //  Deletion

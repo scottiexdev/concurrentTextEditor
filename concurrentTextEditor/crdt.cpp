@@ -67,7 +67,7 @@ QList<QPair<QString, Format>> Crdt::parseFile(QJsonDocument unparsedFile){
 void Crdt::handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format) {
 
     Char c = generateChar(val, rowCh, format);
-    insertChar(c, index);
+    insertChar(c, rowCh);
     insertText(c._value, c._format, index);
 
     _lastChar = c;
@@ -98,8 +98,21 @@ void Crdt::replaceChar(Char val, int index) {
     _file.replace(index, val);
 }
 
-void Crdt::insertChar(Char c, int index) {
+void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
 
+    int row = rowCh.first;
+    int ch = rowCh.second;
+
+    if(row == _file.length()) {
+        _file[rowCh.first].append(Char());
+    }
+
+    if(c._value == '\n') {
+        QVector<Char> rowAfter = fromReturn(row,ch); //take all characters after the \n
+        if(rowAfter.length() == 0) {
+            _file.ins
+        }
+    }
     _file.insert(index, c);    
 }
 
