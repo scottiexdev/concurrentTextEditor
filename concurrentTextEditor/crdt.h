@@ -22,9 +22,9 @@ public:
     QString getFileName();
     QList<QPair<QString, Format>> getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
-    int findInsertIndex(Char c);
+    int findInsertIndexInLine(Char c, QList<Char> row);
     void handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format);
-    void handleLocalDelete(int index);
+    QList<Char> handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos);
     void handleLocalFormat(int index, Format format);
     Char generateChar(QChar val, QPair<int, int> rowCh, Format format);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
@@ -37,7 +37,7 @@ public:
 
     // Insertion
     void insertChar(Char val, QPair<int,int> rowCh);
-    void insertText(QChar val, Format format, int index);
+    void insertText(QChar val, Format format, QPair<int,int> rowCh);
 
     //  Deletion
     void deleteChar(Char val, int index);
@@ -53,6 +53,10 @@ public:
     void updateFileAtIndex(int index, Char c);
     int findIndexByPosition(Char c);
 
+
+    QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
+    QPair<int, int> findInsertPosition(Char c);
+    QPair<int, int> findEndPosition(Char c, QList<Char> lastLine, int totalLines);
     QList<Identifier> findPosBefore(QPair<int, int> rowCh);
     QList<Identifier> findPosAfter(QPair<int, int> rowCh);
 
@@ -65,11 +69,12 @@ private:
 
     QString _fileName;
     QUuid _siteID;
-    QList<QPair<QString, Format>> _textBuffer;
+    QList<QList<QPair<QString, Format>>> _textBuffer;
     // File representation: TO CHANGE, IT MUST BE LIKE A MATRIX
     //QList<Char> _file;
     //QList<QPair<QPair<int, int>, Char>> _file;
-    QVector<QVector<Char>> _file;
+    //QVector<QVector<Char>> _file;
+    QList<QList<Char>> _file;
     int _strategy;
 };
 

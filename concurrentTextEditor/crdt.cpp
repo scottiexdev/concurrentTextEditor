@@ -68,20 +68,50 @@ void Crdt::handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format) {
 
     Char c = generateChar(val, rowCh, format);
     insertChar(c, rowCh);
-    insertText(c._value, c._format, index);
+    insertText(c._value, c._format, rowCh);
 
     _lastChar = c;
     _lastOperation = EditType::insertion;
 }
 
-void Crdt::handleLocalDelete(int index) {
+QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
+    QList<Char> chars;
+    bool newRowRemoved = false;
+    if(startPos.first != endPos.first) { //compare rows
+        // delete chars on first line from startPos.ch to end of line
+        newRowRemoved = true;
+        chars = deleteMultipleRows(startPos, endPos);
+    } else {
+        chars = deleteSingleLine(startPos, endPos);
 
-    Char c = _file.takeAt(index);
-    _textBuffer.removeAt(index);
-
-    _lastChar = c;
-    _lastOperation = EditType::deletion;
+        if(chars.
+    }
 }
+
+QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos) {
+    QList<Char> chars = toReturn(startPos);
+    int row;
+    for(row = startPos.first + 1; row < endPos.first; row++) {
+        chars.append(_file[row]);
+    }
+
+    if(!_file[endPos.first].isEmpty()) {
+        chars.append(lastRowToEndPos(endPos)); //take the chars of the last selected row til endPos.ch
+    }
+
+    return chars;
+}
+
+
+
+//QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
+
+//    Char c = _file.takeAt(index);
+//    _textBuffer.removeAt(index);
+
+//    _lastChar = c;
+//    _lastOperation = EditType::deletion;
+//}
 
 void Crdt::handleLocalFormat(int index, Format format) {
 
@@ -104,21 +134,25 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
     int ch = rowCh.second;
 
     if(row == _file.length()) {
-        _file[rowCh.first].append(Char());
+        _file[row].append(Char());
     }
 
     if(c._value == '\n') {
-        QVector<Char> rowAfter = fromReturn(row,ch); //take all characters after the \n
+        QList<Char> rowAfter = fromReturn(rowCh); //take all characters after the \n
         if(rowAfter.length() == 0) {
-            _file.ins
+            _file[row].insert(ch, c);
+        } else {
+            _file[row].append(c);
+            _file.insert(row+1, rowAfter); //if there are characters in next lines?
         }
+    } else {
+        _file[row].insert(ch, c);
     }
-    _file.insert(index, c);    
 }
 
-void Crdt::insertText(QChar val, Format format, int index) {
+void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
 
-    _textBuffer.insert(index, QPair<QString,Format>(val,format));
+    _textBuffer[rowCh.first][rowCh.second] = QPair<QString,Format>(val,format);
 }
 
 Char Crdt::generateChar(QChar val, QPair<int, int> rowCh, Format format) {
@@ -254,21 +288,79 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
     return qFloor(QRandomGenerator().bounded((double)1) * (max - min)) + min;
 }
 
-int Crdt::findInsertIndex(Char c) {
+QPair<int, int> Crdt::findInsertPosition(Char c) {
+    int minRow = 0;
+    int totalRows = _file.length();
+    int maxRow = totalRows - 1;
+    QList<Char> lastRow = _file[maxRow];
+    int midRow;
+    QList<Char> currentRow, minCurrentRow, maxCurrentRow;
+    Char minLastChar, maxLastChar;
+    int charIndex;
+
+    if(_file.isEmpty() || c.compareTo(_file[0][0]) <= 0) {
+        return QPair<int, int>(0,0);
+    }
+
+    Char lastC = lastRow[lastRow.length() - 1];
+
+    if(c.compareTo(lastC) > 0) {
+        return findEndPosition(lastC, lastRow, totalRows);
+    }
+
+    //binary search
+    while(minRow + 1 < maxRow) {
+        midRow = qFloor(minRow+(maxRow-minRow)/2);
+        currentRow = _file[midRow];
+        lastC = currentRow[currentRow.length()-1];
+
+        if(c.compareTo(lastC) == 0) {
+            return QPair<int,int>(midRow,currentRow.length()-1);
+        } else if (c.compareTo(lastC) < 0) {
+            maxRow = midRow;
+        } else {
+            minRow = midRow;
+        }
+    }
+
+    //check between min and max line
+    minCurrentRow = _file[minRow];
+    minLastChar = minCurrentRow[minCurrentRow.length()-1];
+    minCurrentRow = _file[minRow];
+    maxLastChar = maxCurrentRow[maxCurrentRow.length()-1];
+
+    if(c.compareTo(minLastChar) <= 0) {
+        charIndex = findInsertIndexInLine(c, minCurrentRow);
+        return QPair<int,int>(minRow,charIndex);
+    } else {
+        charIndex = findInsertIndexInLine(c, maxCurrentRow);
+        return QPair<int,int>(maxRow,charIndex);
+    }
+}
+
+QPair<int, int> Crdt::findEndPosition(Char c, QList<Char> lastRow, int totalLines) {
+    if(c._value == '\n') {
+        return QPair<int,int>(totalLines,0);
+    } else {
+        return QPair<int,int>(totalLines-1, lastRow.length());
+    }
+}
+
+int Crdt::findInsertIndexInLine(Char c, QList<Char> row) {
 
     int left = 0;
     int right = _file.length() - 1;
     int mid, compareNum;
 
-    if (_file.length() == 0 || c.compareTo(_file.at(left)) < 0) {
+    if (row.length() == 0 || c.compareTo(row[left]) < 0) {
       return left;
-    } else if (c.compareTo(_file.at(right)) > 0) {
+    } else if (c.compareTo(row[right]) > 0) {
       return _file.length();
     }
 
     while (left + 1 < right) {
       mid = qFloor(left + (right - left) / 2);
-      compareNum = c.compareTo(_file.at(mid));
+      compareNum = c.compareTo(row[mid]);
 
       if (compareNum == 0) {
         return mid;
@@ -279,7 +371,7 @@ int Crdt::findInsertIndex(Char c) {
       }
     }
 
-    return c.compareTo(_file.at(left)) == 0 ? left : right;
+    return c.compareTo(row[left]) == 0 ? left : right;
 
 }
 
@@ -354,7 +446,7 @@ int Crdt::handleRemoteDelete(const QJsonObject &qjo) {
 int Crdt::handleRemoteInsert(const QJsonObject &qjo) {
 
     Char c = getChar(qjo["content"].toObject());
-    int index = findInsertIndex(c);
+    int index = findInsertIndexInLine(c);
     this->insertChar(c, index);
     _textBuffer.insert(index, QPair<QString,Format>(c._value,c._format));
 
@@ -390,7 +482,7 @@ Char Crdt::getChar(QJsonObject jsonChar ){
         positions.append(identifier);
     }
 
-    return Char(val,counter,siteID,rowCh,positions,format);
+    return Char(val,counter,siteID,positions,format);
 }
 
 

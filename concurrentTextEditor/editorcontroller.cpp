@@ -24,9 +24,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     ensureCursorVisible();
     int pressed_key = key->key();
     int cursorPosition = this->textCursor().position();
+    int cursorRow = this->textCursor().blockNumber();
     int anchor = this->textCursor().anchor();
     int deltaPositions = abs(cursorPosition - anchor);
-    int start, end;
+    QPair<int,int> start, end;
     Format currentFormat =_currentFormat;
     //get format
     QTextCharFormat charFormat;
@@ -44,8 +45,12 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     //take selection if there is one
     if(deltaPositions != 0){
-        start = anchor > cursorPosition ? cursorPosition : anchor;
-        end = start == anchor ? cursorPosition : anchor;
+        QPair<int, int> rowChCursor = QPair<int,int>(cursorRow,cursorPosition);
+        QTextCursor temp = this->textCursor();
+        temp.setPosition(anchor);
+        QPair<int, int> rowChAnchor = QPair<int,int>(temp.blockNumber(),anchor);
+        start = anchor > cursorPosition ? rowChCursor : rowChAnchor;
+        end = start == rowChAnchor ? rowChCursor : rowChAnchor;
     }        
 
     //ctrl-c handler to avoid "HeartBug"
@@ -85,9 +90,9 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             cursorPosition=start;
         }
 
-        // Write clipboard text into crdt and broadcast edit        
+        // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
-            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition, currentFormat);
+            _crdt.handleLocalInsert(clipText[writingIndex], QPair<int,int>(), currentFormat);
             emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
             cursorPosition++;
         }
@@ -145,7 +150,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     QTextEdit::keyPressEvent(key);
 }
 
-void EditorController::deleteSelection(int start, int end) {
+void EditorController::deleteSelection(QPair<int,int> start, QPair<int,int> end) {
 
     QString completeFilename = _crdt.getFileName();
 

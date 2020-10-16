@@ -39,7 +39,7 @@ public:
 
 private:
     Crdt _crdt;
-    void deleteSelection(int start, int end);
+    void deleteSelection(QPair<int,int> start, QPair<int,int> end);
     bool _isPublic;
     QMap<QString, QColor> _usersColor;
     bool _shared = false;

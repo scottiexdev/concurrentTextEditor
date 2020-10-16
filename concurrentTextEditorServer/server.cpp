@@ -715,7 +715,7 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     Char c = crdtFile.getChar(newChar);
 
     // Find correct index with crdt structure
-    int index = crdtFile.findInsertIndex(c);
+    int index = crdtFile.findInsertIndexInLine(c);
     // Keep crdt updated
     crdtFile.insertChar(c, index);
 
