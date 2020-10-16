@@ -84,9 +84,8 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
-        if(containsReturn(chars)) {
-            newLineRemoved = true;
-        }
+
+
     }
 }
 
@@ -108,14 +107,6 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
     int charNum = endPos.second - startPos.second;
 
 }
-
-bool Crdt::containsReturn(QList<Char> chars) {
-    foreach(Char c, chars) {
-        if(c._value == '\n')
-            return true;
-    }
-    return false;
-}
 //QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
 
 //    Char c = _file.takeAt(index);
@@ -124,6 +115,26 @@ bool Crdt::containsReturn(QList<Char> chars) {
 //    _lastChar = c;
 //    _lastOperation = EditType::deletion;
 //}
+
+
+QList<Char> Crdt::fromReturn(QPair<int, int> rowCh){
+    QList<Char> buff = _file[rowCh.first];
+    QList<Char> res(buff.mid(rowCh.second));
+    return res;
+}
+
+QList<Char> Crdt::toReturn(QPair<int, int> rowCh){
+    // TODO: capire se va bene così oppure cambiarla concettualmente.
+    QList<Char> buff = _file[rowCh.first];
+    QList<Char> res(buff.mid(0, rowCh.second));
+    return res;
+}
+
+QList<Char> Crdt::lastRowToendPos(QPair<int, int> endPos){
+    QList<Char> buff = _file[endPos.first];
+    QList<Char> res(buff.mid(0, endPos.second));
+    return res;
+}
 
 void Crdt::handleLocalFormat(int index, Format format) {
 
