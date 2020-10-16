@@ -106,8 +106,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             deleteSelection(start, end);
             cursorPosition=start;
         }
-
-        _crdt.handleLocalInsert(key->text().data()[0], cursorPosition, currentFormat);
+        //now I am considering the line where the cursor is
+        int row = this->textCursor().blockNumber();
+        QPair<int, int> rowCh(row, cursorPosition);
+        _crdt.handleLocalInsert(key->text().data()[0], rowCh, currentFormat);
         this->textCursor().insertText(key->text().data()[0], charFormat);
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
 

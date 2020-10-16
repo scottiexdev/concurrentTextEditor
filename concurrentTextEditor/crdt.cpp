@@ -64,9 +64,9 @@ QList<QPair<QString, Format>> Crdt::parseFile(QJsonDocument unparsedFile){
     return _textBuffer;
 }
 
-void Crdt::handleLocalInsert(QChar val, int index, Format format) {
+void Crdt::handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format) {
 
-    Char c = generateChar(val, index, format);
+    Char c = generateChar(val, rowCh, format);
     insertChar(c, index);
     insertText(c._value, c._format, index);
 
@@ -108,21 +108,52 @@ void Crdt::insertText(QChar val, Format format, int index) {
     _textBuffer.insert(index, QPair<QString,Format>(val,format));
 }
 
-Char Crdt::generateChar(QChar val, int index, Format format) {
+Char Crdt::generateChar(QChar val, QPair<int, int> rowCh, Format format) {
 
-    QList<Identifier> posBefore = findPosBefore;
-    QList<Identifier> posAfter;
-    QList<Identifier> newPos;
-    if(index-1 >= 0)
-        posBefore = _file.at(index - 1)._position;
-    if(index < _file.length())
-        posAfter = _file.at(index)._position;
-    newPos = generatePosBetween(posBefore, posAfter, newPos);
+    QList<Identifier> posBefore = findPosBefore(rowCh);
+    QList<Identifier> posAfter = findPosAfter(rowCh);
+    QList<Identifier> newPos = generatePosBetween(posBefore, posAfter, newPos);
+//    if(index-1 >= 0)
+//        posBefore = _file.at(index - 1)._position;
+//    if(index < _file.length())
+//        posAfter = _file.at(index)._position;
 
     //TODO: version counter per globality
     //const localCounter = this.vector.localVersion.counter;
 
     return Char(val, 0, _siteID, newPos, format);
+}
+
+QList<Identifier> Crdt::findPosBefore(QPair<int, int> rowCh) {
+    int row = rowCh.first;
+    int ch = rowCh.second;
+
+    if(ch == 0 && row == 0) {
+        return QList<Identifier>();
+    } else if (ch == 0 && row != 0) { //first char of the row, but not the first one
+        row -= 1;
+        ch = _file[row].length();
+    }
+
+    return _file[row][ch-1]._position;
+}
+
+QList<Identifier> Crdt::findPosAfter(QPair<int, int> rowCh) {
+    int row = rowCh.first;
+    int ch = rowCh.second;
+    int numRows = _file.length();//in theory this is the number of rows, debug needed
+    int numChars = _file[row].length();
+
+    if((row == numRows-1) && (ch == numChars)) {
+        return QList<Identifier>();
+    } else if ((row < numRows-1) && (ch == numChars)) {
+        row += 1;
+        ch = 0;
+    } else if ((row > numRows -1 && ch == 0)) {
+        return QList<Identifier>();
+    }
+
+    return _file[row][ch]._position;
 }
 
 int Crdt::retrieveStrategy(int level) {

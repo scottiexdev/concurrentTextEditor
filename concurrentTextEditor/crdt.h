@@ -23,10 +23,10 @@ public:
     QList<QPair<QString, Format>> getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndex(Char c);
-    void handleLocalInsert(QChar val, int index, Format format);
+    void handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format);
     void handleLocalDelete(int index);
     void handleLocalFormat(int index, Format format);
-    Char generateChar(QChar val, int index, Format format);
+    Char generateChar(QChar val, QPair<int, int> rowCh, Format format);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
 
@@ -53,6 +53,9 @@ public:
     void updateFileAtIndex(int index, Char c);
     int findIndexByPosition(Char c);
 
+    QList<Identifier> findPosBefore(QPair<int, int> rowCh);
+    QList<Identifier> findPosAfter(QPair<int, int> rowCh);
+
 private:
     QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);
 
@@ -63,8 +66,10 @@ private:
     QString _fileName;
     QUuid _siteID;
     QList<QPair<QString, Format>> _textBuffer;
-    // File representation
-    QList<Char> _file;     
+    // File representation: TO CHANGE, IT MUST BE LIKE A MATRIX
+    //QList<Char> _file;
+    //QList<QPair<QPair<int, int>, Char>> _file;
+    QVector<QVector<Char>> _file;
     int _strategy;
 };
 
