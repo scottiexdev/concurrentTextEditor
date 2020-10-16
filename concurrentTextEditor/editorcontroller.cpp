@@ -157,10 +157,14 @@ void EditorController::deleteSelection(QPair<int,int> start, QPair<int,int> end)
     if(_shared)
         completeFilename = _owner + "/" + _crdt.getFileName();
 
-    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-        _crdt.handleLocalDelete(floatingCursor - 1);
+    QList<Char> chars = _crdt.handleLocalDelete(start, end);
+    foreach (Char c, chars) {
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
     }
+//    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
+//        _crdt.handleLocalDelete(floatingCursor - 1);
+//        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
+//    }
 }
 
 

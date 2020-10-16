@@ -715,9 +715,9 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     Char c = crdtFile.getChar(newChar);
 
     // Find correct index with crdt structure
-    int index = crdtFile.findInsertIndexInLine(c);
+    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
     // Keep crdt updated
-    crdtFile.insertChar(c, index);
+    crdtFile.insertChar(c, rowCh);
 
     // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
     cteContent.insert(index, newChar);

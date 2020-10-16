@@ -61,8 +61,7 @@ public:
     QList<Identifier> findPosAfter(QPair<int, int> rowCh);
     bool containsReturn(QList<Char> chars);
 
-    QList<Char> fromReturn(QPair<int, int> rowCh);
-    QList<Char> toReturn(QPair<int, int> rowCh);
+    QList<Char> firstRowToEndLine(QPair<int, int> rowCh);
     QList<Char> lastRowToendPos(QPair<int,int> endPos);
 
 private:

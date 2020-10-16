@@ -90,7 +90,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
 }
 
 QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos) {
-    QList<Char> chars = toReturn(startPos);
+    QList<Char> chars = firstRowToEndLine(startPos);
     int row;
     for(row = startPos.first + 1; row < endPos.first; row++) {
         chars.append(_file[row]);
@@ -116,17 +116,10 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
 //    _lastOperation = EditType::deletion;
 //}
 
-
-QList<Char> Crdt::fromReturn(QPair<int, int> rowCh){
-    QList<Char> buff = _file[rowCh.first];
-    QList<Char> res(buff.mid(rowCh.second));
-    return res;
-}
-
-QList<Char> Crdt::toReturn(QPair<int, int> rowCh){
+QList<Char> Crdt::firstRowToEndLine(QPair<int, int> startPos){
     // TODO: capire se va bene così oppure cambiarla concettualmente.
-    QList<Char> buff = _file[rowCh.first];
-    QList<Char> res(buff.mid(0, rowCh.second));
+    QList<Char> buff = _file[startPos.first];
+    QList<Char> res(buff.mid(startPos.second));
     return res;
 }
 
@@ -161,7 +154,7 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
     }
 
     if(c._value == '\n') {
-        QList<Char> rowAfter = fromReturn(rowCh); //take all characters after the \n
+        QList<Char> rowAfter = firstRowToEndLine(rowCh); //take all characters after the \n
         if(rowAfter.length() == 0) {
             _file[row].insert(ch, c);
         } else {
