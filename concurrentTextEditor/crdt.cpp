@@ -84,6 +84,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
+<<<<<<< HEAD
         if(chars[chars.length()-1]._value == '\n')
             newRowRemoved = true;
         }
@@ -91,7 +92,21 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     if(newRowRemoved && !_file[startPos.first + 1].isEmpty()) { //maybe check if last line
         mergeRows(startPos.first);
     }
+=======
+        foreach(Char item, chars) {
+            if(item._value == '\n') newRowRemoved = true;
+        }
+        // ^ inserire un break dentro l'if oppure no?
+    }
+
+    // eliminare i caratteri da _file & _textbuffer (??)
+
+
+
+>>>>>>> f90a0059ee3d8448e5667b40220277e47aded611
 }
+
+
 
 QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos) {
     QList<Char> chars = firstRowToEndLine(startPos);
