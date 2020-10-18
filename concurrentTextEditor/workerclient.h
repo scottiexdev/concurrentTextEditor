@@ -60,7 +60,7 @@ private slots:
     void onReadyRead();
 
 public slots:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, QPair<int,int> index, bool isPublic);
 
 signals:
     void myLoggedIn();

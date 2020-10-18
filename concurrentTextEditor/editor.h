@@ -64,6 +64,8 @@ private:
     };
     int _colorNumber=0;
     bool b=false, i=false, u=false;
+
+    void changeFormat(Format format);
 };
 
 #endif // EDITOR_H

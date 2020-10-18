@@ -34,12 +34,13 @@ public:
     void italics(int position, int anchor);
     void underline(int position, int anchor);
     void setFormat(QTextCharFormat& charFormat, Format format);
-    void changeFormat(int position, int anchor, Format format);
+    void changeFormat(QPair<int,int> position, QPair<int,int> anchor, Format format);
     void setCurrentFormat(QTextCharFormat& charFormat);
 
 private:
     Crdt _crdt;
     void deleteSelection(QPair<int,int> start, QPair<int,int> end);
+    void takeSelection(QPair<int,int> cursorPosition, QPair<int,int> anchorPosition, QPair<int,int> & startPos, QPair<int,int> & endPos);
     bool _isPublic;
     QMap<QString, QColor> _usersColor;
     bool _shared = false;
@@ -48,7 +49,7 @@ private:
     bool isKeySequenceHandled(QKeyEvent* key);
 
 signals:
-    void broadcastEditWorker(QString fileName, Char c, EditType editType, int index, bool isPublic);
+    void broadcastEditWorker(QString fileName, Char c, EditType editType, QPair<int,int> position, bool isPublic);
 
 public slots:
     void handleRemoteEdit(const QJsonObject &qjo);

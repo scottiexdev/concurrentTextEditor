@@ -718,7 +718,7 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
     // Keep crdt updated
     crdtFile.insertChar(c, rowCh);
-
+    int index = crdtFile.calcIndex(rowCh);
     // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
     cteContent.insert(index, newChar);
 
@@ -739,7 +739,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     //Open file from database - cteFile
     QString filename = doc["fileName"].toString();
-    bool isPublic= doc["access"].toBool();
+    bool isPublic = doc["access"].toBool();
 
     checkPublic(filename, sender.userName(), isPublic);
 
@@ -764,7 +764,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonObject delChar = doc["content"].toObject();
 
     Char c = crdtFile.getChar(delChar);
-    int index = crdtFile.findIndexByPosition(c);
+    int index = crdtFile.findPosition(c);
 
     // Update data structures (remote delete)
     cteContent.removeAt(index);

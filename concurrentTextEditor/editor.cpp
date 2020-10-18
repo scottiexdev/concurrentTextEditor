@@ -134,28 +134,29 @@ void Editor::on_actionPaste_triggered(){
 void Editor::on_actionBold_triggered()
 {
     setFormatUi(UiEditor::bold1);
-
-    int position = ui->editorController->textCursor().position();
-    int anchor = ui->editorController->textCursor().anchor();
-    ui->editorController->changeFormat(position, anchor, Format::bold);
+    changeFormat(Format::bold);
 }
 
 void Editor::on_actionItalics_triggered()
 {
     setFormatUi(UiEditor::italics1);
-
-    int position = ui->editorController->textCursor().position();
-    int anchor = ui->editorController->textCursor().anchor();
-    ui->editorController->changeFormat(position, anchor, Format::italics);
+    changeFormat(Format::italics);
 }
 
 void Editor::on_actionUnderline_triggered()
 {
     setFormatUi(UiEditor::underlined);
+    changeFormat(Format::underline);
+}
 
-    int position = ui->editorController->textCursor().position();
+void Editor::changeFormat(Format format) {
     int anchor = ui->editorController->textCursor().anchor();
-    ui->editorController->changeFormat(position, anchor, Format::underline);
+    QTextCursor temp = ui->editorController->textCursor();
+    temp.setPosition(anchor);
+    QPair<int, int> anchorPosition = QPair<int,int>(temp.blockNumber(),temp.positionInBlock());
+    QPair<int,int> cursorPosition = QPair<int,int>(ui->editorController->textCursor().blockNumber(),
+                                                   ui->editorController->textCursor().positionInBlock());
+    ui->editorController->changeFormat(cursorPosition, anchorPosition, Format::underline);
 }
 
 void Editor::on_actionCopy_triggered()

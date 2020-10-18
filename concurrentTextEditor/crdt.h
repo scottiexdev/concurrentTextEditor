@@ -20,12 +20,15 @@ public:
     Crdt();    
     Crdt(QString siteID);
     QString getFileName();
-    QList<QPair<QString, Format>> getTextBuffer();
+    QList<QList<QPair<QString, Format>>> getTextBuffer();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndexInLine(Char c, QList<Char> row);
     void handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format);
     QList<Char> handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos);
-    void handleLocalFormat(int index, Format format);
+
+    QList<Char> handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endPos, Format format);
+    QList<Char> chFormatMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos, Format format);
+    QList<Char> chFormatSingleLine(QPair<int,int> startPos, QPair<int,int> endPos, Format format);
     Char generateChar(QChar val, QPair<int, int> rowCh, Format format);
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
@@ -33,7 +36,7 @@ public:
     Format getCurrentFormat(int index);
 
     Char getChar(QJsonObject jsonChar);
-    void replaceChar(Char val, int index);
+    void replaceChar(Char val, QPair<int,int> rowCh);
 
     // Insertion
     void insertChar(Char val, QPair<int,int> rowCh);
@@ -42,7 +45,7 @@ public:
     //  Deletion
     void deleteChar(Char val, int index);
 
-    int handleRemoteInsert(const QJsonObject& qjo);
+    QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
     int handleRemoteDelete(const QJsonObject& qjo);
     int handleRemoteFormat(const QJsonObject& qjo);
 
@@ -50,9 +53,10 @@ public:
     EditType _lastOperation;
     int retrieveStrategy(int level);
     QUuid getSiteID();
-    void updateFileAtIndex(int index, Char c);
+    void updateFileAtPosition(int index, Char c);
     int findIndexByPosition(Char c);
 
+    void mergeRows(int row);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
     QPair<int, int> findInsertPosition(Char c);
@@ -64,8 +68,11 @@ public:
     QList<Char> firstRowToEndLine(QPair<int, int> rowCh);
     QList<Char> lastRowToendPos(QPair<int,int> endPos);
 
+    int calcIndex(QPair<int, int> rowCh);
+    void calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore);
+
 private:
-    QList<QPair<QString, Format>> parseFile(QJsonDocument unparsedFile);
+    QList<QList<QPair<QString, Format>>> parseFile(QJsonDocument unparsedFile);
 
     int _base = 32;
     int _boundary = 10;
