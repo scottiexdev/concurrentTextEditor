@@ -710,14 +710,16 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
+
+    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
     QJsonObject newChar = doc["content"].toObject();
-    // NewChar viene parsato e trasformato in Char obj
+/*   NewChar viene parsato e trasformato in Char obj
     Char c = crdtFile.getChar(newChar);
 
-    // Find correct index with crdt structure
-    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
-    // Keep crdt updated
-    crdtFile.insertChar(c, rowCh);
+//    // Find correct index with crdt structure
+//    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
+//    // Keep crdt updated
+//    crdtFile.insertChar(c, rowCh);*/
     int index = crdtFile.calcIndex(rowCh);
     // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
     cteContent.insert(index, newChar);
@@ -761,14 +763,10 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    QJsonObject delChar = doc["content"].toObject();
-
-    Char c = crdtFile.getChar(delChar);
-    int index = crdtFile.findPosition(c);
+    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
 
     // Update data structures (remote delete)
-    cteContent.removeAt(index);
-    crdtFile.deleteChar(c, index);
+    cteContent.removeAt(crdtFile.calcIndex(position));
     cteData["content"] = cteContent;
     cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
@@ -803,13 +801,11 @@ void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
     //Estrazione campi del json
     QJsonObject cteData = cteFile.object();
     QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+
+    QPair<int,int> position = crdtFile.handleRemoteFormat(doc);
     QJsonObject formatChar = doc["content"].toObject();
 
-    Char c = crdtFile.getChar(formatChar);
-    int index = crdtFile.findIndexInLine(c);
-
-    cteContent.replace(index, formatChar);
-    crdtFile.replaceChar(c, index);
+    cteContent.replace(crdtFile.calcIndex(position), formatChar);
 
     cteData["content"] = cteContent;
     cteFile.setObject(cteData);

@@ -194,8 +194,13 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
     int row = rowCh.first;
     int ch = rowCh.second;
 
-    if(row == _file.length()) {
+    if(row == _file.length()-1 && row !=0) {
         _file[row].append(Char());
+    }
+
+    if(row == _file.length()) { //means that it is a new line
+        _file.append(QList<Char>());
+        _file[row].append(c);
     }
 
     if(c._value == '\n') {
@@ -204,7 +209,7 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
             _file[row].insert(ch, c);
         } else {
             _file[row].append(c);
-            _file.insert(row+1, rowAfter); //if there are characters in next lines?
+            _file.insert(row+1, rowAfter); //if there are characters in next lines? Scala perché è una lista
         }
     } else {
         _file[row].insert(ch, c);
@@ -213,6 +218,9 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
 
 void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
 
+    if(_textBuffer.size() < rowCh.first+1) {
+        _textBuffer.append(QList<QPair<QString, Format>>());
+    }
     _textBuffer[rowCh.first].insert(rowCh.second, QPair<QString,Format>(val,format));
 }
 
@@ -220,7 +228,7 @@ Char Crdt::generateChar(QChar val, QPair<int, int> rowCh, Format format) {
 
     QList<Identifier> posBefore = findPosBefore(rowCh);
     QList<Identifier> posAfter = findPosAfter(rowCh);
-    QList<Identifier> newPos = generatePosBetween(posBefore, posAfter, newPos);
+    QList<Identifier> newPos = generatePosBetween(posBefore, posAfter, QList<Identifier>());
 //    if(index-1 >= 0)
 //        posBefore = _file.at(index - 1)._position;
 //    if(index < _file.length())
@@ -250,7 +258,10 @@ QList<Identifier> Crdt::findPosAfter(QPair<int, int> rowCh) {
     int row = rowCh.first;
     int ch = rowCh.second;
     int numRows = _file.length();//in theory this is the number of rows, debug needed
-    int numChars = _file[row].length();
+    if(numRows == 0) {
+        return QList<Identifier>();
+    }
+    int numChars = _file.at(row).length();
 
     if((row == numRows-1) && (ch == numChars)) {
         return QList<Identifier>();
@@ -350,6 +361,12 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
 }
 
 QPair<int, int> Crdt::findInsertPosition(Char c) {
+
+
+    if(_file.isEmpty() || c.compareTo(_file[0][0]) <= 0) {
+        return QPair<int, int>(0,0);
+    }
+
     int minRow = 0;
     int totalRows = _file.length();
     int maxRow = totalRows - 1;
@@ -358,10 +375,6 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
     QList<Char> currentRow, minCurrentRow, maxCurrentRow;
     Char minLastChar, maxLastChar;
     int charIndex;
-
-    if(_file.isEmpty() || c.compareTo(_file[0][0]) <= 0) {
-        return QPair<int, int>(0,0);
-    }
 
     Char lastC = lastRow[lastRow.length() - 1];
 
@@ -387,15 +400,15 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
     //check between min and max line
     minCurrentRow = _file[minRow];
     minLastChar = minCurrentRow[minCurrentRow.length()-1];
-    minCurrentRow = _file[minRow];
+    maxCurrentRow = _file[maxRow];
     maxLastChar = maxCurrentRow[maxCurrentRow.length()-1];
 
     if(c.compareTo(minLastChar) <= 0) {
         charIndex = findInsertIndexInLine(c, minCurrentRow);
-        return QPair<int,int>(minRow,charIndex);
+        return QPair<int,int>(minRow,charIndex+1);
     } else {
         charIndex = findInsertIndexInLine(c, maxCurrentRow);
-        return QPair<int,int>(maxRow,charIndex);
+        return QPair<int,int>(maxRow,charIndex+1);
     }
 }
 
@@ -410,13 +423,13 @@ QPair<int, int> Crdt::findEndPosition(Char c, QList<Char> lastRow, int totalLine
 int Crdt::findInsertIndexInLine(Char c, QList<Char> row) {
 
     int left = 0;
-    int right = _file.length() - 1;
+    int right = row.length() - 1;
     int mid, compareNum;
 
     if (row.length() == 0 || c.compareTo(row[left]) < 0) {
       return left;
     } else if (c.compareTo(row[right]) > 0) {
-      return _file.length();
+      return row.length();
     }
 
     while (left + 1 < right) {
@@ -540,10 +553,6 @@ QPair<int,int> Crdt::findPosition(Char c) {
     return position;
 }
 
-void Crdt::deleteChar(Char val, int index){
-    _file.removeAt(index);
-}
-
 QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
 
     Char c = getChar(qjo["content"].toObject());
@@ -613,7 +622,7 @@ int Crdt::calcIndex(QPair<int, int> rowCh) {
     for(row = 0; row < rowCh.first; row++)
         index += _file[row].length();
     index += rowCh.second;
-    return index;
+    return index-1;
 }
 
 void Crdt::calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore) {
