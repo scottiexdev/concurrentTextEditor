@@ -200,7 +200,7 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
 
     if(row == _file.length()) { //means that it is a new line
         _file.append(QList<Char>());
-        _file[row].append(c);
+        //_file[row].append(c);
     }
 
     if(c._value == '\n') {
@@ -227,6 +227,7 @@ void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
 Char Crdt::generateChar(QChar val, QPair<int, int> rowCh, Format format) {
 
     QList<Identifier> posBefore = findPosBefore(rowCh);
+
     QList<Identifier> posAfter = findPosAfter(rowCh);
     QList<Identifier> newPos = generatePosBetween(posBefore, posAfter, QList<Identifier>());
 //    if(index-1 >= 0)
@@ -405,10 +406,10 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
 
     if(c.compareTo(minLastChar) <= 0) {
         charIndex = findInsertIndexInLine(c, minCurrentRow);
-        return QPair<int,int>(minRow,charIndex+1);
+        return QPair<int,int>(minRow,charIndex);
     } else {
         charIndex = findInsertIndexInLine(c, maxCurrentRow);
-        return QPair<int,int>(maxRow,charIndex+1);
+        return QPair<int,int>(maxRow,charIndex);
     }
 }
 
@@ -416,7 +417,7 @@ QPair<int, int> Crdt::findEndPosition(Char c, QList<Char> lastRow, int totalLine
     if(c._value == '\n') {
         return QPair<int,int>(totalLines,0);
     } else {
-        return QPair<int,int>(totalLines-1, lastRow.length());
+        return QPair<int,int>(totalLines-1, lastRow.length()-1);
     }
 }
 
@@ -622,7 +623,11 @@ int Crdt::calcIndex(QPair<int, int> rowCh) {
     for(row = 0; row < rowCh.first; row++)
         index += _file[row].length();
     index += rowCh.second;
-    return index-1;
+    if(index==0) {
+        return index;
+    } else {
+        return index-1;
+    }
 }
 
 void Crdt::calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore) {
