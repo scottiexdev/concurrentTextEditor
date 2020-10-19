@@ -33,7 +33,7 @@ public:
     QList<Identifier> generatePosBetween(QList<Identifier> posBefore, QList<Identifier> posAfter, QList<Identifier> newPos, int level=0);
     int generateIdBetween(int idBefore, int idAfter, int boundaryStrategy);
 
-    Format getCurrentFormat(int index);
+    Format getCurrentFormat(QPair<int,int> index);
 
     Char getChar(QJsonObject jsonChar);
     void replaceChar(Char val, QPair<int,int> rowCh);
@@ -46,19 +46,20 @@ public:
     void deleteChar(Char val, int index);
 
     QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
-    int handleRemoteDelete(const QJsonObject& qjo);
-    int handleRemoteFormat(const QJsonObject& qjo);
+    QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
+    QPair<int,int> handleRemoteFormat(const QJsonObject& qjo);
 
     Char _lastChar;
     EditType _lastOperation;
     int retrieveStrategy(int level);
     QUuid getSiteID();
     void updateFileAtPosition(int index, Char c);
-    int findIndexByPosition(Char c);
+    QPair<int,int> findIndexInLine(Char c, QList<Char> row, int pos);
 
     void mergeRows(int row);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
+    QPair<int, int> findPosition(Char c);
     QPair<int, int> findInsertPosition(Char c);
     QPair<int, int> findEndPosition(Char c, QList<Char> lastLine, int totalLines);
     QList<Identifier> findPosBefore(QPair<int, int> rowCh);

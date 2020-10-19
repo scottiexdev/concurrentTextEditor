@@ -806,7 +806,7 @@ void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
     QJsonObject formatChar = doc["content"].toObject();
 
     Char c = crdtFile.getChar(formatChar);
-    int index = crdtFile.findIndexByPosition(c);
+    int index = crdtFile.findIndexInLine(c);
 
     cteContent.replace(index, formatChar);
     crdtFile.replaceChar(c, index);
