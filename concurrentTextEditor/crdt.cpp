@@ -194,21 +194,28 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
     int row = rowCh.first;
     int ch = rowCh.second;
 
-    if(row == _file.length()-1 && row !=0) {
-        _file[row].append(Char());
-    }
+    //non so cosa faccia, non me frega niente
+//    if(row == _file.length()-1 && row !=0) {
+//        _file[row].append(Char());
+//    }
 
     if(row == _file.length()) { //means that it is a new line
         _file.append(QList<Char>());
         //_file[row].append(c);
     }
 
-    if(c._value == '\n') {
+    if(c._value == '\r') {
         QList<Char> rowAfter = firstRowToEndLine(rowCh); //take all characters after the \n
         if(rowAfter.length() == 0) {
             _file[row].insert(ch, c);
+            if(row+1 == _file.length()) {
+                _file.append(QList<Char>());
+            }
         } else {
-            _file[row].append(c);
+            _file[row].insert(ch, c);
+            if(row+1 == _file.length()) {
+                _file.append(QList<Char>());
+            }
             _file.insert(row+1, rowAfter); //if there are characters in next lines? Scala perché è una lista
         }
     } else {
@@ -218,7 +225,7 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
 
 void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
 
-    if(_textBuffer.size() < rowCh.first+1) {
+    if(_textBuffer.length() < rowCh.first+1) {
         _textBuffer.append(QList<QPair<QString, Format>>());
     }
     _textBuffer[rowCh.first].insert(rowCh.second, QPair<QString,Format>(val,format));
@@ -377,7 +384,14 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
     Char minLastChar, maxLastChar;
     int charIndex;
 
-    Char lastC = lastRow[lastRow.length() - 1];
+    Char lastC;
+
+    if(lastRow.length()-1 < 0) {
+        QList<Char> lastRow2 = _file[maxRow-1];
+        lastC = lastRow2[lastRow2.length()-1];
+    } else {
+        lastC = lastRow[lastRow.length() - 1];
+    }
 
     if(c.compareTo(lastC) > 0) {
         return findEndPosition(lastC, lastRow, totalRows);
@@ -413,9 +427,9 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
     }
 }
 
-QPair<int, int> Crdt::findEndPosition(Char c, QList<Char> lastRow, int totalLines) {
-    if(c._value == '\n') {
-        return QPair<int,int>(totalLines,0);
+QPair<int, int> Crdt::findEndPosition(Char lastC, QList<Char> lastRow, int totalLines) {
+    if(lastC._value == '\r') {
+        return QPair<int,int>(totalLines-1,0);
     } else {
         return QPair<int,int>(totalLines-1, lastRow.length()); //-1?
     }
@@ -614,6 +628,9 @@ Char Crdt::getChar(QJsonObject jsonChar ){
 
 
 Format Crdt::getCurrentFormat(QPair<int,int> position) {
+    if(position.second < 0) { //devo guardare il char alla riga precedente
+        return _file[position.first-1].at(_file[position.first-1].length()-1)._format;
+    }
     return _file[position.first].at(position.second)._format;
 }
 

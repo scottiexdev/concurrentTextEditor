@@ -358,7 +358,7 @@ void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
         currentFormat = _currentFormat;
     }
     else {
-        currentFormat = _crdt.getCurrentFormat(QPair<int,int>(this->textCursor().blockNumber(),(this->textCursor().position() - 1)));
+        currentFormat = _crdt.getCurrentFormat(QPair<int,int>(this->textCursor().blockNumber(),(this->textCursor().positionInBlock() - 1)));
     }
 
     charFormat.setBackground(Qt::white);
