@@ -417,7 +417,7 @@ QPair<int, int> Crdt::findEndPosition(Char c, QList<Char> lastRow, int totalLine
     if(c._value == '\n') {
         return QPair<int,int>(totalLines,0);
     } else {
-        return QPair<int,int>(totalLines-1, lastRow.length()-1);
+        return QPair<int,int>(totalLines-1, lastRow.length()); //-1?
     }
 }
 
@@ -621,13 +621,9 @@ int Crdt::calcIndex(QPair<int, int> rowCh) {
     int index = 0;
     int row;
     for(row = 0; row < rowCh.first; row++)
-        index += _file[row].length();
+        index += _file.at(row).length();
     index += rowCh.second;
-    if(index==0) {
-        return index;
-    } else {
-        return index-1;
-    }
+    return index; //da modificare in -1 quando faccio la delete probably
 }
 
 void Crdt::calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore) {
