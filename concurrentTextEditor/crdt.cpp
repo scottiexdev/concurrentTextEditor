@@ -84,7 +84,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
-        if(chars[chars.length()-1]._value == '\n')
+        if(chars[chars.length()-1]._value == '\r')
             newRowRemoved = true;
         }
 
@@ -114,11 +114,16 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
 }
 
 QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> endPos) {
-    int charNum = endPos.second - startPos.second;
-    for(int i=startPos.second; i< charNum; i++) {
-        _file[startPos.first].removeAt(i);
+    QList<Char> toremove;
+    Char tmp;
+    //int charNum = endPos.second - startPos.second;
+    for(int i=startPos.second; i<= endPos.second; i++) {
+        tmp = _file[startPos.first].takeAt(i);
+        toremove.append(tmp);
         _textBuffer[startPos.first].removeAt(i);
     }
+
+    return toremove;
 }
 
 void Crdt::mergeRows(int row) {
@@ -533,7 +538,12 @@ QPair<int,int> Crdt::findPosition(Char c) {
         return QPair<int,int>();
     }
 
-    lastCh = lastRow[lastRow.length()-1];
+    if(lastRow.length()-1 < 0) {
+        QList<Char> lastRow2 = _file[maxRow-1];
+        lastCh = lastRow2[lastRow2.length()-1];
+    } else {
+        lastCh = lastRow[lastRow.length() - 1];
+    }
 
     if(c.compareTo(lastCh) > 0) {
         return QPair<int,int>();
@@ -574,7 +584,7 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     QPair<int,int> index = findPosition(c);
     _file[index.first].removeAt(index.second);
 
-    if(c._value == '\n' && _file[index.first+1].isEmpty()) {
+    if(c._value == '\r' && _file[index.first+1].isEmpty()) {
         mergeRows(index.first);
     }
 

@@ -133,8 +133,8 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
         QPair<int,int> startBefore;
         _crdt.calcBeforePosition(start, startBefore);
-        _crdt.handleLocalDelete(startBefore, startBefore);
-        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, startBefore, _isPublic);
+        QList<Char> chars = _crdt.handleLocalDelete(startBefore, startBefore);
+        emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, startBefore, _isPublic);
     }
 
 
