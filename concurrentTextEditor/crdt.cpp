@@ -88,10 +88,15 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
             newRowRemoved = true;
         }
 
-    if(newRowRemoved && !_file[startPos.first + 1].isEmpty()) { //maybe check if last line
-        mergeRows(startPos.first);
+
+
+    if(newRowRemoved && startPos.first+1 != _file.length()) { //maybe check if last line
+        if(!_file[startPos.first + 1].isEmpty()) {
+            mergeRows(startPos.first);
+        }
     }
 
+    removeEmptyRows();
     return chars;
 }
 
@@ -99,6 +104,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
 
 QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos) {
     QList<Char> chars = firstRowToEndLine(startPos);
+    deleteSingleLine(startPos, QPair<int,int>(startPos.first, _file[startPos.first].length()));
     int row;
     for(row = startPos.first + 1; row < endPos.first; row++) {
         chars.append(_file[row]);
@@ -185,7 +191,7 @@ QList<Char> Crdt::handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endP
 }
 
 QList<Char> Crdt::chFormatMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos, Format format) {
-    QList<Char> chars = firstRowToEndLine(startPos);
+    QList<Char> chars = firstRowToEndLine(startPos); //simile, da dev'essere un'altra funzione, che cambi il formato di ogni carattere
     int row;
     for(row = startPos.first + 1; row < endPos.first; row++) {
         chars.append(_file[row]);
@@ -604,6 +610,24 @@ QPair<int,int> Crdt::findPosition(Char c) {
     return position;
 }
 
+void Crdt::removeEmptyRows() {
+    for(int i = 0; i<_file.length(); i++) {
+        if(_file.at(i).length() == 0) {
+            _file.removeAt(i);
+        }
+    }
+
+    for(int i = 0; i<_textBuffer.length(); i++) {
+        if(_textBuffer.at(i).length() == 0) {
+            _textBuffer.removeAt(i);
+        }
+    }
+    if(_file.length() == 0) {
+        _file.append(QList<Char>()); //forse non necessario dato che viene gestita da tutti
+        _textBuffer.append(QList<QPair<QString,Format>>());
+    }
+}
+
 QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
 
     Char c = getChar(qjo["content"].toObject());
@@ -611,11 +635,13 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     _file[index.first].removeAt(index.second);
     _textBuffer[index.first].removeAt(index.second);
 
-    if((c._value == '\r' || c._value == '\n') && _file[index.first+1].isEmpty()) {
-        mergeRows(index.first);
+    if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
+        if(_file[index.first+1].isEmpty()) {
+            mergeRows(index.first);
+        }
     }
 
-
+    removeEmptyRows();
 
     return index;
 }

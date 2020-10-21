@@ -793,7 +793,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonArray cteContent = cteData["content"].toArray();*/ //Array di Char da parsare
 
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-//    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
+    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
 
     // Update data structures (remote delete)
 //    cteContent.removeAt(crdtFile.calcIndex(position));

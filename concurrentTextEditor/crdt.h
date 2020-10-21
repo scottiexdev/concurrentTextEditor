@@ -46,6 +46,7 @@ public:
 
     //  Deletion
     void deleteChar(Char val, int index);
+    void removeEmptyRows();
 
     QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
     QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
