@@ -91,11 +91,13 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
         // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
-            _crdt.handleLocalInsert(clipText[writingIndex], QPair<int,int>(), currentFormat);
+            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition, currentFormat);
             emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-            if(clipText[writingIndex] == '\n') {
+            if(clipText[writingIndex] == '\n' || clipText[writingIndex] == '\r' ) {
                 cursorPosition.first++;
                 cursorPosition.second = 0;
+            } else {
+                cursorPosition.second++;
             }
         }
         this->textCursor().insertText(clipText, charFormat);
@@ -232,7 +234,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
     charFormat.setBackground(_usersColor[user]);
 
     EditType edit = static_cast<EditType>(qjo["editType"].toInt());
-    Format format = static_cast<Format>(_crdt.getChar(qjo["content"].toObject())._format);
+    Format format = static_cast<Format>(qjo["content"].toObject()["format"].toInt());
 
     switch(edit) {
 
@@ -246,7 +248,7 @@ void EditorController::handleRemoteEdit(const QJsonObject &qjo) {
             //set format
             setFormat(charFormat, format);
             // Write
-            this->textCursor().insertText(QString(_crdt.getChar(qjo["content"].toObject())._value), charFormat);
+            this->textCursor().insertText(QString(qjo["content"].toObject()["value"].toString()[0]), charFormat);
             // Set cursor back to original position (before editing)
             this->setTextCursor(cursorBeforeEdit);
 

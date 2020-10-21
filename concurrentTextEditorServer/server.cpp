@@ -435,28 +435,43 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
 
     checkPublic(fileName, sender.userName(), isPublic);
 
-    QFile f(fileName);
-    if(!f.open(QIODevice::ReadWrite))
-        return; //handle error, if it is deleted or else
     QJsonObject msgF;
     msgF["type"] = messageType::filesRequest;
     msgF["requestedFiles"] = fileName;
-    QString buf = f.readAll();
-    msgF["fileContent"] = buf;
+
     if(fileName.split("/").size() == 2) { //without this server sees two copies of the same file opened
         fileName = fileName.split("/")[1];
     }
-    // Carica e parsa file se non gia' aperto
-    if(!_openedFiles.contains(fileName)){
+
+    if(_openedFiles.contains(fileName)) {
+        Crdt crdtF = _openedFiles.value(fileName);
+        QJsonObject fileContent = crdtF.crdtToJson();
+
+        msgF["fileContent"] = QString(QJsonDocument(fileContent).toJson());
+    }
+    else {
+        // Carica e parsa file se non gia' aperto
+        QFile f(fileName);
+        if(!f.open(QIODevice::ReadWrite))
+            return; //handle error, if it is deleted or else
+
+        QString buf = f.readAll();
+        msgF["fileContent"] = buf;
+        f.close();
+
         Crdt file;
         file.parseCteFile(QJsonDocument(msgF));
         _openedFiles.insert(fileName, file);
     }
 
+//    if(!_openedFiles.contains(fileName)){
+
+//    }
+
     sender.addOpenFile(fileName);
 
     sendJson(sender, msgF);       // Manda file in formato Json, unparsed
-    f.close();
+
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -636,19 +651,34 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
             userDel["type"] = messageType::userList;
             userDel["action"] = action::del;
             userDel["username"] = QString(doc["user"].toString());
-
+            int opened = 0;
             for(WorkerServer* worker : m_clients) {
+
                 QList<QString> openedFile = worker->openedFileList();
                 if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName)) {
                     sender.delOpenFile(fileName);
                     sendJson(*worker, userDel);
+                    opened++;
                 }
+            }
+            if(opened == 1) { //only one people had the file opened => save file in cte
+                saveFile(fileName);
             }
             break;
         }
 }
 
+void Server::saveFile(QString filename) {
 
+    QJsonObject content;
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
+    Crdt crdtF = _openedFiles.value(filename);
+    content = crdtF.crdtToJson();
+    file.write(QJsonDocument(content).toJson());
+    file.close();
+    _openedFiles.remove(filename);
+}
 
 void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
 
@@ -696,43 +726,43 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
     checkPublic(filename, sender.userName(), isPublic);
 
     //Open Json file
-    QFile file(filename);
-    file.open(QIODevice::ReadWrite);
-    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-    file.close();
+//    QFile file(filename);
+//    file.open(QIODevice::ReadWrite);
+//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+//    file.close();
     if(filename.split("/").count() == 2) {
         filename = filename.split("/")[1];
     }
     Crdt crdtFile = _openedFiles.value(filename);
 
-    //Estrazione campi del json
-    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+//    //Estrazione campi del json
+//    QJsonObject cteData = cteFile.object();
+//    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
 
     QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
-    QJsonObject newChar = doc["content"].toObject();
-/*   NewChar viene parsato e trasformato in Char obj
-    Char c = crdtFile.getChar(newChar);
+//    QJsonObject newChar = doc["content"].toObject();
+// /*   NewChar viene parsato e trasformato in Char obj
+//    Char c = crdtFile.getChar(newChar);
 
-//    // Find correct index with crdt structure
-//    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
-//    // Keep crdt updated
-//    crdtFile.insertChar(c, rowCh);*/
-    int index = crdtFile.calcIndex(rowCh);
-    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
-    cteContent.insert(index, newChar);
+// //    // Find correct index with crdt structure
+// //    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
+// //    // Keep crdt updated
+// //    crdtFile.insertChar(c, rowCh);*/
+//    int index = crdtFile.calcIndex(rowCh);
+//    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
+//    cteContent.insert(index, newChar);
 
-    // Update data structures
-    cteData["content"] = cteContent;
-    cteFile.setObject(cteData);
+//    // Update data structures
+//    cteData["content"] = cteContent;
+//    cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
 
     // Write Json file to disk
-    file.open(QIODevice::WriteOnly);
-    file.write(cteFile.toJson());
-    file.close();
+//    file.open(QIODevice::WriteOnly);
+//    file.write(cteFile.toJson());
+//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }

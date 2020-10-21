@@ -21,6 +21,7 @@ public:
     Crdt(QString siteID);
     QString getFileName();
     QList<QList<QPair<QString, Format>>> getTextBuffer();
+    QJsonObject crdtToJson();
     bool parseCteFile(QJsonDocument unparsedFile);
     int findInsertIndexInLine(Char c, QList<Char> row);
     void handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format);
@@ -36,6 +37,7 @@ public:
     Format getCurrentFormat(QPair<int,int> index);
 
     Char getChar(QJsonObject jsonChar);
+    QJsonObject setChar(Char c);
     void replaceChar(Char val, QPair<int,int> rowCh);
 
     // Insertion
@@ -57,6 +59,7 @@ public:
     QPair<int,int> findIndexInLine(Char c, QList<Char> row, int pos);
 
     void mergeRows(int row);
+    void splitRows(int row, int column);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
     QPair<int, int> findPosition(Char c);
@@ -87,7 +90,7 @@ private:
     //QList<QPair<QPair<int, int>, Char>> _file;
     //QVector<QVector<Char>> _file;
     QList<QList<Char>> _file;
-    int _strategy;
+    int _strategy = 'plus';
 };
 
 

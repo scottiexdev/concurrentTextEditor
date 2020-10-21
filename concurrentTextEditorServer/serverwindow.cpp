@@ -41,6 +41,6 @@ void ServerWindow::toggleStartServer() {
 }
 
 void ServerWindow::logMessage(const QString &msg)  {
-    ui->logEditor->appendPlainText(msg + '\n');
+    //ui->logEditor->appendPlainText(msg + '\n');
 }
 

@@ -91,6 +91,7 @@ private:
 
     // UTILITIES
     QJsonObject createFileData(QFileInfoList file_data, bool isPublic);
+    void saveFile(QString filename);
     bool checkFilenameAvailability(QString filename, QString username, bool isPublic);
     bool checkFilenameInDirectory(QString filename, QDir directory, bool isPublic);
     bool checkUsernameAvailability(QString n_usn);

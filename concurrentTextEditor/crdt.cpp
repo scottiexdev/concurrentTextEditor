@@ -84,7 +84,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
-        if(chars[chars.length()-1]._value == '\r')
+        if(chars[chars.length()-1]._value == '\r' || chars[chars.length()-1]._value == '\n')
             newRowRemoved = true;
         }
 
@@ -127,8 +127,10 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
 }
 
 void Crdt::mergeRows(int row) {
-    QList<Char> rowAfter = _file.takeAt(row+1);
-    _file[row].append(rowAfter);
+    QList<Char> rowAfterFile = _file.takeAt(row+1);
+    QList<QPair<QString,Format>> rowAfterBuf = _textBuffer.takeAt(row+1);
+    _file[row].append(rowAfterFile);
+    _textBuffer[row].append(rowAfterBuf);
 }
 //QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
 
@@ -209,7 +211,7 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
         //_file[row].append(c);
     }
 
-    if(c._value == '\r') {
+    if(c._value == '\n' || c._value == '\r') {
         QList<Char> rowAfter = firstRowToEndLine(rowCh); //take all characters after the \n
         if(rowAfter.length() == 0) {
             _file[row].insert(ch, c);
@@ -218,13 +220,21 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
             }
         } else {
             _file[row].insert(ch, c);
-            if(row+1 == _file.length()) {
-                _file.append(QList<Char>());
-            }
+            splitRows(row, ch);
+//            if(row+1 == _file.length()) {
+//                _file.append(QList<Char>());
+//            }
             _file.insert(row+1, rowAfter); //if there are characters in next lines? Scala perché è una lista
         }
     } else {
         _file[row].insert(ch, c);
+    }
+}
+
+void Crdt::splitRows(int row, int column) {
+    int i = column+1;
+    while(i != _file[row].length()) {
+        _file[row].removeAt(i);
     }
 }
 
@@ -433,7 +443,7 @@ QPair<int, int> Crdt::findInsertPosition(Char c) {
 }
 
 QPair<int, int> Crdt::findEndPosition(Char lastC, QList<Char> lastRow, int totalLines) {
-    if(lastC._value == '\r') {
+    if(lastC._value == '\r' || lastC._value == '\n') {
         return QPair<int,int>(totalLines-1,0);
     } else {
         return QPair<int,int>(totalLines-1, lastRow.length()); //-1?
@@ -567,7 +577,13 @@ QPair<int,int> Crdt::findPosition(Char c) {
     minCurrRow = _file[minRow];
     minLastCh = minCurrRow[minCurrRow.length()-1];
     maxCurrRow = _file[maxRow];
-    maxLastCh = maxCurrRow[maxCurrRow.length()-1];
+    if(maxCurrRow.length()==0) {
+         QList<Char> beforeMaxRow = _file[maxRow-1];
+         maxLastCh = beforeMaxRow[beforeMaxRow.length()-1];
+    } else {
+         maxLastCh = maxCurrRow[maxCurrRow.length()-1];
+    }
+
 
     if (c.compareTo(minLastCh) <= 0) {
         position = findIndexInLine(c, minCurrRow, minRow);
@@ -583,12 +599,13 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     Char c = getChar(qjo["content"].toObject());
     QPair<int,int> index = findPosition(c);
     _file[index.first].removeAt(index.second);
+    _textBuffer[index.first].removeAt(index.second);
 
-    if(c._value == '\r' && _file[index.first+1].isEmpty()) {
+    if((c._value == '\r' || c._value == '\n') && _file[index.first+1].isEmpty()) {
         mergeRows(index.first);
     }
 
-    _textBuffer[index.first].removeAt(index.second);
+
 
     return index;
 }
@@ -636,6 +653,40 @@ Char Crdt::getChar(QJsonObject jsonChar ){
     return Char(val,counter,siteID,positions,format);
 }
 
+QJsonObject Crdt::setChar(Char c) {
+    QJsonObject jsonChar;
+    jsonChar["value"] = QJsonValue(c._value);
+    jsonChar["format"] = QJsonValue(c._format);
+    jsonChar["siteID"] = QJsonValue(c._siteID.toString());
+    jsonChar["counter"] = QJsonValue(c._counter);
+    //prossime due righe necessarie, altrimenti la lettura del json esplode
+    jsonChar["row"] = 0;
+    jsonChar["column"] = 0;
+
+    QJsonArray positions;
+    foreach(const Identifier id, c._position) {
+        QJsonObject pos;
+        pos["digit"] = QJsonValue(id._digit);
+        pos["siteID"] = QJsonValue(id._siteID.toString());
+        positions.append(pos);
+    }
+
+    jsonChar["position"] = positions;
+    return jsonChar;
+}
+
+QJsonObject Crdt::crdtToJson() {
+    QJsonObject jsonFile;
+    QJsonArray content;
+    foreach(QList<Char> row, _file) {
+        foreach(Char c, row) {
+            QJsonObject jsonChar = setChar(c);
+            content.append(jsonChar);
+        }
+    }
+    jsonFile.insert("content", content);
+    return jsonFile;
+}
 
 Format Crdt::getCurrentFormat(QPair<int,int> position) {
     if(position.second < 0) { //devo guardare il char alla riga precedente
