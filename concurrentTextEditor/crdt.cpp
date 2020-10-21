@@ -116,11 +116,21 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
 QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> endPos) {
     QList<Char> toremove;
     Char tmp;
-    //int charNum = endPos.second - startPos.second;
-    for(int i=startPos.second; i<= endPos.second; i++) {
-        tmp = _file[startPos.first].takeAt(i);
+    int charNum = (endPos.second - startPos.second);
+    int i = startPos.second;
+    int currChar = 0;
+
+    if(charNum == 0) {
+        tmp = _file[startPos.first].takeAt(startPos.second);
         toremove.append(tmp);
-        _textBuffer[startPos.first].removeAt(i);
+        _textBuffer[startPos.first].removeAt(startPos.second);
+    } else {
+        while(currChar != charNum) {
+            tmp = _file[startPos.first].takeAt(i);
+            toremove.append(tmp);
+            _textBuffer[startPos.first].removeAt(i);
+            currChar++;
+        }
     }
 
     return toremove;

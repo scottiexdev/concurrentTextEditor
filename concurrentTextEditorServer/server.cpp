@@ -777,10 +777,10 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
 
 
     //Open Json file
-    QFile file(filename);
-    file.open(QIODevice::ReadWrite);
-    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-    file.close();
+//    QFile file(filename);
+//    file.open(QIODevice::ReadWrite);
+//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+//    file.close();
 
     if(filename.split("/").count() == 2) {
         filename = filename.split("/")[1];
@@ -789,22 +789,22 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     Crdt crdtFile = _openedFiles.value(filename);
 
     //Estrazione campi del json
-    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+/*    QJsonObject cteData = cteFile.object();
+    QJsonArray cteContent = cteData["content"].toArray();*/ //Array di Char da parsare
 
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
+//    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
 
     // Update data structures (remote delete)
-    cteContent.removeAt(crdtFile.calcIndex(position));
-    cteData["content"] = cteContent;
-    cteFile.setObject(cteData);
+//    cteContent.removeAt(crdtFile.calcIndex(position));
+//    cteData["content"] = cteContent;
+//    cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
 
     // Write Json file to disk
-    file.open(QIODevice::WriteOnly);
-    file.write(cteFile.toJson());
-    file.close();
+//    file.open(QIODevice::WriteOnly);
+//    file.write(cteFile.toJson());
+//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }
