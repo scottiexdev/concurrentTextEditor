@@ -47,6 +47,7 @@ public:
     //  Deletion
     void deleteChar(Char val, int index);
     void removeEmptyRows();
+    void removeServerEmptyRows();
 
     QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
     QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
@@ -60,7 +61,9 @@ public:
     QPair<int,int> findIndexInLine(Char c, QList<Char> row, int pos);
 
     void mergeRows(int row);
+    void mergeServerRows(int row);
     void splitRows(int row, int column);
+    void splitRowsBuf(int row, int column);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<QPair<QString,Format>> takeMultipleBufRows(QPair<int,int> start, QPair<int,int> end);
@@ -78,13 +81,16 @@ public:
     QList<QPair<QString,Format>> lastRowToEndPosBuf(QPair<int, int> endPos);
 
     int calcIndex(QPair<int, int> rowCh);
-    void calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore);
+    bool calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore);
+    bool calcAfterPosition(QPair<int,int> end, QPair<int,int> & endAfter);
+    
+    void removeChar(Char c, QPair<int,int> index);
 
 private:
     QList<QList<QPair<QString, Format>>> parseFile(QJsonDocument unparsedFile);
 
-    int _base = 32;
-    int _boundary = 10;
+    int _base = 64;
+    int _boundary = 200;
     int _mult = 2;
 
     QString _fileName;

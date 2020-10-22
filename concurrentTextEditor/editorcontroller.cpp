@@ -187,9 +187,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     if(pressed_key == Qt::Key_Backspace && start == end && (this->textCursor().position()-1) != -1) {
 
         QPair<int,int> startBefore;
-        _crdt.calcBeforePosition(start, startBefore);
-        QList<Char> chars = _crdt.handleLocalDelete(startBefore, startBefore);
-        emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, startBefore, _isPublic);
+        if(_crdt.calcBeforePosition(start, startBefore)) {
+            QList<Char> chars = _crdt.handleLocalDelete(startBefore, startBefore);
+            emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, startBefore, _isPublic);
+        }
     }
 
 
@@ -199,8 +200,11 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     // Handle "delete" deletion
     if(pressed_key == Qt::Key_Delete && this->textCursor() != lastIndex && start == end) {
 
-        QList<Char> chars = _crdt.handleLocalDelete(start,end);
-        emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, start, _isPublic);
+        QPair<int,int> endAfter;
+        if(_crdt.calcAfterPosition(end, endAfter)) {
+            QList<Char> chars = _crdt.handleLocalDelete(endAfter,endAfter);
+            emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, start, _isPublic);
+        }
     }
 
     // Let the editor do its thing on current text if no handler is found

@@ -741,15 +741,15 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
 
-    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
-//    QJsonObject newChar = doc["content"].toObject();
+//    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
+    QJsonObject newChar = doc["content"].toObject();
 // /*   NewChar viene parsato e trasformato in Char obj
-//    Char c = crdtFile.getChar(newChar);
+    Char c = crdtFile.getChar(newChar);
 
 // //    // Find correct index with crdt structure
-// //    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
+    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
 // //    // Keep crdt updated
-// //    crdtFile.insertChar(c, rowCh);*/
+    crdtFile.insertChar(c, rowCh);
 //    int index = crdtFile.calcIndex(rowCh);
 //    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
 //    cteContent.insert(index, newChar);
@@ -793,7 +793,10 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonArray cteContent = cteData["content"].toArray();*/ //Array di Char da parsare
 
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
+    Char c = crdtFile.getChar(doc["content"].toObject());
+    QPair<int,int> index = crdtFile.findPosition(c);
+    crdtFile.removeChar(c,index);
+//    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
 
     // Update data structures (remote delete)
 //    cteContent.removeAt(crdtFile.calcIndex(position));
