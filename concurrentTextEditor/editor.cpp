@@ -156,7 +156,7 @@ void Editor::changeFormat(Format format) {
     QPair<int, int> anchorPosition = QPair<int,int>(temp.blockNumber(),temp.positionInBlock());
     QPair<int,int> cursorPosition = QPair<int,int>(ui->editorController->textCursor().blockNumber(),
                                                    ui->editorController->textCursor().positionInBlock());
-    ui->editorController->changeFormat(cursorPosition, anchorPosition, Format::underline);
+    ui->editorController->changeFormat(cursorPosition, anchorPosition, format);
 }
 
 void Editor::on_actionCopy_triggered()

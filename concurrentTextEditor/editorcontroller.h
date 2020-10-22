@@ -35,7 +35,7 @@ public:
     void underline(int position, int anchor);
     void setFormat(QTextCharFormat& charFormat, Format format);
     void changeFormat(QPair<int,int> position, QPair<int,int> anchor, Format format);
-    void setCurrentFormat(QTextCharFormat& charFormat);
+    void setCurrentFormat(QTextCharFormat& charFormat, QPair<int,int> pos);
 
 private:
     Crdt _crdt;
@@ -46,7 +46,9 @@ private:
     bool _shared = false;
     QString _owner = "";
     Format _currentFormat = Format::plain;
+    QList<QPair<QString,Format>> _clipRichText;
     bool isKeySequenceHandled(QKeyEvent* key);
+    QList<QPair<QString,Format>> getRichClip(QPair<int,int> start, QPair<int,int> end);
 
 signals:
     void broadcastEditWorker(QString fileName, Char c, EditType editType, QPair<int,int> position, bool isPublic);

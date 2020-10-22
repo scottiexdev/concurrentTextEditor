@@ -173,6 +173,16 @@ QList<Char> Crdt::lastRowToEndPos(QPair<int, int> endPos){
 QList<Char> Crdt::handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endPos, Format format) {
 
     QList<Char> chars;
+//    int j = startPos.second;
+//    for(int i = startPos.first; i<endPos.first;i++) {
+//        Char c = _file[i][j];
+//        c._format = format;
+//        replaceChar(c,QPair<int,int>(i,j));
+//        j++;
+//        if(j==_file[i].length())
+//            j=0;
+//        chars.append(c);
+//    }
 
     if(startPos.first != endPos.first) { //compare rows
         // delete chars on first line from startPos.ch to end of line
@@ -191,19 +201,29 @@ QList<Char> Crdt::handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endP
 }
 
 QList<Char> Crdt::chFormatMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos, Format format) {
-    QList<Char> chars = firstRowToEndLine(startPos); //simile, da dev'essere un'altra funzione, che cambi il formato di ogni carattere
+    QList<Char> chars;
+    chFormatSingleLine(startPos, QPair<int,int>(startPos.first, _file[startPos.first].length()), format);
+    chars = firstRowToEndLine(startPos);
     int row;
     for(row = startPos.first + 1; row < endPos.first; row++) {
+        chFormatSingleLine(QPair<int,int>(row,0), QPair<int,int>(row, _file[row].length()), format);
         chars.append(_file[row]);
     }
 
     if(!_file[endPos.first].isEmpty()) {
+        chFormatSingleLine(QPair<int,int>(endPos.first,0), endPos, format);
         chars.append(lastRowToEndPos(endPos)); //take the chars of the last selected row til endPos.ch
     }
     return chars;
 }
 
 QList<Char> Crdt::chFormatSingleLine(QPair<int, int> startPos, QPair<int, int> endPos, Format format) {
+    for(int i=startPos.second; i<endPos.second; i++) {
+        Char c = _file[startPos.first][i];
+        c._format = format;
+        replaceChar(c,QPair<int,int>(startPos.first,i));
+    }
+
     return _file[startPos.first].mid(startPos.second,endPos.second-startPos.second);
 }
 
@@ -624,10 +644,10 @@ void Crdt::removeEmptyRows() {
             i--;
         }
     }
-    if(_file.length() == 0) {
-        _file.append(QList<Char>()); //forse non necessario dato che viene gestita da tutti
-        _textBuffer.append(QList<QPair<QString,Format>>());
-    }
+//    if(_file.length() == 0) {
+//        _file.append(QList<Char>()); //forse non necessario dato che viene gestita da tutti
+//        _textBuffer.append(QList<QPair<QString,Format>>());
+//    }
 }
 
 QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
@@ -727,7 +747,7 @@ QJsonObject Crdt::crdtToJson() {
 }
 
 Format Crdt::getCurrentFormat(QPair<int,int> position) {
-    if(position.second < 0) { //devo guardare il char alla riga precedente
+    if(position.second < 0 && position.first != 0) { //devo guardare il char alla riga precedente
         return _file[position.first-1].at(_file[position.first-1].length()-1)._format;
     }
     return _file[position.first].at(position.second)._format;
@@ -751,4 +771,35 @@ void Crdt::calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore
         startBefore.first = start.first;
         startBefore.second = start.second - 1;
     }
+}
+
+QList<QPair<QString,Format>> Crdt::takeMultipleBufRows(QPair<int,int> startPos, QPair<int,int> endPos) {
+    QList<QPair<QString,Format>> chars;
+    chars = firstRowToEndLineBuf(startPos);
+    int row;
+    for(row = startPos.first + 1; row < endPos.first; row++) {
+        chars.append(_textBuffer[row]);
+    }
+
+    if(!_file[endPos.first].isEmpty()) {
+        chars.append(lastRowToEndPosBuf(endPos)); //take the chars of the last selected row til endPos.ch
+    }
+    return chars;
+}
+
+QList<QPair<QString,Format>> Crdt::takeSingleBufRow(QPair<int,int> startPos, QPair<int,int> endPos) {
+    return _textBuffer[startPos.first].mid(startPos.second,endPos.second);
+}
+
+QList<QPair<QString,Format>> Crdt::firstRowToEndLineBuf(QPair<int, int> startPos){
+    // TODO: capire se va bene così oppure cambiarla concettualmente.
+    QList<QPair<QString,Format>> buff = _textBuffer[startPos.first];
+    QList<QPair<QString,Format>> res(buff.mid(startPos.second));
+    return res;
+}
+
+QList<QPair<QString,Format>> Crdt::lastRowToEndPosBuf(QPair<int, int> endPos){
+    QList<QPair<QString,Format>> buff = _textBuffer[endPos.first];
+    QList<QPair<QString,Format>> res(buff.mid(0, endPos.second));
+    return res;
 }

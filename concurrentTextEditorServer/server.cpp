@@ -817,10 +817,10 @@ void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
 
 
     //Open Json file
-    QFile file(filename);
-    file.open(QIODevice::ReadWrite);
-    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-    file.close();
+//    QFile file(filename);
+//    file.open(QIODevice::ReadWrite);
+//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
+//    file.close();
 
     if(filename.split("/").count() == 2) {
         filename = filename.split("/")[1];
@@ -829,22 +829,22 @@ void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
     Crdt crdtFile = _openedFiles.value(filename);
 
     //Estrazione campi del json
-    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
+//    QJsonObject cteData = cteFile.object();
+//    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
     QPair<int,int> position = crdtFile.handleRemoteFormat(doc);
-    QJsonObject formatChar = doc["content"].toObject();
+//    QJsonObject formatChar = doc["content"].toObject();
 
-    cteContent.replace(crdtFile.calcIndex(position), formatChar);
+//    cteContent.replace(crdtFile.calcIndex(position), formatChar);
 
-    cteData["content"] = cteContent;
-    cteFile.setObject(cteData);
+//    cteData["content"] = cteContent;
+//    cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
 
-    // Write Json file to disk
-    file.open(QIODevice::WriteOnly);
-    file.write(cteFile.toJson());
-    file.close();
+//    // Write Json file to disk
+//    file.open(QIODevice::WriteOnly);
+//    file.write(cteFile.toJson());
+//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }

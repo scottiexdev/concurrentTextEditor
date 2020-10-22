@@ -29,7 +29,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     QPair<int, int> anchorPosition = QPair<int,int>(temp.blockNumber(),temp.positionInBlock());
     QPair<int,int> cursorPosition = QPair<int,int>(this->textCursor().blockNumber(),this->textCursor().positionInBlock());
     //int deltaPositions = abs(cursorPosition - anchor);
-    QPair<int,int> start, end;
+    QPair<int,int> start, end, startClip, endClip;
     Format currentFormat =_currentFormat;
     //get format
     QTextCharFormat charFormat;
@@ -53,7 +53,12 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 //    }
 
     //ctrl-c handler to avoid "HeartBug"
-    if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Control){
+    if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Copy){
+        if(start!=end) {
+            startClip = start;
+            endClip = end;
+            _clipRichText = getRichClip(start,end);
+        }
         QTextEdit::keyPressEvent(key);
         return;
     }
@@ -77,30 +82,48 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     //ctrl-v handler
     if(key->matches(QKeySequence::Paste) || pressed_key == Qt::Key_Paste) {
 
-        QClipboard* clipboard = QApplication::clipboard();
-        QString clipText = clipboard->text();
-        if(clipText.isNull() || clipText.isEmpty()) {
-            return;
-        }
-        setCurrentFormat(charFormat);
+//        QClipboard* clipboard = QApplication::clipboard();
+//        QString clipText = clipboard->text();
+//        if(clipText.isNull() || clipText.isEmpty()) {
+//            return;
+//        }
         if(start!=end) {
             deleteSelection(start, end);
             //for insert we need to set the position to start, either it's out of range
             cursorPosition=start;
         }
 
+        if(_clipRichText.isEmpty()) {
+            QClipboard* clipboard = QApplication::clipboard();
+            QString clipText = clipboard->text();
+            if(clipText.isNull() || clipText.isEmpty()) {
+                return;
+            } else {
+                //for con clipText
+            }
+        } else {
+            //for con _clipRichText
+        }
+
+
+
         // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
-        for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
-            _crdt.handleLocalInsert(clipText[writingIndex], cursorPosition, currentFormat);
+        for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
+            //setCurrentFormat(charFormat, cursorPosition);
+            QChar val = _clipRichText[writingIndex].first[0];
+            Format charF = _clipRichText[writingIndex].second;
+            _crdt.handleLocalInsert(val, cursorPosition, charF);
             emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-            if(clipText[writingIndex] == '\n' || clipText[writingIndex] == '\r' ) {
+            if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
                 cursorPosition.first++;
                 cursorPosition.second = 0;
             } else {
                 cursorPosition.second++;
             }
+            setFormat(charFormat, charF);
+            this->textCursor().insertText(val,charFormat);
         }
-        this->textCursor().insertText(clipText, charFormat);
+        //this->textCursor().insertText(clipText, charFormat);
 
 
         return;
@@ -109,7 +132,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     // Handle Char insert or return
     if( (pressed_key >= 0x20 && pressed_key <= 0x0ff && pressed_key != Qt::Key_Control) || pressed_key == Qt::Key_Return || pressed_key == Qt::Key_Tab) {
 
-        setCurrentFormat(charFormat);
+        setCurrentFormat(charFormat, cursorPosition);
         //cancel the selection (if there is one)
         if(start!=end) {
             deleteSelection(start, end);
@@ -190,6 +213,16 @@ void EditorController::deleteSelection(QPair<int,int> start, QPair<int,int> end)
 //    }
 }
 
+QList<QPair<QString,Format>> EditorController::getRichClip(QPair<int,int> start, QPair<int,int> end) {
+    QList<QPair<QString,Format>> richClip;
+    if(start.first!=end.first) {
+        richClip = _crdt.takeMultipleBufRows(start,end);
+    } else {
+        richClip = _crdt.takeSingleBufRow(start,end);
+    }
+
+    return richClip;
+}
 
 void EditorController::write(){
 
@@ -345,22 +378,23 @@ void EditorController::changeFormat(QPair<int,int> position, QPair<int,int> anch
         QList<Char> chars = _crdt.handleLocalFormat(start, end, _currentFormat);
         //change handlelocalformat getting the list of chars to broadcast as return value, then for cycle to broadcast
         foreach (Char c, chars) {
-            emit broadcastEditWorker(completeFilename , c, _crdt._lastOperation, end, _isPublic);
-            _crdt.calcBeforePosition(end, end);
+            emit broadcastEditWorker(completeFilename , c, EditType::format, QPair<int,int>(), _isPublic);
+            //_crdt.calcBeforePosition(end, end);
         }
     }
 }
 
 
-void EditorController::setCurrentFormat(QTextCharFormat& charFormat){
+void EditorController::setCurrentFormat(QTextCharFormat& charFormat, QPair<int,int> pos){
 
     Format currentFormat;
+    pos.second -= 1;
 
     if(this->textCursor().position() == 0) {
         currentFormat = _currentFormat;
     }
     else {
-        currentFormat = _crdt.getCurrentFormat(QPair<int,int>(this->textCursor().blockNumber(),(this->textCursor().positionInBlock() - 1)));
+        currentFormat = _crdt.getCurrentFormat(pos); //forse la position.second va -1
     }
 
     charFormat.setBackground(Qt::white);

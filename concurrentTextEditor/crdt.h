@@ -63,6 +63,8 @@ public:
     void splitRows(int row, int column);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);
     QList<Char> deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos);
+    QList<QPair<QString,Format>> takeMultipleBufRows(QPair<int,int> start, QPair<int,int> end);
+    QList<QPair<QString,Format>> takeSingleBufRow(QPair<int,int> startPos, QPair<int,int> endPos);
     QPair<int, int> findPosition(Char c);
     QPair<int, int> findInsertPosition(Char c);
     QPair<int, int> findEndPosition(Char c, QList<Char> lastLine, int totalLines);
@@ -72,6 +74,8 @@ public:
 
     QList<Char> firstRowToEndLine(QPair<int, int> rowCh);
     QList<Char> lastRowToEndPos(QPair<int,int> endPos);
+    QList<QPair<QString,Format>> firstRowToEndLineBuf(QPair<int, int> startPos);
+    QList<QPair<QString,Format>> lastRowToEndPosBuf(QPair<int, int> endPos);
 
     int calcIndex(QPair<int, int> rowCh);
     void calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore);
