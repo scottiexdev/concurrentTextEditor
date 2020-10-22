@@ -99,31 +99,61 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             if(clipText.isNull() || clipText.isEmpty()) {
                 return;
             } else {
-                //for con clipText
+                // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
+                for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
+                    //setCurrentFormat(charFormat, cursorPosition);
+                    QChar val = clipText[writingIndex];
+                    Format charF = Format::plain;
+                    _crdt.handleLocalInsert(val, cursorPosition, charF);
+                    emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+                    if(clipText[writingIndex] == '\n' || clipText[writingIndex] == '\r' ) {
+                        cursorPosition.first++;
+                        cursorPosition.second = 0;
+                    } else {
+                        cursorPosition.second++;
+                    }
+                    setFormat(charFormat, charF);
+                    this->textCursor().insertText(val,charFormat);
+                }
             }
         } else {
-            //for con _clipRichText
-        }
-
-
-
-        // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
-        for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
-            //setCurrentFormat(charFormat, cursorPosition);
-            QChar val = _clipRichText[writingIndex].first[0];
-            Format charF = _clipRichText[writingIndex].second;
-            _crdt.handleLocalInsert(val, cursorPosition, charF);
-            emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-            if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
-                cursorPosition.first++;
-                cursorPosition.second = 0;
-            } else {
-                cursorPosition.second++;
+            // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
+            for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
+                //setCurrentFormat(charFormat, cursorPosition);
+                QChar val = _clipRichText[writingIndex].first[0];
+                Format charF = _clipRichText[writingIndex].second;
+                _crdt.handleLocalInsert(val, cursorPosition, charF);
+                emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+                if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
+                    cursorPosition.first++;
+                    cursorPosition.second = 0;
+                } else {
+                    cursorPosition.second++;
+                }
+                setFormat(charFormat, charF);
+                this->textCursor().insertText(val,charFormat);
             }
-            setFormat(charFormat, charF);
-            this->textCursor().insertText(val,charFormat);
         }
-        //this->textCursor().insertText(clipText, charFormat);
+
+
+
+//        // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
+//        for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
+//            //setCurrentFormat(charFormat, cursorPosition);
+//            QChar val = _clipRichText[writingIndex].first[0];
+//            Format charF = _clipRichText[writingIndex].second;
+//            _crdt.handleLocalInsert(val, cursorPosition, charF);
+//            emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
+//            if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
+//                cursorPosition.first++;
+//                cursorPosition.second = 0;
+//            } else {
+//                cursorPosition.second++;
+//            }
+//            setFormat(charFormat, charF);
+//            this->textCursor().insertText(val,charFormat);
+//        }
+//        //this->textCursor().insertText(clipText, charFormat);
 
 
         return;
