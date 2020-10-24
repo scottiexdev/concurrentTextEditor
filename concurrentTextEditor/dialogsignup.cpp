@@ -20,8 +20,8 @@ void dialogsignup::on_pushButton_Signup_clicked()
 {
     bool ok=false, ok1=false; //variable needed to handle different pwd
     QRegularExpression regex("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", QRegularExpression::CaseInsensitiveOption);
-    //_workerClient->connectToServer(QHostAddress::LocalHost, 8888);
-    _workerClient->connectToServer(QHostAddress("79.54.16.163"), 8888);
+    _workerClient->connectToServer(QHostAddress::LocalHost, 8888);
+    //_workerClient->connectToServer(QHostAddress("79.54.16.163"), 8888);
 
     QString usr = ui->lineEdit_Usr->text();
     QString pwd1 = ui->lineEdit_PwdIns->text();

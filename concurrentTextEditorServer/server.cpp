@@ -773,7 +773,7 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QString filename = doc["fileName"].toString();
     bool isPublic = doc["access"].toBool();
 
-    checkPublic(filename, sender.userName(), isPublic);
+     checkPublic(filename, sender.userName(), isPublic);
 
 
     //Open Json file
@@ -793,10 +793,11 @@ void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
     QJsonArray cteContent = cteData["content"].toArray();*/ //Array di Char da parsare
 
     // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    Char c = crdtFile.getChar(doc["content"].toObject());
-    QPair<int,int> index = crdtFile.findPosition(c);
-    crdtFile.removeChar(c,index);
-//    QPair<int,int> position = crdtFile.handleRemoteDelete(doc);
+    //    Char c = crdtFile.getChar(doc["content"].toObject());
+//    QPair<int,int> index = crdtFile.findPosition(c);
+//    crdtFile.removeChar(c,index);
+
+    QPair<int,int> position = crdtFile.handleRemoteDeleteServer(doc);
 
     // Update data structures (remote delete)
 //    cteContent.removeAt(crdtFile.calcIndex(position));

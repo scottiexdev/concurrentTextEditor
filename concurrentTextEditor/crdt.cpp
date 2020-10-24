@@ -123,6 +123,9 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
     if(!_file[startPos.first+1].isEmpty()) {
         chars.append(lastRowToEndPos(lastRow)); //take the chars of the last selected row til endPos.ch
         deleteSingleLine(QPair<int,int>(lastRow.first,0), lastRow);
+        if(_file[startPos.first].isEmpty()){
+                _file.removeAt(startPos.first);
+        }
     }
 
 //    if(!_file[endPos.first].isEmpty()) {
@@ -142,15 +145,19 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
     if(charNum == 0) {
         tmp = _file[startPos.first].takeAt(startPos.second);
         toremove.append(tmp);
-        _textBuffer[startPos.first].removeAt(startPos.second);
+        _textBuffer[startPos.first].takeAt(startPos.second);
     } else {
         while(currChar != charNum) {
             tmp = _file[startPos.first].takeAt(i);
             toremove.append(tmp);
-            _textBuffer[startPos.first].removeAt(i);
+            _textBuffer[startPos.first].takeAt(i);
             currChar++;
         }
     }
+
+//    if(_file[startPos.first].isEmpty()){
+//        _file.removeAt(startPos.first);
+//    }
 
     return toremove;
 }
@@ -467,8 +474,14 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
 
 QPair<int, int> Crdt::findInsertPosition(Char c) {
 
-
-    if(_file.isEmpty() || c.compareTo(_file[0][0]) <= 0) {
+    //Piu' controlli
+    if(_file.isEmpty()) {
+        return QPair<int, int>(0,0);
+    }
+    else if(_file.first().isEmpty()){
+        return QPair<int, int>(0,0);
+    }
+    else if(c.compareTo(_file[0][0]) <= 0){
         return QPair<int, int>(0,0);
     }
 
@@ -704,20 +717,40 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
     _file[index.first].removeAt(index.second);
     _textBuffer[index.first].removeAt(index.second);
 
+
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-        if(!_file[index.first+1].isEmpty()) {
-            mergeRows(index.first);
-        }
+        mergeRows(index.first);
+//        if(!_file[index.first+1].isEmpty()) {
+//            mergeRows(index.first);
+//        }
     }
+
+    return index;
+}
+
+QPair<int,int> Crdt::handleRemoteDeleteServer(const QJsonObject &qjo) {
+
+    Char c = getChar(qjo["content"].toObject());
+    //removeEmptyRows();
+    QPair<int,int> index = findPosition(c);
+    _file[index.first].removeAt(index.second);
+    //_textBuffer[index.first].removeAt(index.second);
+
+    if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
+        //if(!_file[index.first+1].isEmpty()) {
+            mergeServerRows(index.first);
+        //}
+    }
+
     return index;
 }
 
 void Crdt::removeChar(Char c, QPair<int,int> index) {
     _file[index.first].removeAt(index.second);
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-        if(!_file[index.first+1].isEmpty()) {
+        //if(!_file[index.first+1].isEmpty()) {
             mergeServerRows(index.first);
-        }
+        //}
     }
 
     //removeServerEmptyRows();
