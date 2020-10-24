@@ -639,8 +639,14 @@ QPair<int,int> Crdt::findPosition(Char c) {
     QList<Char> currRow, minCurrRow, maxCurrRow;
     QPair<int,int> position;
 
-    if(_file.isEmpty() || c.compareTo(_file[0][0]) < 0) {
-        return QPair<int,int>();
+    if(_file.isEmpty()) {
+        return QPair<int, int>(0,0);
+    }
+    else if(_file.first().isEmpty()){
+        return QPair<int, int>(0,0);
+    }
+    else if(c.compareTo(_file[0][0]) <= 0){
+        return QPair<int, int>(0,0);
     }
 
     if(lastRow.length()-1 < 0) {
@@ -776,6 +782,8 @@ QPair<int,int> Crdt::handleRemoteInsert(const QJsonObject &qjo) {
 
     return position;
 }
+
+
 
 QPair<int,int> Crdt::handleRemoteFormat(const QJsonObject &qjo) {
 

@@ -113,6 +113,7 @@ private:
     void editHandler(WorkerServer& sender, const QJsonObject &doc);
     void inviteHandler(WorkerServer &sender, const QJsonObject &doc);
     void deleteFileHandler(WorkerServer &sender, const QJsonObject &doc);
+    int GetActiveConnectionsNumber(QString fileName, QString effectiveFileName);
 
     //Edit handlers
     void insertionHandler(const QJsonObject &doc, WorkerServer &sender);

@@ -4,6 +4,8 @@
 #include "server.h"
 #include <QEvent>
 #include <QKeyEvent>
+#define LOG 0
+//#define LOG 1
 
 ServerWindow::ServerWindow(QWidget *parent, bool autoStart) :
     QWidget(parent),
@@ -41,6 +43,7 @@ void ServerWindow::toggleStartServer() {
 }
 
 void ServerWindow::logMessage(const QString &msg)  {
-    //ui->logEditor->appendPlainText(msg + '\n');
+    if(LOG)
+        ui->logEditor->appendPlainText(msg + '\n');
 }
 

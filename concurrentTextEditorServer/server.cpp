@@ -661,11 +661,27 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
                     opened++;
                 }
             }
-            if(opened == 1) { //only one people had the file opened => save file in cte
-                saveFile(fileName);
-            }
-            break;
+        break;
         }
+
+    if(GetActiveConnectionsNumber(fileName, effectiveFileName) == 1) { //only one people had the file opened => save file in cte
+        saveFile(fileName);
+    }
+}
+
+int Server::GetActiveConnectionsNumber(QString fileName, QString effectiveFileName){
+
+    int opened = 0;
+
+    for(WorkerServer* worker : m_clients) {
+
+        QList<QString> openedFile = worker->openedFileList();
+        if(openedFile.contains(fileName) || openedFile.contains(effectiveFileName)) {
+            opened++;
+        }
+    }
+
+    return opened;
 }
 
 void Server::saveFile(QString filename) {
@@ -741,15 +757,15 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
 
-//    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
-    QJsonObject newChar = doc["content"].toObject();
+    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
+    //QJsonObject newChar = doc["content"].toObject();
 // /*   NewChar viene parsato e trasformato in Char obj
-    Char c = crdtFile.getChar(newChar);
+    //Char c = crdtFile.getChar(newChar);
 
 // //    // Find correct index with crdt structure
-    QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
+    //QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
 // //    // Keep crdt updated
-    crdtFile.insertChar(c, rowCh);
+   // crdtFile.insertChar(c, rowCh);
 //    int index = crdtFile.calcIndex(rowCh);
 //    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
 //    cteContent.insert(index, newChar);
