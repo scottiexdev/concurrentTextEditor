@@ -54,6 +54,7 @@ public:
     QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
     QPair<int,int> handleRemoteDeleteServer(const QJsonObject &qjo);
     QPair<int,int> handleRemoteFormat(const QJsonObject& qjo);
+    QPair<int,int> handleRemoteFormatServer(const QJsonObject &qjo);
 
     Char _lastChar;
     EditType _lastOperation;

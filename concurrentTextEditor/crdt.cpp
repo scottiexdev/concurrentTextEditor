@@ -803,6 +803,16 @@ QPair<int,int> Crdt::handleRemoteFormat(const QJsonObject &qjo) {
     return index;
 }
 
+QPair<int,int> Crdt::handleRemoteFormatServer(const QJsonObject &qjo) {
+
+    Char c = getChar(qjo["content"].toObject());
+    QPair<int,int> index = findPosition(c);
+    _file[index.first].replace(index.second, c);
+    //_textBuffer[index.first].replace(index.second, QPair<QString,Format>(c._value,c._format));
+    //no need to modify textbuffer, I don't know, maybe Silvio wrote this
+    return index;
+}
+
 Char Crdt::getChar(QJsonObject jsonChar ){
 
     // Estrazione di Char da newChar JSonObject

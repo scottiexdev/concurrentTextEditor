@@ -853,7 +853,7 @@ void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
 //    QJsonObject cteData = cteFile.object();
 //    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
 
-    QPair<int,int> position = crdtFile.handleRemoteFormat(doc);
+    QPair<int,int> position = crdtFile.handleRemoteFormatServer(doc);
 //    QJsonObject formatChar = doc["content"].toObject();
 
 //    cteContent.replace(crdtFile.calcIndex(position), formatChar);
