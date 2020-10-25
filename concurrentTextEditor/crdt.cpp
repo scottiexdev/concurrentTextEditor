@@ -778,7 +778,15 @@ QPair<int,int> Crdt::handleRemoteInsert(const QJsonObject &qjo) {
     QPair<int,int> position = findInsertPosition(c);
     insertChar(c, position);
     insertText(c._value,c._format,position);
-    //_textBuffer.insert(position, QPair<QString,Format>(c._value,c._format));
+
+    return position;
+}
+
+QPair<int,int> Crdt::handleRemoteInsertServer(const QJsonObject &qjo) {
+
+    Char c = getChar(qjo["content"].toObject());
+    QPair<int,int> position = findInsertPosition(c);
+    insertChar(c, position);
 
     return position;
 }
@@ -886,7 +894,12 @@ bool Crdt::calcBeforePosition(QPair<int,int> start, QPair<int,int> & startBefore
 }
 
 bool Crdt::calcAfterPosition(QPair<int,int> end, QPair<int,int> & endAfter) {
-    if(end.second+1 == _file[end.first].length()) { //occhio alle righe insesistneti
+
+    if(_file[end.first].length() == 0) {
+            return false;
+        }
+
+    if(end.second+1 > _file[end.first].length()) { //occhio alle righe insesistneti
         if(end.first + 1 == _file.length()) {
             return false;
         } else {
@@ -895,7 +908,7 @@ bool Crdt::calcAfterPosition(QPair<int,int> end, QPair<int,int> & endAfter) {
         }
     } else {
         endAfter.first = end.first;
-        endAfter.second = end.second + 1;
+        endAfter.second = end.second;
     }
 
     return true;

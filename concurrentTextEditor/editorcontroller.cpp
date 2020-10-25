@@ -203,7 +203,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         QPair<int,int> endAfter;
         if(_crdt.calcAfterPosition(end, endAfter)) {
             QList<Char> chars = _crdt.handleLocalDelete(endAfter,endAfter);
-            emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, start, _isPublic);
+            emit broadcastEditWorker(completeFilename , chars[0], EditType::deletion, endAfter, _isPublic);
         }
     }
 

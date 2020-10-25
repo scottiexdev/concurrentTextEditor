@@ -50,6 +50,7 @@ public:
     void removeServerEmptyRows();
 
     QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
+    QPair<int,int> handleRemoteInsertServer(const QJsonObject &qjo);
     QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
     QPair<int,int> handleRemoteDeleteServer(const QJsonObject &qjo);
     QPair<int,int> handleRemoteFormat(const QJsonObject& qjo);

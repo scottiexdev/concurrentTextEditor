@@ -664,7 +664,8 @@ void Server::userListHandler(WorkerServer &sender, const QJsonObject &doc) {
         break;
         }
 
-    if(GetActiveConnectionsNumber(fileName, effectiveFileName) == 1) { //only one people had the file opened => save file in cte
+    int activeConnections = GetActiveConnectionsNumber(fileName, effectiveFileName);
+    if(activeConnections == 0) { //only one people had the file opened => save file in cte
         saveFile(fileName);
     }
 }
@@ -757,7 +758,7 @@ void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
 
-    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc);
+    QPair<int,int> rowCh = crdtFile.handleRemoteInsertServer(doc);
     //QJsonObject newChar = doc["content"].toObject();
 // /*   NewChar viene parsato e trasformato in Char obj
     //Char c = crdtFile.getChar(newChar);
