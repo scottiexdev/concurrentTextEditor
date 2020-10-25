@@ -72,20 +72,29 @@ void Crdt::handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format) {
 
 QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
     QList<Char> chars;
+    QPair<int,int> posBefore;
     bool newRowRemoved = false;
+    bool merge = true;
     if(startPos.first != endPos.first) { //compare rows
         // delete chars on first line from startPos.ch to end of line
         newRowRemoved = true;
         chars = deleteMultipleRows(startPos, endPos);
+
+        if(startPos.first + 1 < _file.length()) {
+            if(calcBeforePosition(startPos, posBefore)) {
+                QChar val = _file[posBefore.first][posBefore.second]._value;
+                if(val != '\n' && val != '\r') {
+                    mergeRows(startPos.first);
+                }
+            }
+        }
+
     } else {
         chars = deleteSingleLine(startPos, endPos);
 
-        if(chars[chars.length()-1]._value == '\r' || chars[chars.length()-1]._value == '\n')
-            newRowRemoved = true;
+        if(chars[chars.length()-1]._value == '\r' || chars[chars.length()-1]._value == '\n'){
+                mergeRows(startPos.first);
         }
-
-    if(newRowRemoved && startPos.first+1 < _file.length()) { //maybe check if last line
-        mergeRows(startPos.first);
     }
 
     return chars;
@@ -96,7 +105,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
 QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos) {
     QPair<int,int> lastRow(startPos.first+1, endPos.second);
     QList<Char> chars = firstRowToEndLine(startPos);
-    deleteSingleLine(startPos, QPair<int,int>(startPos.first, _file[startPos.first].length()));
+    deleteSingleLine(startPos, QPair<int,int>(startPos.first, _file[startPos.first].length()-1));
     int row=0;
     int rowsToDelete = endPos.first - startPos.first - 1;
     while(row != rowsToDelete) {
@@ -134,7 +143,7 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
         toremove.append(tmp);
         _textBuffer[startPos.first].takeAt(startPos.second);
     } else {
-        while(currChar != charNum) {
+        while(currChar <= charNum) {
             tmp = _file[startPos.first].takeAt(i);
             toremove.append(tmp);
             _textBuffer[startPos.first].takeAt(i);
@@ -167,7 +176,7 @@ QList<Char> Crdt::firstRowToEndLine(QPair<int, int> startPos){
 QList<Char> Crdt::lastRowToEndPos(QPair<int, int> endPos){
 
     QList<Char> buff = _file[endPos.first];
-    QList<Char> res(buff.mid(0, endPos.second));
+    QList<Char> res(buff.mid(0, endPos.second+1));
     return res;
 }
 

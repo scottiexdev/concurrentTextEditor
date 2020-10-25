@@ -29,7 +29,7 @@ void EditorController::keyPressEvent(QKeyEvent *key)
     QPair<int, int> anchorPosition = QPair<int,int>(temp.blockNumber(),temp.positionInBlock());
     QPair<int,int> cursorPosition = QPair<int,int>(this->textCursor().blockNumber(),this->textCursor().positionInBlock());
     //int deltaPositions = abs(cursorPosition - anchor);
-    QPair<int,int> start, end;
+    QPair<int,int> start, end, endBefore;
     Format currentFormat =_currentFormat;
     //get format
     QTextCharFormat charFormat;
@@ -64,7 +64,9 @@ void EditorController::keyPressEvent(QKeyEvent *key)
          //cancel the selection (if there is one)
         if(start!=end) {
             //Iterate over characters to be removed
-            deleteSelection(start, end);
+            if(_crdt.calcBeforePosition(end, endBefore)) {
+                deleteSelection(start, endBefore);
+            }
         }
         QTextEdit::keyPressEvent(key);
         return;
@@ -79,7 +81,9 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             return;
         }
         if(start!=end) {
-            deleteSelection(start, end);
+            if(_crdt.calcBeforePosition(end, endBefore)) {
+                deleteSelection(start, endBefore);
+            }
             //for insert we need to set the position to start, either it's out of range
             cursorPosition=start;
         }
@@ -109,7 +113,9 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         setCurrentFormat(charFormat, cursorPosition);
         //cancel the selection (if there is one)
         if(start!=end) {
-            deleteSelection(start, end);
+            if(_crdt.calcBeforePosition(end, endBefore)) {
+                deleteSelection(start, endBefore);
+            }
             cursorPosition=start;
         }
 
@@ -122,7 +128,10 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     // Handle selection deletion with backspace or delete key
     if((pressed_key == Qt::Key_Backspace || pressed_key == Qt::Key_Delete) && start!=end) {
-        deleteSelection(start, end);
+        if(_crdt.calcBeforePosition(end, endBefore)) {
+            deleteSelection(start, endBefore);
+        }
+
     }
 
     // Handle backspace deletion
