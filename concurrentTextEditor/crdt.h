@@ -46,15 +46,10 @@ public:
 
     //  Deletion
     void deleteChar(Char val, int index);
-    void removeEmptyRows();
-    void removeServerEmptyRows();
 
-    QPair<int,int> handleRemoteInsert(const QJsonObject& qjo);
-    QPair<int,int> handleRemoteInsertServer(const QJsonObject &qjo);
-    QPair<int,int> handleRemoteDelete(const QJsonObject& qjo);
-    QPair<int,int> handleRemoteDeleteServer(const QJsonObject &qjo);
-    QPair<int,int> handleRemoteFormat(const QJsonObject& qjo);
-    QPair<int,int> handleRemoteFormatServer(const QJsonObject &qjo);
+    QPair<int,int> handleRemoteInsert(const QJsonObject& qjo, bool client = true);
+    QPair<int,int> handleRemoteDelete(const QJsonObject& qjo, bool client = true);
+    QPair<int,int> handleRemoteFormat(const QJsonObject& qjo, bool client = true);
 
     Char _lastChar;
     EditType _lastOperation;
@@ -77,6 +72,7 @@ public:
     QList<Identifier> findPosBefore(QPair<int, int> rowCh);
     QList<Identifier> findPosAfter(QPair<int, int> rowCh);
     bool containsReturn(QList<Char> chars);
+    bool cornerCaseHandler(Char c);
 
     QList<Char> firstRowToEndLine(QPair<int, int> rowCh);
     QList<Char> lastRowToEndPos(QPair<int,int> endPos);

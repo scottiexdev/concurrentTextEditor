@@ -90,6 +90,21 @@ void Server::notifyServerDown() {
     broadcastAll(serverDown);
 }
 
+void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
+
+    dest.sendJson(msg);
+}
+
+void Server::jsonReceived(WorkerServer& sender, const QJsonObject &doc) {
+
+    //emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
+
+    if(sender.userName().isEmpty())
+        return jsonFromLoggedOut(sender, doc);
+
+    jsonFromLoggedIn(sender, doc);
+}
+
 
 void Server::sendListFile(WorkerServer &sender, bool isPublic) {
 
@@ -165,21 +180,6 @@ QJsonObject Server::createFileData(QFileInfoList list, bool isPublic){
     }
 
     return file_data;
-}
-
-void Server::sendJson(WorkerServer& dest, const QJsonObject &msg) {
-
-    dest.sendJson(msg);
-}
-
-void Server::jsonReceived(WorkerServer& sender, const QJsonObject &doc) {
-
-    emit logMessage("JSON received " + QString::fromUtf8(QJsonDocument(doc).toJson()));
-
-    if(sender.userName().isEmpty())
-        return jsonFromLoggedOut(sender, doc);
-
-    jsonFromLoggedIn(sender, doc);
 }
 
 void Server::stopServer() {
@@ -464,14 +464,8 @@ void Server::sendFile(WorkerServer& sender, QString fileName, bool isPublic){
         _openedFiles.insert(fileName, file);
     }
 
-//    if(!_openedFiles.contains(fileName)){
-
-//    }
-
     sender.addOpenFile(fileName);
-
     sendJson(sender, msgF);       // Manda file in formato Json, unparsed
-
 }
 
 void Server::logQueryResults(QSqlQuery executedQuery){
@@ -735,137 +729,57 @@ void Server::editHandler(WorkerServer &sender, const QJsonObject &doc) {
 }
 void Server::insertionHandler(const QJsonObject &doc, WorkerServer &sender){
 
-    //Open file from database - cteFile
     QString filename = doc["fileName"].toString();
     bool isPublic= doc["access"].toBool();
 
     // Change application working directory based on public or private file write on disk
     checkPublic(filename, sender.userName(), isPublic);
 
-    //Open Json file
-//    QFile file(filename);
-//    file.open(QIODevice::ReadWrite);
-//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-//    file.close();
-    if(filename.split("/").count() == 2) {
+    if(filename.split("/").count() == 2)
         filename = filename.split("/")[1];
-    }
+
     Crdt crdtFile = _openedFiles.value(filename);
 
-//    //Estrazione campi del json
-//    QJsonObject cteData = cteFile.object();
-//    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
-
     // Nuovo char viene preso da "doc" (JsonObject ricevuto) e indice relativo a _file
-
-    QPair<int,int> rowCh = crdtFile.handleRemoteInsertServer(doc);
-    //QJsonObject newChar = doc["content"].toObject();
-// /*   NewChar viene parsato e trasformato in Char obj
-    //Char c = crdtFile.getChar(newChar);
-
-// //    // Find correct index with crdt structure
-    //QPair<int,int> rowCh = crdtFile.findInsertPosition(c);
-// //    // Keep crdt updated
-   // crdtFile.insertChar(c, rowCh);
-//    int index = crdtFile.calcIndex(rowCh);
-//    // inserzione al posto giusto nel JsonArray da updatare per il file conservato sul server
-//    cteContent.insert(index, newChar);
-
-//    // Update data structures
-//    cteData["content"] = cteContent;
-//    cteFile.setObject(cteData);
+    QPair<int,int> rowCh = crdtFile.handleRemoteInsert(doc, false);
     _openedFiles.insert(filename, crdtFile);
-
-    // Write Json file to disk
-//    file.open(QIODevice::WriteOnly);
-//    file.write(cteFile.toJson());
-//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }
 
 void Server::deletionHandler(const QJsonObject &doc, WorkerServer &sender){
 
-    //Open file from database - cteFile
     QString filename = doc["fileName"].toString();
     bool isPublic = doc["access"].toBool();
 
      checkPublic(filename, sender.userName(), isPublic);
 
-
-    //Open Json file
-//    QFile file(filename);
-//    file.open(QIODevice::ReadWrite);
-//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-//    file.close();
-
-    if(filename.split("/").count() == 2) {
+    if(filename.split("/").count() == 2)
         filename = filename.split("/")[1];
-    }
 
     Crdt crdtFile = _openedFiles.value(filename);
-
-    //Estrazione campi del json
-/*    QJsonObject cteData = cteFile.object();
-    QJsonArray cteContent = cteData["content"].toArray();*/ //Array di Char da parsare
-
-    // Char da eliminare viene preso da "doc" (JsonObject ricevuto) insieme all'indice
-    //    Char c = crdtFile.getChar(doc["content"].toObject());
-//    QPair<int,int> index = crdtFile.findPosition(c);
-//    crdtFile.removeChar(c,index);
-
-    QPair<int,int> position = crdtFile.handleRemoteDeleteServer(doc);
+    QPair<int,int> position = crdtFile.handleRemoteDelete(doc, false);
 
     // Update data structures (remote delete)
-//    cteContent.removeAt(crdtFile.calcIndex(position));
-//    cteData["content"] = cteContent;
-//    cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
-
-    // Write Json file to disk
-//    file.open(QIODevice::WriteOnly);
-//    file.write(cteFile.toJson());
-//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }
 
 void Server::formatHandler(const QJsonObject &doc, WorkerServer &sender) {
+
     QString filename = doc["fileName"].toString();
     bool isPublic= doc["access"].toBool();
 
     checkPublic(filename, sender.userName(), isPublic);
 
-
-    //Open Json file
-//    QFile file(filename);
-//    file.open(QIODevice::ReadWrite);
-//    QJsonDocument cteFile = QJsonDocument::fromJson(file.readAll());
-//    file.close();
-
-    if(filename.split("/").count() == 2) {
+    if(filename.split("/").count() == 2)
         filename = filename.split("/")[1];
-    }
 
     Crdt crdtFile = _openedFiles.value(filename);
+    QPair<int,int> position = crdtFile.handleRemoteFormat(doc, false);
 
-    //Estrazione campi del json
-//    QJsonObject cteData = cteFile.object();
-//    QJsonArray cteContent = cteData["content"].toArray(); //Array di Char da parsare
-
-    QPair<int,int> position = crdtFile.handleRemoteFormatServer(doc);
-//    QJsonObject formatChar = doc["content"].toObject();
-
-//    cteContent.replace(crdtFile.calcIndex(position), formatChar);
-
-//    cteData["content"] = cteContent;
-//    cteFile.setObject(cteData);
     _openedFiles.insert(filename, crdtFile);
-
-//    // Write Json file to disk
-//    file.open(QIODevice::WriteOnly);
-//    file.write(cteFile.toJson());
-//    file.close();
 
     broadcastOnlyOpenedFile(filename, doc, sender);
 }
@@ -889,10 +803,8 @@ void Server::inviteHandler(WorkerServer &sender, const QJsonObject &doc) {
     QDir linksDir = QDir(linksPath);
 
     // Check directory existence and create it if it doesn't exist
-    if(!linksDir.exists()){
-        // does this work?
+    if(!linksDir.exists())
         QDir().mkdir(linksDir.path());
-    }
 
     QDir::setCurrent(linksPath);
 
@@ -1003,7 +915,6 @@ void Server::propicHandler(const QJsonObject &doc){
     img.save(_defaultIconPath+doc["filename"].toString());
 
     if(encoded.isNull() || encoded.isEmpty()) {
-        // TODO: json che invii messaggio di immagine non supportata
     } else {
         // eseguo update nel db
         QSqlQuery q;

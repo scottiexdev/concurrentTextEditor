@@ -17,7 +17,6 @@ bool Crdt::parseCteFile(QJsonDocument unparsedFile){
     return true;
 }
 
-
 QList<QList<QPair<QString, Format>>> Crdt::parseFile(QJsonDocument unparsedFile){
 
     //costruzione della lista di Char
@@ -53,12 +52,9 @@ QList<QList<QPair<QString, Format>>> Crdt::parseFile(QJsonDocument unparsedFile)
         Char c = getChar(tmpChar.toObject());
 
         //Find index for new char and insert it into _file Struct and _textBuffer
-        //NOT NECESSARY ANYMORE, THE FILE IS WRITTEN IN ORDER
         QPair<int,int> rowCh = findInsertPosition(c);
         insertChar(c, rowCh);
         insertText(c._value, c._format, rowCh);
-//        _file.append(c);
-//        _textBuffer.append(QPair<QString, Format>(c._value, c._format));
     }
 
     return _textBuffer;
@@ -77,7 +73,6 @@ void Crdt::handleLocalInsert(QChar val, QPair<int, int> rowCh, Format format) {
 QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
     QList<Char> chars;
     bool newRowRemoved = false;
-    //removeEmptyRows();
     if(startPos.first != endPos.first) { //compare rows
         // delete chars on first line from startPos.ch to end of line
         newRowRemoved = true;
@@ -89,14 +84,10 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
             newRowRemoved = true;
         }
 
-
-
     if(newRowRemoved && startPos.first+1 != _file.length()) { //maybe check if last line
         mergeRows(startPos.first);
-//        if(!_file[startPos.first + 1].isEmpty()) {
-//            mergeRows(startPos.first);
-//        }
     }
+
     return chars;
 }
 
@@ -114,12 +105,6 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
         row++;
     }
 
-//    for(row = startPos.first + 1; row < endPos.first; row++) {
-//        chars.append(_file[row]);
-//        _file[row].clear();
-//        _textBuffer[row].clear();
-//    }
-
     if(!_file[startPos.first+1].isEmpty()) {
         chars.append(lastRowToEndPos(lastRow)); //take the chars of the last selected row til endPos.ch
         deleteSingleLine(QPair<int,int>(lastRow.first,0), lastRow);
@@ -128,10 +113,6 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
         }
     }
 
-//    if(!_file[endPos.first].isEmpty()) {
-//        chars.append(lastRowToEndPos(endPos)); //take the chars of the last selected row til endPos.ch
-//        deleteSingleLine(QPair<int,int>(endPos.first,0), endPos);
-//    }
     return chars;
 }
 
@@ -155,10 +136,6 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
         }
     }
 
-//    if(_file[startPos.first].isEmpty()){
-//        _file.removeAt(startPos.first);
-//    }
-
     return toremove;
 }
 
@@ -173,23 +150,17 @@ void Crdt::mergeServerRows(int row) {
     QList<Char> rowAfterFile = _file.takeAt(row+1);
     _file[row].append(rowAfterFile);
 }
-//QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endPos) {
 
-//    Char c = _file.takeAt(index);
-//    _textBuffer.removeAt(index);
-
-//    _lastChar = c;
-//    _lastOperation = EditType::deletion;
-//}
 
 QList<Char> Crdt::firstRowToEndLine(QPair<int, int> startPos){
-    // TODO: capire se va bene così oppure cambiarla concettualmente.
+
     QList<Char> buff = _file[startPos.first];
     QList<Char> res(buff.mid(startPos.second));
     return res;
 }
 
 QList<Char> Crdt::lastRowToEndPos(QPair<int, int> endPos){
+
     QList<Char> buff = _file[endPos.first];
     QList<Char> res(buff.mid(0, endPos.second));
     return res;
@@ -198,16 +169,6 @@ QList<Char> Crdt::lastRowToEndPos(QPair<int, int> endPos){
 QList<Char> Crdt::handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endPos, Format format) {
 
     QList<Char> chars;
-//    int j = startPos.second;
-//    for(int i = startPos.first; i<endPos.first;i++) {
-//        Char c = _file[i][j];
-//        c._format = format;
-//        replaceChar(c,QPair<int,int>(i,j));
-//        j++;
-//        if(j==_file[i].length())
-//            j=0;
-//        chars.append(c);
-//    }
 
     if(startPos.first != endPos.first) { //compare rows
         // delete chars on first line from startPos.ch to end of line
@@ -217,19 +178,15 @@ QList<Char> Crdt::handleLocalFormat(QPair<int,int> startPos, QPair<int,int> endP
     }
 
     return chars;
-//    Char c = _file[rowCh.first][rowCh.second];
-//    c._format = format;
-//    replaceChar(c, rowCh);
-
-//    _lastChar = c;
-//    _lastOperation = EditType::format;
 }
 
 QList<Char> Crdt::chFormatMultipleRows(QPair<int,int> startPos, QPair<int,int> endPos, Format format) {
+
     QList<Char> chars;
+    int row;
+
     chFormatSingleLine(startPos, QPair<int,int>(startPos.first, _file[startPos.first].length()), format);
     chars = firstRowToEndLine(startPos);
-    int row;
     for(row = startPos.first + 1; row < endPos.first; row++) {
         chFormatSingleLine(QPair<int,int>(row,0), QPair<int,int>(row, _file[row].length()), format);
         chars.append(_file[row]);
@@ -239,6 +196,7 @@ QList<Char> Crdt::chFormatMultipleRows(QPair<int,int> startPos, QPair<int,int> e
         chFormatSingleLine(QPair<int,int>(endPos.first,0), endPos, format);
         chars.append(lastRowToEndPos(endPos)); //take the chars of the last selected row til endPos.ch
     }
+
     return chars;
 }
 
@@ -262,14 +220,8 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
     int row = rowCh.first;
     int ch = rowCh.second;
 
-    //non so cosa faccia, non me frega niente
-//    if(row == _file.length()-1 && row !=0) {
-//        _file[row].append(Char());
-//    }
-
     if(row >= _file.length()) { //means that it is a new line
         _file.append(QList<Char>());
-        //_file[row].append(c);
     }
 
     if(c._value == '\n' || c._value == '\r') {
@@ -277,31 +229,30 @@ void Crdt::insertChar(Char c, QPair<int,int> rowCh) {
         if(rowAfter.length() == 0) {
             _file[row].insert(ch, c);
             _file.insert(row+1, QList<Char>());
-//            if(row+1 == _file.length()) {
-//                _file.append(QList<Char>());
-//            }
         } else {
             _file[row].insert(ch, c);
             splitRows(row, ch);
-//            if(row+1 == _file.length()) {
-//                _file.append(QList<Char>());
-//            }
             _file.insert(row+1, rowAfter); //if there are characters in next lines? Scala perché è una lista
         }
-    } else {
+    }
+    else {
         _file[row].insert(ch, c);
     }
 }
 
 void Crdt::splitRows(int row, int column) {
+
     int i = column+1;
+
     while(i != _file[row].length()) {
         _file[row].removeAt(i);
     }
 }
 
 void Crdt::splitRowsBuf(int row, int column) {
+
     int i = column+1;
+
     while(i != _textBuffer[row].length()) {
         _textBuffer[row].removeAt(i);
     }
@@ -322,15 +273,14 @@ void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
         if(rowAfter.length() == 0) {
             _textBuffer[row].insert(ch, c);
             _textBuffer.insert(row+1, QList<QPair<QString,Format>>());
-//            if(row+1 == _textBuffer.length()) {
-//                _textBuffer.append(QList<QPair<QString,Format>>());
-//            }
-        } else {
+        }
+        else {
             _textBuffer[row].insert(ch,c);
             splitRowsBuf(row,ch);
             _textBuffer.insert(row+1, rowAfter);
         }
-    } else {
+    }
+    else {
         _textBuffer[row].insert(ch,c);
     }
 }
@@ -338,27 +288,21 @@ void Crdt::insertText(QChar val, Format format, QPair<int,int> rowCh) {
 Char Crdt::generateChar(QChar val, QPair<int, int> rowCh, Format format) {
 
     QList<Identifier> posBefore = findPosBefore(rowCh);
-
     QList<Identifier> posAfter = findPosAfter(rowCh);
     QList<Identifier> newPos = generatePosBetween(posBefore, posAfter, QList<Identifier>());
-//    if(index-1 >= 0)
-//        posBefore = _file.at(index - 1)._position;
-//    if(index < _file.length())
-//        posAfter = _file.at(index)._position;
-
-    //TODO: version counter per globality
-    //const localCounter = this.vector.localVersion.counter;
 
     return Char(val, 0, _siteID, newPos, format);
 }
 
 QList<Identifier> Crdt::findPosBefore(QPair<int, int> rowCh) {
+
     int row = rowCh.first;
     int ch = rowCh.second;
 
     if(ch == 0 && row == 0) {
         return QList<Identifier>();
-    } else if (ch == 0 && row != 0) { //first char of the row, but not the first one
+    }
+    else if (ch == 0 && row != 0) { //first char of the row, but not the first one
         row -= 1;
         ch = _file[row].length();
     }
@@ -367,9 +311,11 @@ QList<Identifier> Crdt::findPosBefore(QPair<int, int> rowCh) {
 }
 
 QList<Identifier> Crdt::findPosAfter(QPair<int, int> rowCh) {
+
     int row = rowCh.first;
     int ch = rowCh.second;
     int numRows = _file.length();//in theory this is the number of rows, debug needed
+
     if(numRows == 0) {
         return QList<Identifier>();
     }
@@ -377,10 +323,12 @@ QList<Identifier> Crdt::findPosAfter(QPair<int, int> rowCh) {
 
     if((row == numRows-1) && (ch == numChars)) {
         return QList<Identifier>();
-    } else if ((row < numRows-1) && (ch == numChars)) {
+    }
+    else if ((row < numRows-1) && (ch == numChars)) {
         row += 1;
         ch = 0;
-    } else if ((row > numRows -1 && ch == 0)) {
+    }
+    else if ((row > numRows -1 && ch == 0)) {
         return QList<Identifier>();
     }
 
@@ -472,18 +420,28 @@ int Crdt::generateIdBetween(int min, int max, int boundaryStrategy) {
     return qFloor(QRandomGenerator().bounded((double)1) * (max - min)) + min;
 }
 
-QPair<int, int> Crdt::findInsertPosition(Char c) {
+bool Crdt::cornerCaseHandler(Char c){
 
-    //Piu' controlli
+    bool cornerCase = false;
     if(_file.isEmpty()) {
-        return QPair<int, int>(0,0);
+        cornerCase = true;
     }
     else if(_file.first().isEmpty()){
-        return QPair<int, int>(0,0);
+        cornerCase = true;
     }
     else if(c.compareTo(_file[0][0]) <= 0){
-        return QPair<int, int>(0,0);
+        cornerCase = true;
     }
+    else
+         cornerCase = false;
+
+    return cornerCase;
+}
+
+QPair<int, int> Crdt::findInsertPosition(Char c) {
+
+    if(cornerCaseHandler(c))
+        return QPair<int, int>(0,0);
 
     int minRow = 0;
     int totalRows = _file.length();
@@ -574,12 +532,6 @@ int Crdt::findInsertIndexInLine(Char c, QList<Char> row) {
 
 }
 
-//useless, never called
-//void Crdt::updateFileAtPosition(int index, Char c){
-//    _file.insert(index, c);
-//}
-
-
 QString Crdt::getFileName(){
     return _fileName;
 }
@@ -630,6 +582,7 @@ QPair<int,int> Crdt::findIndexInLine(Char c, QList<Char> row, int rowIndex){
 }
 
 QPair<int,int> Crdt::findPosition(Char c) {
+
     int minRow = 0;
     int totalRows = _file.length();
     int maxRow = totalRows - 1;
@@ -639,15 +592,8 @@ QPair<int,int> Crdt::findPosition(Char c) {
     QList<Char> currRow, minCurrRow, maxCurrRow;
     QPair<int,int> position;
 
-    if(_file.isEmpty()) {
+    if(cornerCaseHandler(c))
         return QPair<int, int>(0,0);
-    }
-    else if(_file.first().isEmpty()){
-        return QPair<int, int>(0,0);
-    }
-    else if(c.compareTo(_file[0][0]) <= 0){
-        return QPair<int, int>(0,0);
-    }
 
     if(lastRow.length()-1 < 0) {
         QList<Char> lastRow2 = _file[maxRow-1];
@@ -695,122 +641,54 @@ QPair<int,int> Crdt::findPosition(Char c) {
     return position;
 }
 
-void Crdt::removeEmptyRows() {
-    for(int i = 0; i<_file.length(); i++) {
-        if(_file.at(i).length() == 0) {
-            _file.removeAt(i);
-            i--;
-        }
-    }
 
-    for(int i = 0; i<_textBuffer.length(); i++) {
-        if(_textBuffer.at(i).length() == 0) {
-            _textBuffer.removeAt(i);
-            i--;
-        }
-    }
-//    if(_file.length() == 0) {
-//        _file.append(QList<Char>()); //forse non necessario dato che viene gestita da tutti
-//        _textBuffer.append(QList<QPair<QString,Format>>());
-//    }
-}
-
-QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo) {
+QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo, bool client) {
 
     Char c = getChar(qjo["content"].toObject());
-    //removeEmptyRows();
     QPair<int,int> index = findPosition(c);
     _file[index.first].removeAt(index.second);
-    _textBuffer[index.first].removeAt(index.second);
 
+    if(client)
+        _textBuffer[index.first].removeAt(index.second);
 
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
         mergeRows(index.first);
-//        if(!_file[index.first+1].isEmpty()) {
-//            mergeRows(index.first);
-//        }
     }
 
     return index;
 }
 
-QPair<int,int> Crdt::handleRemoteDeleteServer(const QJsonObject &qjo) {
+QPair<int,int> Crdt::handleRemoteInsert(const QJsonObject &qjo, bool client) {
 
     Char c = getChar(qjo["content"].toObject());
-    //removeEmptyRows();
-    QPair<int,int> index = findPosition(c);
-    _file[index.first].removeAt(index.second);
-    //_textBuffer[index.first].removeAt(index.second);
+    QPair<int,int> position = findInsertPosition(c);
+    insertChar(c, position);
+    if(client)
+        insertText(c._value,c._format,position);
 
-    if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-        //if(!_file[index.first+1].isEmpty()) {
-            mergeServerRows(index.first);
-        //}
-    }
+    return position;
+}
+
+
+QPair<int,int> Crdt::handleRemoteFormat(const QJsonObject &qjo, bool client) {
+
+    Char c = getChar(qjo["content"].toObject());
+    QPair<int,int> index = findPosition(c);
+    _file[index.first].replace(index.second, c);
+    if(client)
+        _textBuffer[index.first].replace(index.second, QPair<QString,Format>(c._value,c._format));
 
     return index;
 }
+
 
 void Crdt::removeChar(Char c, QPair<int,int> index) {
+
     _file[index.first].removeAt(index.second);
+
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-        //if(!_file[index.first+1].isEmpty()) {
             mergeServerRows(index.first);
-        //}
     }
-
-    //removeServerEmptyRows();
-}
-
-void Crdt::removeServerEmptyRows() {
-    for(int i = 0; i<_file.length(); i++) {
-        if(_file.at(i).length() == 0) {
-            _file.removeAt(i);
-            i--;
-        }
-    }
-}
-
-
-QPair<int,int> Crdt::handleRemoteInsert(const QJsonObject &qjo) {
-
-    Char c = getChar(qjo["content"].toObject());
-    QPair<int,int> position = findInsertPosition(c);
-    insertChar(c, position);
-    insertText(c._value,c._format,position);
-
-    return position;
-}
-
-QPair<int,int> Crdt::handleRemoteInsertServer(const QJsonObject &qjo) {
-
-    Char c = getChar(qjo["content"].toObject());
-    QPair<int,int> position = findInsertPosition(c);
-    insertChar(c, position);
-
-    return position;
-}
-
-
-
-QPair<int,int> Crdt::handleRemoteFormat(const QJsonObject &qjo) {
-
-    Char c = getChar(qjo["content"].toObject());
-    QPair<int,int> index = findPosition(c);
-    _file[index.first].replace(index.second, c);
-    _textBuffer[index.first].replace(index.second, QPair<QString,Format>(c._value,c._format));
-    //no need to modify textbuffer, I don't know, maybe Silvio wrote this
-    return index;
-}
-
-QPair<int,int> Crdt::handleRemoteFormatServer(const QJsonObject &qjo) {
-
-    Char c = getChar(qjo["content"].toObject());
-    QPair<int,int> index = findPosition(c);
-    _file[index.first].replace(index.second, c);
-    //_textBuffer[index.first].replace(index.second, QPair<QString,Format>(c._value,c._format));
-    //no need to modify textbuffer, I don't know, maybe Silvio wrote this
-    return index;
 }
 
 Char Crdt::getChar(QJsonObject jsonChar ){
@@ -841,7 +719,6 @@ QJsonObject Crdt::setChar(Char c) {
     jsonChar["format"] = QJsonValue(c._format);
     jsonChar["siteID"] = QJsonValue(c._siteID.toString());
     jsonChar["counter"] = QJsonValue(c._counter);
-    //prossime due righe necessarie, altrimenti la lettura del json esplode
     jsonChar["row"] = 0;
     jsonChar["column"] = 0;
 

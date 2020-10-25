@@ -55,7 +55,7 @@ void WorkerServer::receiveJson() {
             }
             //loop and try to read more JSON
         } else {
-            break; //the read dailed, socket go back to the stat before the transaction and we exit the loop
+            break;
         }
     }
 }

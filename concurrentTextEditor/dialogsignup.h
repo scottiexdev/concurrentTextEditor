@@ -12,6 +12,7 @@
 #include <QBuffer>
 #include  <QStandardPaths>
 #include "workerclient.h"
+#define LOCAL_HOST 0
 
 namespace Ui {
 class dialogsignup;

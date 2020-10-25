@@ -31,8 +31,13 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     ui->pushButtonLogin->setText("Connecting...");
     ui->pushButtonLogin->repaint();
 
-    //if(!_workerClient->connectToServer(QHostAddress::LocalHost, 8888)) {
-    if(!_workerClient->connectToServer(QHostAddress("109.115.20.249"), 8888)) {
+    bool success = false;
+    if(LOCAL_HOST)
+        success = _workerClient->connectToServer(QHostAddress::LocalHost, 8888);
+    else
+        success = _workerClient->connectToServer(QHostAddress("109.115.20.249"), 8888);
+
+    if(!success) {
         QMessageBox::warning(this, "Error", "Server is not responding");
         ui->pushButtonLogin->setEnabled(true);
         ui->pushButtonLogin->setText("Login");

@@ -47,10 +47,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
 
     //take selection if there is one
     takeSelection(cursorPosition, anchorPosition, start, end);
-//    if(deltaPositions != 0){
-//        start = anchor > cursorColumn ? cursorPosition : anchorPosition;
-//        end = start == anchorPosition ? cursorPosition : anchorPosition;
-//    }
 
     //ctrl-c handler to avoid "HeartBug"
     if(key->matches(QKeySequence::Copy) || pressed_key == Qt::Key_Copy){
@@ -88,19 +84,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             cursorPosition=start;
         }
 
-//        if(!clipText.isEmpty() && !clipText.isNull()) {
-//            _clipRichText.clear();
-//            foreach(QChar clipC, clipText) {
-//                _clipRichText.append(QPair<QString, Format>(QString(clipC),Format::plain));
-//            }
-//        }
-//        if(_clipRichText.isEmpty()) {
-//            QClipboard* clipboard = QApplication::clipboard();
-//            QString clipText = clipboard->text();
-//            if(clipText.isNull() || clipText.isEmpty()) {
-//                return;
-//            } else {
-//                // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
         for(int writingIndex = 0; writingIndex <  clipText.length(); writingIndex++){
             //setCurrentFormat(charFormat, cursorPosition);
             QChar val = clipText[writingIndex];
@@ -116,45 +99,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
             setFormat(charFormat, charF);
         }
         this->textCursor().insertText(clipText,charFormat);
-//            }
-//        } else {
-            // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
-//            for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
-//                //setCurrentFormat(charFormat, cursorPosition);
-//                QChar val = _clipRichText[writingIndex].first[0];
-//                Format charF = _clipRichText[writingIndex].second;
-//                _crdt.handleLocalInsert(val, cursorPosition, charF);
-//                emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-//                if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
-//                    cursorPosition.first++;
-//                    cursorPosition.second = 0;
-//                } else {
-//                    cursorPosition.second++;
-//                }
-//                setFormat(charFormat, charF);
-//                this->textCursor().insertText(val,charFormat);
-//            }
-
-
-
-//        // Write clipboard text into crdt and broadcast edit: da fare una funzione a parte per modulare un po'
-//        for(int writingIndex = 0; writingIndex <  _clipRichText.length(); writingIndex++){
-//            //setCurrentFormat(charFormat, cursorPosition);
-//            QChar val = _clipRichText[writingIndex].first[0];
-//            Format charF = _clipRichText[writingIndex].second;
-//            _crdt.handleLocalInsert(val, cursorPosition, charF);
-//            emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-//            if(_clipRichText[writingIndex].first[0] == '\n' || _clipRichText[writingIndex].first[0] == '\r' ) {
-//                cursorPosition.first++;
-//                cursorPosition.second = 0;
-//            } else {
-//                cursorPosition.second++;
-//            }
-//            setFormat(charFormat, charF);
-//            this->textCursor().insertText(val,charFormat);
-//        }
-//        //this->textCursor().insertText(clipText, charFormat);
-
 
         return;
     }
@@ -172,8 +116,6 @@ void EditorController::keyPressEvent(QKeyEvent *key)
         _crdt.handleLocalInsert(key->text().data()[0], cursorPosition, currentFormat);
         this->textCursor().insertText(key->text().data()[0], charFormat);
         emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, cursorPosition, _isPublic);
-
-
 
         return;
     }
@@ -239,12 +181,7 @@ void EditorController::deleteSelection(QPair<int,int> start, QPair<int,int> end)
     QList<Char> chars = _crdt.handleLocalDelete(start, end);
     foreach (Char c, chars) {
         emit broadcastEditWorker(completeFilename , c, EditType::deletion, QPair<int,int>(), _isPublic);
-        //_crdt.calcBeforePosition(end, end);
     }
-//    for(int floatingCursor =  end; floatingCursor > start; floatingCursor--) {
-//        _crdt.handleLocalDelete(floatingCursor - 1);
-//        emit broadcastEditWorker(completeFilename , _crdt._lastChar, _crdt._lastOperation, floatingCursor - 1, _isPublic);
-//    }
 }
 
 QList<QPair<QString,Format>> EditorController::getRichClip(QPair<int,int> start, QPair<int,int> end) {

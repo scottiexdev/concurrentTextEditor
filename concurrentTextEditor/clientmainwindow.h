@@ -10,6 +10,7 @@
 #include "dialogsignup.h"
 #include "workerclient.h"
 #include "loggedinmainwindow.h"
+#define LOCAL_HOST 0
 
 
 QT_BEGIN_NAMESPACE
