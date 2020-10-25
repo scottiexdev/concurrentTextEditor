@@ -361,12 +361,12 @@ void EditorController::setCurrentFormat(QTextCharFormat& charFormat, QPair<int,i
     Format currentFormat;
     pos.second -= 1;
 
-    if(this->textCursor().position() == 0) {
-        currentFormat = _currentFormat;
-    }
-    else {
-        currentFormat = _crdt.getCurrentFormat(pos); //forse la position.second va -1
-    }
+//    if(this->textCursor().position() == 0) {
+//        currentFormat = _currentFormat;
+//    }
+//    else {
+//        currentFormat = _crdt.getCurrentFormat(pos); //forse la position.second va -1
+//    }
 
     charFormat.setBackground(Qt::white);
     setFormat(charFormat, _currentFormat);

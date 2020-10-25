@@ -58,8 +58,7 @@ public:
     void updateFileAtPosition(int index, Char c);
     QPair<int,int> findIndexInLine(Char c, QList<Char> row, int pos);
 
-    void mergeRows(int row);
-    void mergeServerRows(int row);
+    void mergeRows(int row, bool client = true);
     void splitRows(int row, int column);
     void splitRowsBuf(int row, int column);
     QList<Char> deleteSingleLine(QPair<int,int> startPos, QPair<int,int> endPos);

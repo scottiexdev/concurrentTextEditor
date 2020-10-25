@@ -139,23 +139,22 @@ QList<Char> Crdt::deleteSingleLine(QPair<int, int> startPos, QPair<int, int> end
     return toremove;
 }
 
-void Crdt::mergeRows(int row) {
-    QList<Char> rowAfterFile = _file.takeAt(row+1);
-    QList<QPair<QString,Format>> rowAfterBuf = _textBuffer.takeAt(row+1);
-    _file[row].append(rowAfterFile);
-    _textBuffer[row].append(rowAfterBuf);
-}
+void Crdt::mergeRows(int row, bool client) {
 
-void Crdt::mergeServerRows(int row) {
     QList<Char> rowAfterFile = _file.takeAt(row+1);
     _file[row].append(rowAfterFile);
-}
 
+    if(client){
+        QList<QPair<QString,Format>> rowAfterBuf = _textBuffer.takeAt(row+1);
+        _textBuffer[row].append(rowAfterBuf);
+    }
+}
 
 QList<Char> Crdt::firstRowToEndLine(QPair<int, int> startPos){
 
     QList<Char> buff = _file[startPos.first];
     QList<Char> res(buff.mid(startPos.second));
+
     return res;
 }
 
@@ -652,7 +651,7 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo, bool client) {
         _textBuffer[index.first].removeAt(index.second);
 
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-        mergeRows(index.first);
+        mergeRows(index.first, client);
     }
 
     return index;
@@ -687,7 +686,7 @@ void Crdt::removeChar(Char c, QPair<int,int> index) {
     _file[index.first].removeAt(index.second);
 
     if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
-            mergeServerRows(index.first);
+            mergeRows(index.first, false);
     }
 }
 
