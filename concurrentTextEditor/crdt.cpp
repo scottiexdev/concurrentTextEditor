@@ -84,7 +84,7 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
             newRowRemoved = true;
         }
 
-    if(newRowRemoved && startPos.first+1 != _file.length()) { //maybe check if last line
+    if(newRowRemoved && startPos.first+1 < _file.length()) { //maybe check if last line
         mergeRows(startPos.first);
     }
 
@@ -108,9 +108,15 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
     if(!_file[startPos.first+1].isEmpty()) {
         chars.append(lastRowToEndPos(lastRow)); //take the chars of the last selected row til endPos.ch
         deleteSingleLine(QPair<int,int>(lastRow.first,0), lastRow);
-        if(_file[startPos.first].isEmpty()){
-                _file.removeAt(startPos.first);
+        if(_file[startPos.first+1].isEmpty()){
+                _file.removeAt(startPos.first+1);
+                _textBuffer.removeAt(startPos.first+1);
         }
+    }
+
+    if(_file[startPos.first].isEmpty()) {
+        _file.removeAt(startPos.first);
+        _textBuffer.removeAt(startPos.first);
     }
 
     return chars;
