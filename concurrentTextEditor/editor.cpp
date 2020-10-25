@@ -72,10 +72,15 @@ void Editor::handleFile(QJsonDocument unparsedFile) {
 
 void Editor::showUser(QString user) {
     QListWidgetItem *newUser = new QListWidgetItem(user);
-    QColor color = _colors.at(_colorNumber%_colors.size());
-    newUser->setBackground(_colors.at(_colorNumber%_colors.size())); //creare una palette
-    _colorNumber++;
-    ui->editorController->setUserColor(user, color);
+    if(user == _workerClient->getUser()) {
+        newUser->setBackground(QColor(Qt::white));
+        ui->editorController->setUserColor(user, Qt::white);
+    } else {
+        QColor color = _colors.at(_colorNumber%_colors.size());
+        newUser->setBackground(_colors.at(_colorNumber%_colors.size())); //creare una palette
+        _colorNumber++;
+        ui->editorController->setUserColor(user, color);
+    }
     ui->listWidget->addItem(newUser);
     ui->activeUsers->setText("Active users: " + QString::number(ui->listWidget->count()));
 }
