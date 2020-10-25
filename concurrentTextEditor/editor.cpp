@@ -39,6 +39,12 @@ Editor::Editor(QWidget *parent, WorkerClient *worker, QString fileName, bool isP
     ui->actionExport_PDF->setIcon(_workerClient->getIcon(UiEditor::pdf));
     ui->actionUnderline->setIcon(_workerClient->getIcon(UiEditor::underlined));
     ui->actionItalics->setIcon(_workerClient->getIcon(UiEditor::italics1));
+
+
+
+    _loadMsg.setText("Loading file, please wait...");
+    _loadMsg.setStandardButtons(0);
+    _loadMsg.show();
 }
 
 Editor::~Editor()
@@ -57,10 +63,17 @@ Editor::~Editor()
 void Editor::handleFile(QJsonDocument unparsedFile) {
     //Il document ricevuto viene passato a editorcontroller che lo converte il data structure
     //c++ e lo visualizza
+
+    // show here loading msg
+
     if(!ui->editorController->parseCteFile(unparsedFile)){
         //throw exception;
     }
+
     ui->editorController->write();
+
+    // delete here msg
+    _loadMsg.hide();
 }
 
 void Editor::showUser(QString user) {
