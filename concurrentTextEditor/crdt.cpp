@@ -85,7 +85,13 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
                 QChar val = _file[posBefore.first][posBefore.second]._value;
                 if(val != '\n' && val != '\r') {
                     mergeRows(startPos.first);
+                } else {
+                    if(_file[startPos.first].isEmpty()) {
+                        _file.removeAt(startPos.first);
+                        _textBuffer.removeAt(startPos.first);
+                    }
                 }
+
             } else {
                 if(_file[startPos.first].isEmpty()) {
                     _file.removeAt(startPos.first);

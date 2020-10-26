@@ -35,7 +35,7 @@ void clientmainwindow::on_pushButtonLogin_clicked()
     if(LOCAL_HOST)
         success = _workerClient->connectToServer(QHostAddress::LocalHost, 8888);
     else
-        success = _workerClient->connectToServer(QHostAddress("109.115.20.249"), 8888);
+        success = _workerClient->connectToServer(QHostAddress("87.0.224.19"), 8888);
 
     if(!success) {
         QMessageBox::warning(this, "Error", "Server is not responding");
