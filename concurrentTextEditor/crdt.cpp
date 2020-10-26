@@ -86,6 +86,11 @@ QList<Char> Crdt::handleLocalDelete(QPair<int,int> startPos, QPair<int,int> endP
                 if(val != '\n' && val != '\r') {
                     mergeRows(startPos.first);
                 }
+            } else {
+                if(_file[startPos.first].isEmpty()) {
+                    _file.removeAt(startPos.first);
+                    _textBuffer.removeAt(startPos.first);
+                }
             }
         }
 
@@ -123,10 +128,10 @@ QList<Char> Crdt::deleteMultipleRows(QPair<int,int> startPos, QPair<int,int> end
         }
     }
 
-    if(_file[startPos.first].isEmpty()) {
-        _file.removeAt(startPos.first);
-        _textBuffer.removeAt(startPos.first);
-    }
+//    if(_file[startPos.first].isEmpty()) {
+//        _file.removeAt(startPos.first);
+//        _textBuffer.removeAt(startPos.first);
+//    }
 
     return chars;
 }
@@ -665,7 +670,7 @@ QPair<int,int> Crdt::handleRemoteDelete(const QJsonObject &qjo, bool client) {
     if(client)
         _textBuffer[index.first].removeAt(index.second);
 
-    if((c._value == '\r' || c._value == '\n') && index.first+1 != _file.length()) {
+    if((c._value == '\r' || c._value == '\n')/* && index.first+1 != _file.length()*/) {
         mergeRows(index.first, client);
     }
 
